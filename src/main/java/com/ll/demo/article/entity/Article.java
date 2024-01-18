@@ -2,9 +2,7 @@ package com.ll.demo.article.entity;
 
 import com.ll.demo.global.entity.BaseEntity;
 import com.ll.demo.user.entity.User;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,9 +17,17 @@ import java.util.List;
 @NoArgsConstructor
 public class Article extends BaseEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String content;
-    private User user;
+
+    @ManyToOne
+    private User author;
+
     private Boolean paid;
+
     private Long price;
 
 }
