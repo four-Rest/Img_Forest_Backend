@@ -1,19 +1,17 @@
-package com.ll.demo.user.controller;
+package com.ll.demo.member.controller;
 
 import com.ll.demo.global.config.JwtProperties;
 import com.ll.demo.global.config.JwtUtil;
 import com.ll.demo.global.response.GlobalResponse;
-import com.ll.demo.user.dto.*;
-import com.ll.demo.user.entity.User;
-import com.ll.demo.user.service.UserService;
+import com.ll.demo.member.dto.*;
+import com.ll.demo.member.entity.Member;
+import com.ll.demo.member.service.MemberService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -26,45 +24,45 @@ import java.util.Optional;
 @RequestMapping("/user")
 public class UserController {
 
-    private final UserService userService;
+    private final MemberService memberService;
     private final HttpServletResponse response;
     private final HttpServletRequest request;
     private final JwtProperties jwtProperties;
 
     @PostMapping("/signup")
-    public GlobalResponse signup(@RequestBody UserCreateRequestDto userCreateRequestDto) {
+    public GlobalResponse signup(@RequestBody MemberCreateRequestDto userCreateRequestDto) {
         if (!userCreateRequestDto.getPassword1().equals(userCreateRequestDto.getPassword2())) {
             return GlobalResponse.of("409", "비밀번호가 일치하지 않습니다");
         }
-        return userService.signup(userCreateRequestDto);
+        return memberService.signup(userCreateRequestDto);
     }
 
     @PostMapping("/login")
     public GlobalResponse<LoginResponseDto> login(@RequestBody LoginRequestDto dto) {
-        GlobalResponse<User> checkedResp = userService.checkUsernameAndPassword(dto.getUsername(), dto.getPassword());
-        User user = checkedResp.getData();
+        GlobalResponse<Member> checkedResp = memberService.checkUsernameAndPassword(dto.getUsername(), dto.getPassword());
+        Member member = checkedResp.getData();
         String accessToken = JwtUtil.encode(
                 60 * 10, // 1 minute
                 Map.of(
-                        "id", user.getId().toString(),
-                        "username", user.getUsername(),
-                        "authorities", user.getAuthoritiesAsStrList()
+                        "id", member.getId().toString(),
+                        "username", member.getUsername(),
+                        "authorities", member.getAuthoritiesAsStrList()
                 )
                 , jwtProperties.getSECRET_KEY()
         );
         String refreshToken = JwtUtil.encode(
                 60 * 60 * 24, //1 day
                 Map.of(
-                        "id", user.getId().toString(),
-                        "username", user.getUsername()
+                        "id", member.getId().toString(),
+                        "username", member.getUsername()
                 )
                 , jwtProperties.getSECRET_KEY()
         );
-        userService.setRefreshToken(user, refreshToken);
+        memberService.setRefreshToken(member, refreshToken);
 
         addCrossDomainCookie(accessToken, refreshToken);
 
-        return GlobalResponse.of("200", "로그인 성공.", new LoginResponseDto(user));
+        return GlobalResponse.of("200", "로그인 성공.", new LoginResponseDto(member));
     }
 
     @PostMapping("/login/refresh")
@@ -81,13 +79,13 @@ public class UserController {
         }
 
         String refreshToken = refreshTokenCookieOp.get().getValue();
-        User user = userService.findUserByRefreshToken(refreshToken).get();
+        Member member = memberService.findUserByRefreshToken(refreshToken).get();
         String accessToken = JwtUtil.encode(
                 60 * 10,
                 Map.of(
-                        "id", user.getId().toString(),
-                        "username", user.getUsername(),
-                        "authorities", user.getAuthoritiesAsStrList()
+                        "id", member.getId().toString(),
+                        "username", member.getUsername(),
+                        "authorities", member.getAuthoritiesAsStrList()
                 ),
                 jwtProperties.getSECRET_KEY()
         );
@@ -114,7 +112,7 @@ public class UserController {
     public GlobalResponse<MyPageResponseDto> mypage(Principal principal) {
 
         String username = principal.getName();
-        MyPageResponseDto responseDto = new MyPageResponseDto(userService.findByUsername(username));
+        MyPageResponseDto responseDto = new MyPageResponseDto(memberService.findByUsername(username));
         return GlobalResponse.of("200", "유저 정보 반환", responseDto);
     }
 
@@ -123,9 +121,9 @@ public class UserController {
     public GlobalResponse mypage(Principal principal, @RequestBody MyPageRequestDto dto){
 
 
-        User user = userService.findByUsername(principal.getName());
-        if(user != null){
-            return userService.updateUserData(user, dto);
+        Member member = memberService.findByUsername(principal.getName());
+        if(member != null){
+            return memberService.updateUserData(member, dto);
         } else{
             return GlobalResponse.of("403", "확인되지 않은 유저입니다.");
         }

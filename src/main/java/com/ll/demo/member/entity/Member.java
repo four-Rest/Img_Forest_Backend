@@ -1,4 +1,4 @@
-package com.ll.demo.user.entity;
+package com.ll.demo.member.entity;
 
 
 import com.ll.demo.global.entity.BaseEntity;
@@ -16,7 +16,7 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends BaseEntity {
+public class Member extends BaseEntity {
     @Column(unique = true)
     private String username;
 

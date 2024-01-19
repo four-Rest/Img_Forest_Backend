@@ -1,4 +1,4 @@
-package com.ll.demo.user.dto;
+package com.ll.demo.member.dto;
 
 
 import lombok.Getter;

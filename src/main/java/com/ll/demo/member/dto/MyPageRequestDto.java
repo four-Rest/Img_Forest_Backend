@@ -1,4 +1,4 @@
-package com.ll.demo.user.dto;
+package com.ll.demo.member.dto;
 
 
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MyPageRequestDto {
-    private String username;
     private String nickname;
-    private String email;
+    private String password1;
+    private String password2;
 }

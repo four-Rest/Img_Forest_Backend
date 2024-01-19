@@ -1,4 +1,4 @@
-package com.ll.demo.user.dto;
+package com.ll.demo.member.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserCreateRequestDto {
+public class MemberCreateRequestDto {
     @Size(min = 3, max = 25)
     @NotEmpty(message = "사용자ID는 필수항목입니다.")
     private String username;
