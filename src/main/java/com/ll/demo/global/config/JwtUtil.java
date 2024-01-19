@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 public class JwtUtil {
+    // JWT 생성
     public static String encode(long expirationSeconds, Map<String, Object> data, String secretKey) {
         Claims claims = Jwts
                 .claims()
@@ -26,6 +27,7 @@ public class JwtUtil {
                 .compact();
     }
 
+    // JWT 검증
     public static Claims decode(String token, String secretKey) {
         return Jwts
                 .parser()
