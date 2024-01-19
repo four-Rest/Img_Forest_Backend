@@ -1,9 +1,9 @@
 package com.ll.demo.article.dto;
 
+import com.ll.demo.member.entity.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.ll.demo.user.entity.User;
 import java.time.LocalDateTime;
 
 @Getter
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ArticleRequestDto {
     private Long id;
-    private User author;
+    private Member member;
     private String content;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;

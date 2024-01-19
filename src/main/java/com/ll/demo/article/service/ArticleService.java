@@ -43,4 +43,9 @@ public class ArticleService {
             throw new IllegalArgumentException();
         }
     }
+
+    @Transactional
+    public void delete(Article article) {
+        articleRepository.delete(article);
+    }
 }
