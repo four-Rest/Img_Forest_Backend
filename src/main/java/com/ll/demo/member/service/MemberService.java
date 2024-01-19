@@ -45,7 +45,7 @@ public class MemberService {
         return memberRepository.findByUsername(username).isPresent() ? false : true;
     }
 
-    public GlobalResponse<Member> checkUsernameAndPassword(String username, String password) {
+    public GlobalResponse<Member> checkMembernameAndPassword(String username, String password) {
         Optional<Member> userOp = memberRepository.findByUsername(username);
 
         if (userOp.isEmpty()) {

@@ -22,7 +22,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
-public class UserController {
+public class MemberController {
 
     private final MemberService memberService;
     private final HttpServletResponse response;
@@ -51,7 +51,7 @@ public class UserController {
                 )
                 , jwtProperties.getSECRET_KEY()
         );
-        // refreshToken 생성 ac
+        // refreshToken 생성 accessToken의 유효 시간이 만료되었을 때 새로운 accessToken 발급 받기 위해 사용
         String refreshToken = JwtUtil.encode(
                 60 * 60 * 24, //1 day
                 Map.of(
