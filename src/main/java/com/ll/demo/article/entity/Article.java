@@ -30,4 +30,7 @@ public class Article extends BaseEntity {
 
     private Long price;
 
+    @OneToOne(mappedBy = "article", cascade = CascadeType.REMOVE)
+    private Image image;
+
 }
