@@ -2,13 +2,15 @@ package com.ll.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-public class DemoApplication {
+@ConfigurationPropertiesScan
+public class DemoApplication
+{
 
-    public static void main(String[] args) {
+public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
-    }
+        }
 
-}
-
+        }
