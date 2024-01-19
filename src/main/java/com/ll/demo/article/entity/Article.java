@@ -1,7 +1,7 @@
 package com.ll.demo.article.entity;
 
 import com.ll.demo.global.entity.BaseEntity;
-import com.ll.demo.user.entity.User;
+import com.ll.demo.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class Article extends BaseEntity {
     private String content;
 
     @ManyToOne
-    private User author;
+    private Member author;
 
     private Boolean paid;
 

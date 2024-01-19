@@ -3,7 +3,7 @@ package com.ll.demo.article.service;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.repository.ArticleRepository;
-import com.ll.demo.user.entity.User;
+import com.ll.demo.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
