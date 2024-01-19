@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Entity
 @Getter
 @SuperBuilder(toBuilder = true)
@@ -31,8 +33,8 @@ public class User extends BaseEntity {
 //                .toList();
 //    }
 //
-//    @SuppressWarnings("JpaAttributeTypeInspection")
-//    public List<String> getAuthoritiesAsStrList() {
-//        return List.of("ROLE_MEMBER");
-//    }
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    public List<String> getAuthoritiesAsStrList() {
+        return List.of("ROLE_MEMBER");
+    }
 }
