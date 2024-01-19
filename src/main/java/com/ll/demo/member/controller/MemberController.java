@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/member")
 public class UserController {
 
     private final MemberService memberService;
@@ -39,10 +39,11 @@ public class UserController {
 
     @PostMapping("/login")
     public GlobalResponse<LoginResponseDto> login(@RequestBody LoginRequestDto dto) {
-        GlobalResponse<Member> checkedResp = memberService.checkUsernameAndPassword(dto.getUsername(), dto.getPassword());
+        GlobalResponse<Member> checkedResp = memberService.checkMembernameAndPassword(dto.getUsername(), dto.getPassword());
         Member member = checkedResp.getData();
+        // accessToken 생성
         String accessToken = JwtUtil.encode(
-                60 * 10, // 1 minute
+                60 * 10, // 100분
                 Map.of(
                         "id", member.getId().toString(),
                         "username", member.getUsername(),
@@ -50,13 +51,14 @@ public class UserController {
                 )
                 , jwtProperties.getSECRET_KEY()
         );
+        // refreshToken 생성 ac
         String refreshToken = JwtUtil.encode(
                 60 * 60 * 24, //1 day
                 Map.of(
                         "id", member.getId().toString(),
                         "username", member.getUsername()
                 )
-                , jwtProperties.getSECRET_KEY()
+                , jwtProperties.getSECRET_KEY() // JWT를 생성할 때 사용하는 비밀키
         );
         memberService.setRefreshToken(member, refreshToken);
 
