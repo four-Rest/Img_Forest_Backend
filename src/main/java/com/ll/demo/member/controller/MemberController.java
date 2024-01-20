@@ -49,8 +49,9 @@ public class MemberController {
                         "username", member.getUsername(),
                         "authorities", member.getAuthoritiesAsStrList()
                 )
-                , jwtProperties.getSECRET_KEY()
+                , jwtProperties.getSecretKey()
         );
+        System.out.println("accessToken 통과");
         // refreshToken 생성 accessToken의 유효 시간이 만료되었을 때 새로운 accessToken 발급 받기 위해 사용
         String refreshToken = JwtUtil.encode(
                 60 * 60 * 24, //1 day
@@ -58,7 +59,7 @@ public class MemberController {
                         "id", member.getId().toString(),
                         "username", member.getUsername()
                 )
-                , jwtProperties.getSECRET_KEY() // JWT를 생성할 때 사용하는 비밀키
+                , jwtProperties.getSecretKey() // JWT를 생성할 때 사용하는 비밀키
         );
         memberService.setRefreshToken(member, refreshToken);
 
@@ -90,7 +91,7 @@ public class MemberController {
                         "username", member.getUsername(),
                         "authorities", member.getAuthoritiesAsStrList()
                 ),
-                jwtProperties.getSECRET_KEY()
+                jwtProperties.getSecretKey()
         );
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
                 .path("/")
