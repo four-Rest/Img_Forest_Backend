@@ -81,7 +81,7 @@ public class MemberController {
         if (refreshTokenCookieOp.isEmpty()) {
             return GlobalResponse.of("401", "refreshToken not exist.");
         }
-
+        System.out.println("통과");
         String refreshToken = refreshTokenCookieOp.get().getValue();
         Member member = memberService.findUserByRefreshToken(refreshToken).get();
         String accessToken = JwtUtil.encode(
