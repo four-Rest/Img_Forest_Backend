@@ -62,10 +62,8 @@ public class MemberController {
         );
         memberService.setRefreshToken(member, refreshToken);
 
-<<<<<<< HEAD
+
         // accessToken, refreshToken
-=======
->>>>>>> dev
         addCrossDomainCookie(accessToken, refreshToken);
 
         return GlobalResponse.of("200", "로그인 성공.", new LoginResponseDto(member));
