@@ -24,8 +24,10 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
 
     @Transactional
-    public void create(ArticleRequestDto articleRequestDto, String username) {
-
+    public void create(ArticleRequestDto articleRequestDto, Member member) {
+        Article article = new Article();
+        article.setContent(articleRequestDto.getContent());
+        article.setMember(member);
     }
 
     public Page<Article> findAll(int page) {
@@ -47,5 +49,15 @@ public class ArticleService {
     @Transactional
     public void delete(Article article) {
         articleRepository.delete(article);
+    }
+
+    public void modifyPaidArticle(Article article, ArticleRequestDto articleRequestDto) {
+        article.setContent(articleRequestDto.getContent());
+        article.setTags(articleRequestDto.getTags());
+    }
+
+    public void modifyUnpaidArticle(Article article, ArticleRequestDto articleRequestDto) {
+        article.setContent(articleRequestDto.getContent());
+        article.setTags(articleRequestDto.getTags());
     }
 }
