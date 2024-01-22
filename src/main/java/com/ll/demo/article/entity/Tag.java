@@ -4,20 +4,21 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+
+import java.util.Set;
 
 @Entity
 @RequiredArgsConstructor
 @Getter
 @Setter
-@SuperBuilder(toBuilder = true)
-public class Image {
+public class Tag {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fileName;
+    private String tagName;
 
-    @OneToOne
-    private Article article;
+    @ManyToMany
+    Set<Article> articles;
 }
