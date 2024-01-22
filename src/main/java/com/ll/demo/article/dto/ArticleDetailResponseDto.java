@@ -14,8 +14,4 @@ import java.util.Set;
 @Builder
 public class ArticleDetailResponseDto {
     Article article;
-
-    Image image;
-
-    Set<Tag> tags;
 }
