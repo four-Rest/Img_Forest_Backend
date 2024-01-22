@@ -42,8 +42,6 @@ public class ArticleController {
     public GlobalResponse show(@PathVariable("id") Long id) {
 
         Article article = articleService.getArticleById(id);
-        Image image = article.getImage();
-        Set<Tag> tags = article.getTags();
 
         return GlobalResponse.of("200", "success",
                 ArticleDetailResponseDto.builder()
@@ -56,8 +54,7 @@ public class ArticleController {
     @PostMapping("")
     public GlobalResponse create(
             @Valid @RequestBody ArticleRequestDto articleRequestDto,
-            @RequestPart("files") MultipartFile file,
-            Principal principal) {
+            Principal principal) throws IOException {
         // 사용자 인증 정보 가져오기
         Member member = memberService.findByUsername(principal.getName());
 
@@ -65,7 +62,7 @@ public class ArticleController {
             return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
         }
 
-        articleService.create(articleRequestDto, file, member);
+        articleService.create(articleRequestDto, member);
 
         return GlobalResponse.of("201", "Article created");
     }

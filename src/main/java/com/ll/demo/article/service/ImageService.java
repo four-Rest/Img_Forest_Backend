@@ -45,4 +45,12 @@ public class ImageService {
     public void delete(Image image) {
         imageRepository.delete(image);
     }
+
+    public void modify(Image image, MultipartFile multipartFile) throws IOException {
+
+        Article article = image.getArticle();
+        Image currentImage = image;
+        delete(currentImage);
+        create(article, multipartFile);
+    }
 }
