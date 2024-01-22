@@ -68,7 +68,7 @@ public class MemberService {
     }
 
     public SecurityUser getMemberFromApiKey(String token) {
-        Claims claims = JwtUtil.decode(token, jwtProperties.getSECRET_KEY());
+        Claims claims = JwtUtil.decode(token, jwtProperties.getSecretKey());
 
         Map<String, Object> data = (Map<String, Object>) claims.get("data");
         long id = Long.parseLong((String) data.get("id"));
