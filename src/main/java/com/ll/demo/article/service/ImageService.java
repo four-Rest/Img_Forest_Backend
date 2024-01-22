@@ -19,8 +19,6 @@ import java.util.UUID;
 public class ImageService {
 
     private final ImageRepository imageRepository;
-    private final ImageService imageService;
-    private final ArticleRepository articleRepository;
 
     @Transactional
     public Image create(Article article, MultipartFile file) throws IOException {
