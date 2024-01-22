@@ -1,14 +1,18 @@
 package com.ll.demo.global.config;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-@AllArgsConstructor
+
+
+
 @Getter
-@ConfigurationProperties(prefix = "jwt")
+@Setter
+@Component
+@ConfigurationProperties(prefix = "spring.jwt")
 public class JwtProperties {
 
-    private final String SECRET_KEY;
+    private String secretKey;
 
 }
