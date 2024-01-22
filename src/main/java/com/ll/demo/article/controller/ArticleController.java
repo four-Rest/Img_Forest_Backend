@@ -15,7 +15,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Set;
 
@@ -46,15 +48,16 @@ public class ArticleController {
         return GlobalResponse.of("200", "success",
                 ArticleDetailResponseDto.builder()
                         .article(article)
-                        .image(image)
-                        .tags(tags)
                         .build());
     }
 
     // 글 생성
     @PreAuthorize("isAuthenticated()")
     @PostMapping("")
-    public GlobalResponse create(@Valid @RequestBody ArticleRequestDto articleRequestDto, Principal principal) {
+    public GlobalResponse create(
+            @Valid @RequestBody ArticleRequestDto articleRequestDto,
+            @RequestPart("files") MultipartFile file,
+            Principal principal) {
         // 사용자 인증 정보 가져오기
         Member member = memberService.findByUsername(principal.getName());
 
@@ -62,7 +65,8 @@ public class ArticleController {
             return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
         }
 
-        articleService.create(articleRequestDto, member);
+        articleService.create(articleRequestDto, file, member);
+
         return GlobalResponse.of("201", "Article created");
     }
 
@@ -72,8 +76,8 @@ public class ArticleController {
     public GlobalResponse update(
             @PathVariable("id") Long id,
             Principal principal,
-            @Valid ArticleRequestDto articleRequestDto
-    ) {
+            @Valid @RequestBody ArticleRequestDto articleRequestDto
+    ) throws IOException {
         Article article = articleService.getArticleById(id);
         Member member = memberService.findByUsername(principal.getName());
 
