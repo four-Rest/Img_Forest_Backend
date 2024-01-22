@@ -5,46 +5,42 @@ import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
 import com.ll.demo.article.repository.ArticleRepository;
 import com.ll.demo.member.entity.Member;
+import com.ll.demo.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ArticleService {
+
     private final ArticleRepository articleRepository;
     private final ImageService imageService;
 
     @Transactional
-    public void create(ArticleRequestDto articleRequestDto, MultipartFile file, Member member) {
+    public void create(ArticleRequestDto articleRequestDto, Member member) throws IOException {
+
         Article article = new Article();
         article.setContent(articleRequestDto.getContent());
         article.setMember(member);
 
-        // 이미지 엔티티 생성 및 설정
-        Image image = new Image();
+        if (articleRequestDto.getMultipartFile() != null) {
 
-        if (file != null) {
-            String fileName = file.getOriginalFilename();
-            image.setFileName(fileName);
-            image.setArticle(article);
-
+            Image image = imageService.create(article, articleRequestDto.getMultipartFile());
             article.setImage(image);
             articleRepository.save(article);
+
         } else {
             throw new IllegalArgumentException("적어도 하나의 이미지를 업로드해야 합니다.");
         }
@@ -84,11 +80,7 @@ public class ArticleService {
         article.setContent(articleRequestDto.getContent());
         article.setTags(articleRequestDto.getTags());
 
-        //기존 이미지 삭제
-        imageService.delete(article.getImage());
-
-        //새 이미지 생성 및 적용
-        Image image = imageService.create(article, articleRequestDto.getMultipartFile());
-        article.setImage(image);
+        //이미지 교체
+        imageService.modify(article.getImage(), articleRequestDto.getMultipartFile());
     }
 }
