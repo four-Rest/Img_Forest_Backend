@@ -52,17 +52,47 @@ public class ImageService {
         String fileName = image.getFileName();
         Path filePath = Paths.get(projectPath, fileName);
 
-        Files.deleteIfExists(filePath);
+        deleteFile(filePath);
 
         imageRepository.delete(image);
     }
 
     @Transactional
-    public void modify(Image image, MultipartFile multipartFile) throws IOException {
+    public void modify(Image image, MultipartFile file) throws IOException {
 
-        Article article = image.getArticle();
-        Image currentImage = image;
-        delete(currentImage);
-        create(article, multipartFile);
+        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+
+        //기존 이미지 파일 삭제
+        String oldFileName = image.getFileName();
+
+        Path oldFilePath = Paths.get(projectPath, oldFileName);
+
+        deleteFile(oldFilePath);
+
+        //새 이미지 파일 저장
+        UUID uuid = UUID.randomUUID();
+
+        String newFileName = uuid + "_" + file.getOriginalFilename();
+
+        File saveFile = new File(projectPath, newFileName);
+
+        file.transferTo(saveFile);
+
+        //Image객체의 fileName을 새 이미지파일로 변경
+        image.setFileName(newFileName);
+
+    }
+
+    @Transactional
+    public void deleteFile(Path filePath) throws IOException {
+
+        if (Files.exists(filePath)) {
+            try {
+                Files.delete(filePath);
+            } catch (IOException e) {
+
+            }
+        }
+
     }
 }
