@@ -7,12 +7,12 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class CreateCommentResponse {
+public class DeleteCommentResponse {
     private Long id;
     private String content;
 
-    public static CreateCommentResponse of(Comment comment) {
-        return CreateCommentResponse.builder()
+    public static DeleteCommentResponse of(Comment comment) {
+        return DeleteCommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
                 .build();
