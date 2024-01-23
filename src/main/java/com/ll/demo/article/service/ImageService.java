@@ -11,6 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
@@ -42,10 +45,19 @@ public class ImageService {
         return image;
     }
 
-    public void delete(Image image) {
+    @Transactional
+    public void delete(Image image) throws IOException {
+
+        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+        String fileName = image.getFileName();
+        Path filePath = Paths.get(projectPath, fileName);
+
+        Files.deleteIfExists(filePath);
+
         imageRepository.delete(image);
     }
 
+    @Transactional
     public void modify(Image image, MultipartFile multipartFile) throws IOException {
 
         Article article = image.getArticle();
