@@ -6,6 +6,7 @@ import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
 import com.ll.demo.article.entity.Tag;
 import com.ll.demo.article.service.ArticleService;
+import com.ll.demo.article.service.ImageService;
 import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
@@ -21,13 +22,15 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Set;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/article")
 public class ArticleController {
 
     private final ArticleService articleService;
     private final MemberService memberService;
+
+    private final ImageService imageService;
 
     //전체 글 조회
     @GetMapping("")
@@ -42,18 +45,14 @@ public class ArticleController {
     public GlobalResponse show(@PathVariable("id") Long id) {
 
         Article article = articleService.getArticleById(id);
-
-        return GlobalResponse.of("200", "success",
-                ArticleDetailResponseDto.builder()
-                        .article(article)
-                        .build());
+        return GlobalResponse.of("200", "success", new ArticleDetailResponseDto(article));
     }
 
     // 글 생성
     @PreAuthorize("isAuthenticated()")
     @PostMapping("")
     public GlobalResponse create(
-            @Valid @RequestBody ArticleRequestDto articleRequestDto,
+            @Valid ArticleRequestDto articleRequestDto,
             Principal principal) throws IOException {
         // 사용자 인증 정보 가져오기
         Member member = memberService.findByUsername(principal.getName());
@@ -67,13 +66,14 @@ public class ArticleController {
         return GlobalResponse.of("201", "Article created");
     }
 
+
     //글 수정
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
     public GlobalResponse update(
             @PathVariable("id") Long id,
             Principal principal,
-            @Valid @RequestBody ArticleRequestDto articleRequestDto
+            @Valid ArticleRequestDto articleRequestDto
     ) throws IOException {
         Article article = articleService.getArticleById(id);
         Member member = memberService.findByUsername(principal.getName());
@@ -100,7 +100,7 @@ public class ArticleController {
     //글 삭제
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
-    public GlobalResponse delete(@PathVariable("id") Long id, Principal principal) {
+    public GlobalResponse delete(@PathVariable("id") Long id, Principal principal) throws IOException {
 
         Article article = articleService.getArticleById(id);
         Member member = memberService.findByUsername(principal.getName());

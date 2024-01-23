@@ -17,14 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Validated
 public class ArticleRequestDto {
-    private Long id;
-    private Member member;
     private String content;
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
     private Set<Tag> tags;
-
-    @NotEmpty
     private MultipartFile multipartFile;
-//  private String comment;
 }
