@@ -1,5 +1,6 @@
 package com.ll.demo.article.entity;
 
+import com.ll.demo.comment.entity.Comment;
 import com.ll.demo.global.entity.BaseEntity;
 import com.ll.demo.member.entity.Member;
 import jakarta.persistence.*;
@@ -38,4 +39,9 @@ public class Article extends BaseEntity {
 
     @ManyToMany
     private Set<Tag> tags;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Comment> commentList;
+
+
 }
