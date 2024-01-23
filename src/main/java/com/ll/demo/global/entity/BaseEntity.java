@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -31,4 +30,7 @@ public class BaseEntity {
 
     @LastModifiedDate
     private LocalDateTime modifiedTime;
+
+    @Setter
+    private LocalDateTime removedTime;
 }
