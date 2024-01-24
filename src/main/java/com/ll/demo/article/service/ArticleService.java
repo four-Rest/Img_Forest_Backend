@@ -63,7 +63,9 @@ public class ArticleService {
     }
 
     @Transactional
-    public void delete(Article article) {
+    public void delete(Article article) throws IOException {
+        Image image = article.getImage();
+        imageService.delete(image);
         articleRepository.delete(article);
     }
 
