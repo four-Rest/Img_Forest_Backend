@@ -11,7 +11,20 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Builder
 public class ArticleDetailResponseDto {
-    Article article;
+    private String content;
+    private String username;
+    private boolean paid;
+    private Long price;
+    private Set<Tag> tags;
+    private String imgFileName;
+
+    public ArticleDetailResponseDto(Article article) {
+        this.content = article.getContent();
+        this.username = article.getMember().getUsername();
+        this.paid = article.isPaid();
+        this.price = article.getPrice();
+        this.tags = article.getTags();
+        this.imgFileName = article.getImage().getFileName();
+    }
 }

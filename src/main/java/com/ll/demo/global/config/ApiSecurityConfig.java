@@ -19,6 +19,8 @@ public class ApiSecurityConfig {
     SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/**")
+                .authorizeHttpRequests(authorizeRequests ->authorizeRequests
+                        .requestMatchers("/h2-console/").permitAll())
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.disable()))
