@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -18,6 +19,6 @@ import java.util.Set;
 @Validated
 public class ArticleRequestDto {
     private String content;
-    private Set<Tag> tags;
+    private String tagString;
     private MultipartFile multipartFile;
 }

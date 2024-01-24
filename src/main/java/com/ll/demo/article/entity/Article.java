@@ -38,7 +38,7 @@ public class Article extends BaseEntity {
     private Image image;
 
     @ManyToMany
-    private Set<Tag> tags;
+    private List<Tag> tags;
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE)
     private List<Comment> commentList;
