@@ -1,6 +1,9 @@
 server:
   port: 8090
 spring:
+  h2:
+    console:
+      enabled: true
   thymeleaf:
     cache: false
   datasource:
