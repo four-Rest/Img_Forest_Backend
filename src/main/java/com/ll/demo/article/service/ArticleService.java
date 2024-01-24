@@ -88,8 +88,9 @@ public class ArticleService {
         if (articleRequestDto.getTagString() != null) {
             article.setTags(tagService.parseTagStringIntoList(articleRequestDto.getTagString()));
         }
-
-        //이미지 교체
-        imageService.modify(article.getImage(), articleRequestDto.getMultipartFile());
+        if (articleRequestDto.getMultipartFile() != null) {
+            //이미지 교체
+            imageService.modify(article.getImage(), articleRequestDto.getMultipartFile());
+        }
     }
 }
