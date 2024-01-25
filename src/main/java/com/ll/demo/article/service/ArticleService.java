@@ -5,7 +5,6 @@ import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
 import com.ll.demo.article.repository.ArticleRepository;
 import com.ll.demo.member.entity.Member;
-import com.ll.demo.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +25,7 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final ImageService imageService;
+    private final TagService tagService;
 
     @Transactional
     public void create(ArticleRequestDto articleRequestDto, Member member) throws IOException {
@@ -34,6 +33,9 @@ public class ArticleService {
         Article article = new Article();
         article.setContent(articleRequestDto.getContent());
         article.setMember(member);
+        if (articleRequestDto.getTagString() != null) {
+            article.setTags(tagService.parseTagStringIntoList(articleRequestDto.getTagString()));
+        }
 
         if (articleRequestDto.getMultipartFile() != null) {
 
@@ -73,16 +75,22 @@ public class ArticleService {
     public void modifyPaidArticle(Article article, ArticleRequestDto articleRequestDto) {
         //내용과 태그 변경
         article.setContent(articleRequestDto.getContent());
-        article.setTags(articleRequestDto.getTags());
+        if (articleRequestDto.getTagString() != null) {
+            article.setTags(tagService.parseTagStringIntoList(articleRequestDto.getTagString()));
+        }
     }
 
     @Transactional
     public void modifyUnpaidArticle(Article article, ArticleRequestDto articleRequestDto) throws IOException {
         //내용과 태그 변경
         article.setContent(articleRequestDto.getContent());
-        article.setTags(articleRequestDto.getTags());
 
-        //이미지 교체
-        imageService.modify(article.getImage(), articleRequestDto.getMultipartFile());
+        if (articleRequestDto.getTagString() != null) {
+            article.setTags(tagService.parseTagStringIntoList(articleRequestDto.getTagString()));
+        }
+        if (articleRequestDto.getMultipartFile() != null) {
+            //이미지 교체
+            imageService.modify(article.getImage(), articleRequestDto.getMultipartFile());
+        }
     }
 }
