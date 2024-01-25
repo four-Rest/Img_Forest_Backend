@@ -23,7 +23,6 @@ public class ApiSecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.disable()))
                 // h2 database 관련 frameOption -> disable
-
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         ;
         return http.build();
