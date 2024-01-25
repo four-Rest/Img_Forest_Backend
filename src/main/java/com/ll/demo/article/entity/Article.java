@@ -1,5 +1,6 @@
 package com.ll.demo.article.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ll.demo.comment.entity.Comment;
 import com.ll.demo.global.entity.BaseEntity;
 import com.ll.demo.member.entity.Member;
@@ -34,6 +35,7 @@ public class Article extends BaseEntity {
 
     private Long price;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "article", cascade = CascadeType.REMOVE)
     private Image image;
 

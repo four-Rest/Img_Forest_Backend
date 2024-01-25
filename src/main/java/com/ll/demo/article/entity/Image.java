@@ -1,5 +1,6 @@
 package com.ll.demo.article.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class Image {
 
     private String fileName;
 
+    @JsonIgnore
     @OneToOne
     private Article article;
 }

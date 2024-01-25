@@ -27,6 +27,10 @@ public class ImageService {
     public Image create(Article article, MultipartFile file) throws IOException {
 
         String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+        String os = System.getProperty("os.name").toLowerCase();
+        if (!os.contains("win")) {
+            projectPath = System.getProperty("user.dir") + "/src/main/resources/static/files";
+        }
 
         UUID uuid = UUID.randomUUID();
 
@@ -49,6 +53,11 @@ public class ImageService {
     public void delete(Image image) throws IOException {
 
         String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+        String os = System.getProperty("os.name").toLowerCase();
+        if (!os.contains("win")) {
+            projectPath = System.getProperty("user.dir") + "/src/main/resources/static/files";
+        }
+
         String fileName = image.getFileName();
         Path filePath = Paths.get(projectPath, fileName);
 
@@ -61,6 +70,10 @@ public class ImageService {
     public void modify(Image image, MultipartFile file) throws IOException {
 
         String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+        String os = System.getProperty("os.name").toLowerCase();
+        if (!os.contains("win")) {
+            projectPath = System.getProperty("user.dir") + "/src/main/resources/static/files";
+        }
 
         //기존 이미지 파일 삭제
         String oldFileName = image.getFileName();
