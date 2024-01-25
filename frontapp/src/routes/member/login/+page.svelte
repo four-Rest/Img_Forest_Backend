@@ -1,6 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { toastNotice } from '../../app.js';
+	import { isLogin } from '$lib/login_stores.js';
 
 	$: signupData = {
 		username: '',
@@ -15,8 +16,16 @@
 				'Content-Type': 'application/json'
 			},
 			method: 'POST',
+			credentials: 'include',
 			body: JSON.stringify(signupData)
-		});
+		})
+			.then((res) => res.json())
+			.then((res) => {
+				console.log(res.data);
+				localStorage.setItem('username', res.data.username);
+				localStorage.setItem('nickname', res.data.nickname);
+			});
+		isLogin.set(true);
 		toastNotice('로그인 완료.');
 		await goto('/');
 	}
