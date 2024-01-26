@@ -21,7 +21,6 @@
 		})
 			.then((res) => res.json())
 			.then((res) => {
-				console.log(res.data);
 				localStorage.setItem('username', res.data.username);
 				localStorage.setItem('nickname', res.data.nickname);
 			});
