@@ -41,6 +41,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@types/toastr": "^2.1.43",
 		"toastr": "^2.1.4"
 	}
 }
