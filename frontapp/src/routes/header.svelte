@@ -54,5 +54,10 @@
 	<div class="navbar-center">
 		<a class="btn btn-ghost text-xl" href="/">Img_Forest</a>
 	</div>
-	<div class="navbar-end"></div>
+	<div class="navbar-end flex items-center">
+		<div tabindex="-1" role="button" class="btn btn-ghost btn-circle">
+			<i class="fa-solid fa-magnifying-glass"></i>
+		</div>
+	</div>
+
 </div>
