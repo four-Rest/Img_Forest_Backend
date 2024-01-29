@@ -35,6 +35,8 @@ public class Article extends BaseEntity {
 
     private Long price;
 
+    private int likes;
+
     @JsonIgnore
     @OneToOne(mappedBy = "article", cascade = CascadeType.REMOVE)
     private Image image;
