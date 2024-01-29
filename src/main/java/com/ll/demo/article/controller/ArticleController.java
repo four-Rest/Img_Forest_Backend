@@ -33,7 +33,7 @@ public class ArticleController {
 
     //전체 글 조회
     @GetMapping("")
-    public GlobalResponse findAll() {
+    public GlobalResponse findAllArticles() {
 
         Set<ArticleListResponseDto> articleListResponseDtoSet = articleService.findAll()
                 .stream()
@@ -44,7 +44,7 @@ public class ArticleController {
 
     //단일 글 조회
     @GetMapping("/detail/{id}")
-    public GlobalResponse show(@PathVariable("id") Long id) {
+    public GlobalResponse showArticle(@PathVariable("id") Long id) {
 
         Article article = articleService.getArticleById(id);
         return GlobalResponse.of("200", "success", new ArticleDetailResponseDto(article));
@@ -52,7 +52,7 @@ public class ArticleController {
 
     //tag값으로 글 검색
     @GetMapping("/{tagName}")
-    public GlobalResponse searchByTag(@PathVariable("tagName") String tagName) {
+    public GlobalResponse searchArticlesByTag(@PathVariable("tagName") String tagName) {
         Set<ArticleListResponseDto> articleListResponseDtoSet = tagService.getArticlesByTagName(tagName)
                 .stream()
                 .map(article -> new ArticleListResponseDto(article))
@@ -63,7 +63,7 @@ public class ArticleController {
     // 글 생성
     @PreAuthorize("isAuthenticated()")
     @PostMapping("")
-    public GlobalResponse create(
+    public GlobalResponse createArticle(
             @Valid ArticleRequestDto articleRequestDto,
             Principal principal) throws IOException {
         // 사용자 인증 정보 가져오기
@@ -82,7 +82,7 @@ public class ArticleController {
     //글 수정
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
-    public GlobalResponse update(
+    public GlobalResponse updateArticle(
             @PathVariable("id") Long id,
             Principal principal,
             @Valid ArticleRequestDto articleRequestDto
@@ -112,7 +112,7 @@ public class ArticleController {
     //글 삭제
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
-    public GlobalResponse delete(@PathVariable("id") Long id, Principal principal) throws IOException {
+    public GlobalResponse deleteArticle(@PathVariable("id") Long id, Principal principal) throws IOException {
 
         Article article = articleService.getArticleById(id);
         Member member = memberService.findByUsername(principal.getName());
