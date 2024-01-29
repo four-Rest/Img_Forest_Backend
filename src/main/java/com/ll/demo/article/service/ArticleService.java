@@ -46,9 +46,10 @@ public class ArticleService {
             throw new IllegalArgumentException("적어도 하나의 이미지를 업로드해야 합니다.");
         }
     }
-
+    
     public List<Article> findAll() {
         return articleRepository.findAll();
+
     }
 
     public Article getArticleById(Long id) {
