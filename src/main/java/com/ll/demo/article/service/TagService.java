@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ll.demo.article.entity.Tag;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +40,10 @@ public class TagService {
 
     public Set<Article> getArticlesByTagName(String tagName) {
         Tag tag = tagRepository.findByTagName(tagName);
-        return tag.getArticles();
+        Set<Article> articles = tag.getArticleTags()
+                .stream()
+                .map(articleTag -> articleTag.getArticle())
+                .collect(Collectors.toSet());
+        return articles;
     }
 }

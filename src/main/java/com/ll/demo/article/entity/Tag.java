@@ -20,6 +20,6 @@ public class Tag {
     @Column(unique = true)
     private String tagName;
 
-    @ManyToMany
-    Set<Article> articles;
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL)
+    private Set<ArticleTag> articleTags;
 }

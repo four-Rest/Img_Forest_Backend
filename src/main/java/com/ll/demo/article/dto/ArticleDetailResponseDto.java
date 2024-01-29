@@ -19,7 +19,7 @@ public class ArticleDetailResponseDto {
     private String username;
     private boolean paid;
     private Long price;
-    private List<String> tags;
+    private Set<String> tags;
     private String imgFileName;
     private List<ListCommentResponse> listCommentResponses;
 
@@ -28,9 +28,10 @@ public class ArticleDetailResponseDto {
         this.username = article.getMember().getUsername();
         this.paid = article.isPaid();
         this.price = article.getPrice();
-        this.tags = article.getTags().stream()
-                .map(tag -> tag.getTagName())
-                .collect(Collectors.toList());
+        this.tags = article.getArticleTags()
+                .stream()
+                .map(articleTag -> articleTag.getTag().getTagName())
+                .collect(Collectors.toSet());
         this.imgFileName = article.getImage().getFileName();
 
         this.listCommentResponses = article.getCommentList().stream()

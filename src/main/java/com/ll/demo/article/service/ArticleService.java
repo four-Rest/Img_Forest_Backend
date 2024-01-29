@@ -2,6 +2,7 @@ package com.ll.demo.article.service;
 
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.entity.Article;
+import com.ll.demo.article.entity.ArticleTag;
 import com.ll.demo.article.entity.Image;
 import com.ll.demo.article.repository.ArticleRepository;
 import com.ll.demo.member.entity.Member;
@@ -20,6 +21,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ImageService imageService;
     private final TagService tagService;
+    private final ArticleTagService articleTagService;
 
     @Transactional
     public void create(ArticleRequestDto articleRequestDto, Member member) throws IOException {
@@ -27,8 +29,11 @@ public class ArticleService {
         Article article = new Article();
         article.setContent(articleRequestDto.getContent());
         article.setMember(member);
+        String tagString = articleRequestDto.getTagString();
         if (articleRequestDto.getTagString() != null) {
-            article.setTags(tagService.parseTagStringIntoSet(articleRequestDto.getTagString()));
+
+            articleTagService.update(article, tagString);
+
         }
 
         if (articleRequestDto.getMultipartFile() != null) {
@@ -67,7 +72,7 @@ public class ArticleService {
         //내용과 태그 변경
         article.setContent(articleRequestDto.getContent());
         if (articleRequestDto.getTagString() != null) {
-            article.setTags(tagService.parseTagStringIntoSet(articleRequestDto.getTagString()));
+            articleTagService.update(article, articleRequestDto.getTagString());
         }
     }
 
@@ -77,7 +82,7 @@ public class ArticleService {
         article.setContent(articleRequestDto.getContent());
 
         if (articleRequestDto.getTagString() != null) {
-            article.setTags(tagService.parseTagStringIntoSet(articleRequestDto.getTagString()));
+            articleTagService.update(article, articleRequestDto.getTagString());
         }
         if (articleRequestDto.getMultipartFile() != null) {
             //이미지 교체
