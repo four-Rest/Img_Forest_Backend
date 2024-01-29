@@ -1,6 +1,7 @@
 package com.ll.demo.article.controller;
 
 import com.ll.demo.article.dto.ArticleDetailResponseDto;
+import com.ll.demo.article.dto.ArticleListResponseDto;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,10 +36,13 @@ public class ArticleController {
 
     //전체 글 조회
     @GetMapping("")
-    public GlobalResponse findAll(@RequestParam(defaultValue = "0") int page) {
+    public GlobalResponse findAll() {
 
-        Page<Article> articles = articleService.findAll(page);
-        return GlobalResponse.of("200", "paging success", articles);
+        Set<ArticleListResponseDto> articleListResponseDtoSet = articleService.findAll()
+                .stream()
+                .map(article -> new ArticleListResponseDto(article))
+                .collect(Collectors.toSet());
+        return GlobalResponse.of("200", "success", articleListResponseDtoSet);
     }
 
     //단일 글 조회
