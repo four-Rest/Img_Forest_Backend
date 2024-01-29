@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,12 +35,8 @@ public class ArticleController {
     //전체 글 조회
     @GetMapping("")
     public GlobalResponse findAllArticles() {
-
-        Set<ArticleListResponseDto> articleListResponseDtoSet = articleService.findAll()
-                .stream()
-                .map(article -> new ArticleListResponseDto(article))
-                .collect(Collectors.toSet());
-        return GlobalResponse.of("200", "success", articleListResponseDtoSet);
+        List<ArticleListResponseDto> articleListResponseDtoList = articleService.findAllOrderByLikesDesc();
+        return GlobalResponse.of("200", "success", articleListResponseDtoList);
     }
 
     //단일 글 조회

@@ -1,8 +1,8 @@
 package com.ll.demo.article.service;
 
 import com.ll.demo.article.dto.ArticleRequestDto;
+import com.ll.demo.article.dto.ArticleListResponseDto;
 import com.ll.demo.article.entity.Article;
-import com.ll.demo.article.entity.ArticleTag;
 import com.ll.demo.article.entity.Image;
 import com.ll.demo.article.repository.ArticleRepository;
 import com.ll.demo.member.entity.Member;
@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,10 +48,12 @@ public class ArticleService {
             throw new IllegalArgumentException("적어도 하나의 이미지를 업로드해야 합니다.");
         }
     }
-    
-    public List<Article> findAll() {
-        return articleRepository.findAll();
 
+    public List<ArticleListResponseDto> findAllOrderByLikesDesc() {
+        List<Article> articles = articleRepository.findAllByOrderByLikesDesc();
+        return articles.stream()
+                .map(ArticleListResponseDto::new)
+                .collect(Collectors.toList());
     }
 
     public Article getArticleById(Long id) {
