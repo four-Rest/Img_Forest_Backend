@@ -1,5 +1,6 @@
 package com.ll.demo.article.service;
 
+import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,8 @@ public class TagService {
     }
 
 
-    public List<Tag> parseTagStringIntoList(String tagString) {
-        List<Tag> tags = new ArrayList<>();
+    public Set<Tag> parseTagStringIntoSet(String tagString) {
+        Set<Tag> tags = new HashSet<>();
         String[] tagArray = tagString.split(" ");
         for (String tagName : tagArray) {
             if (tagRepository.findByTagName(tagName) != null) {
@@ -36,4 +37,8 @@ public class TagService {
         return tags;
     }
 
+    public Set<Article> getArticlesByTagName(String tagName) {
+        Tag tag = tagRepository.findByTagName(tagName);
+        return tag.getArticles();
+    }
 }

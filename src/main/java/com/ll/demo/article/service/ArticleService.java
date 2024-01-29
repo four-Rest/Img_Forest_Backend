@@ -6,17 +6,11 @@ import com.ll.demo.article.entity.Image;
 import com.ll.demo.article.repository.ArticleRepository;
 import com.ll.demo.member.entity.Member;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +28,7 @@ public class ArticleService {
         article.setContent(articleRequestDto.getContent());
         article.setMember(member);
         if (articleRequestDto.getTagString() != null) {
-            article.setTags(tagService.parseTagStringIntoList(articleRequestDto.getTagString()));
+            article.setTags(tagService.parseTagStringIntoSet(articleRequestDto.getTagString()));
         }
 
         if (articleRequestDto.getMultipartFile() != null) {
@@ -73,7 +67,7 @@ public class ArticleService {
         //내용과 태그 변경
         article.setContent(articleRequestDto.getContent());
         if (articleRequestDto.getTagString() != null) {
-            article.setTags(tagService.parseTagStringIntoList(articleRequestDto.getTagString()));
+            article.setTags(tagService.parseTagStringIntoSet(articleRequestDto.getTagString()));
         }
     }
 
@@ -83,11 +77,12 @@ public class ArticleService {
         article.setContent(articleRequestDto.getContent());
 
         if (articleRequestDto.getTagString() != null) {
-            article.setTags(tagService.parseTagStringIntoList(articleRequestDto.getTagString()));
+            article.setTags(tagService.parseTagStringIntoSet(articleRequestDto.getTagString()));
         }
         if (articleRequestDto.getMultipartFile() != null) {
             //이미지 교체
             imageService.modify(article.getImage(), articleRequestDto.getMultipartFile());
         }
     }
+
 }

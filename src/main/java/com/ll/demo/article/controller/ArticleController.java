@@ -4,20 +4,16 @@ import com.ll.demo.article.dto.ArticleDetailResponseDto;
 import com.ll.demo.article.dto.ArticleListResponseDto;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.entity.Article;
-import com.ll.demo.article.entity.Image;
-import com.ll.demo.article.entity.Tag;
 import com.ll.demo.article.service.ArticleService;
 import com.ll.demo.article.service.ImageService;
+import com.ll.demo.article.service.TagService;
 import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -31,6 +27,7 @@ public class ArticleController {
 
     private final ArticleService articleService;
     private final MemberService memberService;
+    private final TagService tagService;
 
     private final ImageService imageService;
 
@@ -46,11 +43,21 @@ public class ArticleController {
     }
 
     //단일 글 조회
-    @GetMapping("/{id}")
+    @GetMapping("/detail/{id}")
     public GlobalResponse show(@PathVariable("id") Long id) {
 
         Article article = articleService.getArticleById(id);
         return GlobalResponse.of("200", "success", new ArticleDetailResponseDto(article));
+    }
+
+    //tag값으로 글 검색
+    @GetMapping("/{tagName}")
+    public GlobalResponse searchByTag(@PathVariable("tagName") String tagName) {
+        Set<ArticleListResponseDto> articleListResponseDtoSet = tagService.getArticlesByTagName(tagName)
+                .stream()
+                .map(article -> new ArticleListResponseDto(article))
+                .collect(Collectors.toSet());
+        return GlobalResponse.of("200", "success", articleListResponseDtoSet);
     }
 
     // 글 생성
