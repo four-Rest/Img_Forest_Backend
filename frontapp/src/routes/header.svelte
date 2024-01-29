@@ -3,6 +3,7 @@
 	import { isLogin } from '$lib/login_stores.js';
 	import { logout } from './member/login_check.js';
 	import { toastNotice } from './app.js';
+	import { searchValue, viewSearchBox } from '$lib/search.js';
 
 	async function logoutProcess() {
 		await logout();
@@ -59,5 +60,33 @@
 			<i class="fa-solid fa-magnifying-glass"></i>
 		</div>
 	</div>
-
 </div>
+
+<style>
+	.search-container {
+		display: flex;
+		align-items: center;
+		background-color: #efefef;
+		border-radius: 24px;
+		padding: 8px 16px;
+		max-width: 1200px; /* 원하는 최대 너비 설정 */
+	}
+
+	.search-icon {
+		color: #a5a5a5;
+		margin-right: 8px;
+	}
+
+	.search-input {
+		border: none;
+		outline: none;
+		background-color: transparent;
+		width: 100%;
+		font-size: 16px;
+	}
+
+	/* 입력 필드에 포커스가 있을 때 스타일 */
+	.search-input:focus {
+		color: #333;
+	}
+</style>
