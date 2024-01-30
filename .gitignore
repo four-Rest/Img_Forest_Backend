@@ -42,3 +42,4 @@ db_dev.trace.db
 demo_dev.mv.db
 demo_dev.trace.db
 /src/main/resources/static/*
+/frontapp/public/*
