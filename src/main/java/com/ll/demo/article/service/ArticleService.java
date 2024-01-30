@@ -4,7 +4,9 @@ import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.dto.ArticleListResponseDto;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
+import com.ll.demo.article.entity.Like;
 import com.ll.demo.article.repository.ArticleRepository;
+import com.ll.demo.article.repository.LikeRepository;
 import com.ll.demo.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class ArticleService {
     private final ImageService imageService;
     private final TagService tagService;
     private final ArticleTagService articleTagService;
+    private final LikeRepository likeRepository;
 
     @Transactional
     public void create(ArticleRequestDto articleRequestDto, Member member) throws IOException {
@@ -31,6 +34,7 @@ public class ArticleService {
         Article article = new Article();
         article.setContent(articleRequestDto.getContent());
         article.setMember(member);
+        article.setLikes(0);
         String tagString = articleRequestDto.getTagString();
         if (articleRequestDto.getTagString() != null) {
 
@@ -95,4 +99,32 @@ public class ArticleService {
         }
     }
 
+    public Like getLikeByArticleAndMember(Article article, Member member) {
+        Optional<Like> opLike = likeRepository.findByArticleAndMember(article, member);
+        if (opLike.isPresent()) {
+            return opLike.get();
+        }
+        return null;
+    }
+
+    @Transactional
+    public void like(Article article, Member member) {
+
+        if (getLikeByArticleAndMember(article, member) == null) {
+            Like like = new Like(article, member);
+            likeRepository.save(like);
+            article.setLikes(article.getLikes() + 1);
+        }
+    }
+
+    @Transactional
+    public void unlike(Article article, Member member) {
+
+        Like like = getLikeByArticleAndMember(article, member);
+
+        if (getLikeByArticleAndMember(article, member) != null) {
+            likeRepository.delete(like);
+            article.setLikes(article.getLikes() - 1);
+        }
+    }
 }

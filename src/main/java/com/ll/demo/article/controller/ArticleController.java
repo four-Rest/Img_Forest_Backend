@@ -124,4 +124,30 @@ public class ArticleController {
         articleService.delete(article);
         return GlobalResponse.of("200", "Article deleted");
     }
+
+    //글 추천
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/like/{id}")
+    public GlobalResponse likeArticle(@PathVariable("id") Long id, Principal principal) {
+
+        Article article = articleService.getArticleById(id);
+        Member member = memberService.findByUsername(principal.getName());
+
+        articleService.like(article, member);
+
+        return GlobalResponse.of("200", "추천되었습니다.");
+    }
+
+    //추천 취소
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/like/{id}")
+    public GlobalResponse unlikeArticle(@PathVariable("id") Long id, Principal principal) {
+
+        Article article = articleService.getArticleById(id);
+        Member member = memberService.findByUsername(principal.getName());
+
+        articleService.unlike(article, member);
+
+        return GlobalResponse.of("200", "추천취소되었습니다.");
+    }
 }
