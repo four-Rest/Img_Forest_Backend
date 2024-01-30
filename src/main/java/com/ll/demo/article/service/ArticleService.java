@@ -4,9 +4,9 @@ import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.dto.ArticleListResponseDto;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
-import com.ll.demo.article.entity.Like;
+import com.ll.demo.article.entity.LikeTable;
 import com.ll.demo.article.repository.ArticleRepository;
-import com.ll.demo.article.repository.LikeRepository;
+import com.ll.demo.article.repository.LikeTableRepository;
 import com.ll.demo.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class ArticleService {
     private final ImageService imageService;
     private final TagService tagService;
     private final ArticleTagService articleTagService;
-    private final LikeRepository likeRepository;
+    private final LikeTableRepository likeTableRepository;
 
     @Transactional
     public void create(ArticleRequestDto articleRequestDto, Member member) throws IOException {
@@ -99,8 +99,8 @@ public class ArticleService {
         }
     }
 
-    public Like getLikeByArticleAndMember(Article article, Member member) {
-        Optional<Like> opLike = likeRepository.findByArticleAndMember(article, member);
+    public LikeTable getLikeByArticleIdAndMemberId(Long articleId, Long memberId) {
+        Optional<LikeTable> opLike = likeTableRepository.getLikeByArticleIdAndMemberId(articleId, memberId);
         if (opLike.isPresent()) {
             return opLike.get();
         }
@@ -110,9 +110,9 @@ public class ArticleService {
     @Transactional
     public void like(Article article, Member member) {
 
-        if (getLikeByArticleAndMember(article, member) == null) {
-            Like like = new Like(article, member);
-            likeRepository.save(like);
+        if (getLikeByArticleIdAndMemberId(article.getId(), member.getId()) == null) {
+            LikeTable likeTable = new LikeTable(article, member);
+            likeTableRepository.save(likeTable);
             article.setLikes(article.getLikes() + 1);
         }
     }
@@ -120,10 +120,10 @@ public class ArticleService {
     @Transactional
     public void unlike(Article article, Member member) {
 
-        Like like = getLikeByArticleAndMember(article, member);
+        LikeTable likeTable = getLikeByArticleIdAndMemberId(article.getId(), member.getId());
 
-        if (getLikeByArticleAndMember(article, member) != null) {
-            likeRepository.delete(like);
+        if (likeTable != null) {
+            likeTableRepository.delete(likeTable);
             article.setLikes(article.getLikes() - 1);
         }
     }

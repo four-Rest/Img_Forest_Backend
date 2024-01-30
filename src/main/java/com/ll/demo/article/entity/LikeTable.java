@@ -12,19 +12,17 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Like {
+public class LikeTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private Article article;
+    private Long articleId;
 
-    @ManyToOne
-    private Member member;
+    private Long memberId;
 
-    public Like(Article article, Member member) {
-        this.article = article;
-        this.member = member;
+    public LikeTable(Article article, Member member) {
+        this.articleId = article.getId();
+        this.memberId = member.getId();
     }
 }
