@@ -21,6 +21,7 @@ public class ArticleDetailResponseDto {
     private Long price;
     private Set<String> tags;
     private String imgFileName;
+    private int likes;
     private List<ListCommentResponse> listCommentResponses;
 
     public ArticleDetailResponseDto(Article article) {
@@ -28,6 +29,7 @@ public class ArticleDetailResponseDto {
         this.username = article.getMember().getUsername();
         this.paid = article.isPaid();
         this.price = article.getPrice();
+        this.likes = article.getLikes();
         this.tags = article.getArticleTags()
                 .stream()
                 .map(articleTag -> articleTag.getTag().getTagName())
