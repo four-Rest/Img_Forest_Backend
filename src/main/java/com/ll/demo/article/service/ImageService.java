@@ -26,10 +26,10 @@ public class ImageService {
     @Transactional
     public Image create(Article article, MultipartFile file) throws IOException {
 
-        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+        String projectPath = System.getProperty("user.dir") + "\\frontapp\\public";
         String os = System.getProperty("os.name").toLowerCase();
         if (!os.contains("win")) {
-            projectPath = System.getProperty("user.dir") + "/src/main/resources/static/files";
+            projectPath = System.getProperty("user.dir") + "/frontapp/public";
         }
 
         UUID uuid = UUID.randomUUID();
@@ -52,10 +52,10 @@ public class ImageService {
     @Transactional
     public void delete(Image image) throws IOException {
 
-        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+        String projectPath = System.getProperty("user.dir") + "\\frontapp\\public";
         String os = System.getProperty("os.name").toLowerCase();
         if (!os.contains("win")) {
-            projectPath = System.getProperty("user.dir") + "/src/main/resources/static/files";
+            projectPath = System.getProperty("user.dir") + "/frontapp/public";
         }
 
         String fileName = image.getFileName();
@@ -69,10 +69,10 @@ public class ImageService {
     @Transactional
     public void modify(Image image, MultipartFile file) throws IOException {
 
-        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+        String projectPath = System.getProperty("user.dir") + "\\frontapp\\public";
         String os = System.getProperty("os.name").toLowerCase();
         if (!os.contains("win")) {
-            projectPath = System.getProperty("user.dir") + "/src/main/resources/static/files";
+            projectPath = System.getProperty("user.dir") + "/frontapp/public";
         }
 
         //기존 이미지 파일 삭제
