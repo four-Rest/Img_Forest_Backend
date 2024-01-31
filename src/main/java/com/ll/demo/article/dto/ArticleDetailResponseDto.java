@@ -22,6 +22,7 @@ public class ArticleDetailResponseDto {
     private Set<String> tags;
     private String imgFileName;
     private int likes;
+    private boolean likeValue;
     private List<ListCommentResponse> listCommentResponses;
 
     public ArticleDetailResponseDto(Article article) {

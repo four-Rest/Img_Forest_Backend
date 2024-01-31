@@ -8,6 +8,7 @@ import com.ll.demo.article.service.ArticleService;
 import com.ll.demo.article.service.ImageService;
 import com.ll.demo.article.service.TagService;
 import com.ll.demo.global.response.GlobalResponse;
+import com.ll.demo.global.rq.Rq;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
 import jakarta.validation.Valid;
@@ -29,8 +30,7 @@ public class ArticleController {
     private final ArticleService articleService;
     private final MemberService memberService;
     private final TagService tagService;
-
-    private final ImageService imageService;
+    private final Rq rq;
 
     //전체 글 조회
     @GetMapping("")
@@ -44,7 +44,14 @@ public class ArticleController {
     public GlobalResponse showArticle(@PathVariable("id") Long id) {
 
         Article article = articleService.getArticleById(id);
-        return GlobalResponse.of("200", "success", new ArticleDetailResponseDto(article));
+        ArticleDetailResponseDto articleDetailResponseDto = new ArticleDetailResponseDto(article);
+        if (rq.isLoggedIn() && articleService.getLikeByArticleIdAndMemberId(article.getId(), memberService.findByUsername(rq.getUser().getUsername()).getId()) != null) {
+            articleDetailResponseDto.setLikeValue(true);
+        } else {
+            articleDetailResponseDto.setLikeValue(false);
+        }
+
+        return GlobalResponse.of("200", "success", articleDetailResponseDto);
     }
 
     //tag값으로 글 검색
