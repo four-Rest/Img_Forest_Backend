@@ -1,8 +1,10 @@
 import logo from './logo.svg';
 import './App.css';
 import React from 'react';
-import { toastNotice } from './ToastrConfig';
-
+import { toastNotice } from './components/ToastrConfig';
+import { AuthProvider } from './api/AuthContext';
+import Header from './components/Header';
+import Footer from './components/Footer';
 function App() {
 
   const handleAlert = () => {
@@ -10,6 +12,8 @@ function App() {
   };
 
   return (
+    <AuthProvider>
+    <Header/>
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
@@ -27,6 +31,8 @@ function App() {
       </header>
       <button onClick={handleAlert}>경고 표시</button>
     </div>
+    <Footer/>
+    </AuthProvider>
   );
 }
 
