@@ -26,10 +26,10 @@ public class ImageService {
     @Transactional
     public Image create(Article article, MultipartFile file) throws IOException {
 
-        String projectPath = System.getProperty("user.dir") + "\\frontapp\\public";
+        String projectPath = System.getProperty("user.dir") + "\\react_front\\src\\imgFiles";
         String os = System.getProperty("os.name").toLowerCase();
         if (!os.contains("win")) {
-            projectPath = System.getProperty("user.dir") + "/frontapp/public";
+            projectPath = System.getProperty("user.dir") + "/react_front/src/imgFiles";
         }
 
         UUID uuid = UUID.randomUUID();
