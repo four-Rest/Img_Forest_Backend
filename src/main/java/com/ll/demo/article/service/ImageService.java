@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Service
@@ -24,13 +26,36 @@ public class ImageService {
     private final ImageRepository imageRepository;
 
     @Transactional
-    public Image create(Article article, MultipartFile file) throws IOException {
+    public String setImagePath() {
 
-        String projectPath = System.getProperty("user.dir") + "\\react_front\\src\\imgFiles";
+        //현재 날짜를 폴더 이름으로 지정
+        LocalDateTime createdTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDateTime = createdTime.format(formatter);
+
+        //저장 디렉토리 결정
+        String projectPath = System.getProperty("user.dir") + "\\react_front\\src\\imgFiles\\%s".formatted(formattedDateTime);
         String os = System.getProperty("os.name").toLowerCase();
         if (!os.contains("win")) {
-            projectPath = System.getProperty("user.dir") + "/react_front/src/imgFiles";
+            projectPath = System.getProperty("user.dir") + "/react_front/src/imgFiles/%s".formatted(formattedDateTime);
         }
+
+        //해당 날짜의 디렉토리가 존재하지 않으면 생성
+        Path path = Paths.get(projectPath);
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (Exception e) {
+                //폴더 생성 실패
+            }
+        }
+        return projectPath;
+    }
+
+    @Transactional
+    public Image create(Article article, MultipartFile file) throws IOException {
+
+        String projectPath = setImagePath();
 
         UUID uuid = UUID.randomUUID();
 
@@ -43,6 +68,7 @@ public class ImageService {
         Image image = Image.builder()
                 .article(article)
                 .fileName(fileName)
+                .path(projectPath)
                 .build();
 
         imageRepository.save(image);
@@ -52,11 +78,7 @@ public class ImageService {
     @Transactional
     public void delete(Image image) throws IOException {
 
-        String projectPath = System.getProperty("user.dir") + "\\frontapp\\public";
-        String os = System.getProperty("os.name").toLowerCase();
-        if (!os.contains("win")) {
-            projectPath = System.getProperty("user.dir") + "/frontapp/public";
-        }
+        String projectPath = image.getPath();
 
         String fileName = image.getFileName();
         Path filePath = Paths.get(projectPath, fileName);
@@ -69,16 +91,12 @@ public class ImageService {
     @Transactional
     public void modify(Image image, MultipartFile file) throws IOException {
 
-        String projectPath = System.getProperty("user.dir") + "\\frontapp\\public";
-        String os = System.getProperty("os.name").toLowerCase();
-        if (!os.contains("win")) {
-            projectPath = System.getProperty("user.dir") + "/frontapp/public";
-        }
+        String projectPath = setImagePath();
 
         //기존 이미지 파일 삭제
         String oldFileName = image.getFileName();
 
-        Path oldFilePath = Paths.get(projectPath, oldFileName);
+        Path oldFilePath = Paths.get(image.getPath(), oldFileName);
 
         deleteFile(oldFilePath);
 
