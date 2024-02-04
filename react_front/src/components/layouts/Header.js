@@ -31,7 +31,7 @@ return (
             <FontAwesomeIcon icon={faBars} />
           </div>
           <ul tabIndex="0" className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-            <li><Link to={'${frontUrl}/article'}><FontAwesomeIcon icon={faRectangleList} /> 글 목록</Link></li>
+            <li><Link to={`${frontUrl}/article`}><FontAwesomeIcon icon={faRectangleList} /> 글 목록</Link></li>
             {isLogin ? (
               <>
                 <li><Link className="nav-link" to={`${frontUrl}/member/mypage`}><FontAwesomeIcon icon={faAddressCard} /> 마이페이지</Link></li>
