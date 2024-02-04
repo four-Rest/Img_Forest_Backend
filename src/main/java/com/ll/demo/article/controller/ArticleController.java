@@ -5,7 +5,6 @@ import com.ll.demo.article.dto.ArticleListResponseDto;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.service.ArticleService;
-import com.ll.demo.article.service.ImageService;
 import com.ll.demo.article.service.TagService;
 import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.global.rq.Rq;
