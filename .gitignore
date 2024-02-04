@@ -43,3 +43,4 @@ demo_dev.mv.db
 demo_dev.trace.db
 /src/main/resources/static/*
 .DS_Store
+/react_front/.env
