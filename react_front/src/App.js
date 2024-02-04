@@ -1,11 +1,13 @@
 /*esLint-disable */
-import React, { useState, useEffect } from 'react'; // 기본 React와 Hooks
-import { BrowserRouter as Router } from 'react-router-dom'; // 라우팅을 위한 컴포넌트
-import Masonry from 'masonry-layout'; // Masonry 레이아웃 라이브러리
-import { AuthProvider } from './api/AuthContext'; // 사용자 인증 상태 관리 Provider
-import Header from './components/layouts/Header'; // 헤더 컴포넌트
-import Footer from './components/layouts/Footer'; // 푸터 컴포넌트
 import './App.css'; // 스타일 시트
+import logo from './logo.svg';
+import './App.css';
+import React from 'react';
+import { toastNotice } from './components/ToastrConfig';
+import { AuthProvider } from './api/AuthContext';
+import { Header,Footer } from '@/components/layout';
+import { BrowserRouter as Router } from 'react-router-dom';
+
 
 function App() {
 
@@ -77,7 +79,6 @@ function App() {
     </section>
         <Footer/>
       </Router>
-    
     </AuthProvider>
   );
 }
