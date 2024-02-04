@@ -3,8 +3,7 @@ import './App.css';
 import React from 'react';
 import { toastNotice } from './components/ToastrConfig';
 import { AuthProvider } from './api/AuthContext';
-import Header from './components/layouts/Header';
-import Footer from './components/layouts/Footer';
+import { Header,Footer } from '@/components/layout';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 
@@ -37,7 +36,6 @@ function App() {
         </div>
         <Footer/>
       </Router>
-    
     </AuthProvider>
   );
 }
