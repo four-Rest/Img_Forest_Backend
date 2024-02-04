@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Masonry from 'react-masonry-css'
 
-function MainPage() {
+
+function Home() {
   const [articleData, setArticleData] = useState([]);
   const apiBaseUrl = import.meta.env.VITE_CORE_API_BASE_URL;
 
@@ -61,4 +62,4 @@ function MainPage() {
   );
 }
 
-export default MainPage;
+export default Home;
