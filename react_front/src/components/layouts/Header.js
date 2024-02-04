@@ -1,16 +1,20 @@
+/*esLint-disable */
+
 import '../../App.css';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 import { useState, useEffect } from 'react';
 import { toastNotice } from '../ToastrConfig';
-
+import { Link } from 'react-router-dom';
+import { faBars, faRectangleList, faAddressCard, faDoorClosed, faUserPlus, faDoorOpen, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../../api/AuthContext'
 
 const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
 const frontUrl = process.env.REACT_APP_CORE_FRONT_BASE_URL;
-const Navbar = () => {
+
+const Header = () => {
     const [isLogin, setIsLogin] = useState(false);
-  
+    const { logout } = useAuth();
     useEffect(() => {
       setIsLogin(!!localStorage.getItem('nickname'));
     }, []);
@@ -27,23 +31,23 @@ return (
             <FontAwesomeIcon icon={faBars} />
           </div>
           <ul tabIndex="0" className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-            <li><Link to="${frontUrl}/article"><FontAwesomeIcon icon={faRectangleList} /> 글 목록</Link></li>
+            <li><Link to={'${frontUrl}/article'}><FontAwesomeIcon icon={faRectangleList} /> 글 목록</Link></li>
             {isLogin ? (
               <>
-                <li><Link className="nav-link" to="${frontUrl}/member/mypage"><FontAwesomeIcon icon={faAddressCard} /> 마이페이지</Link></li>
+                <li><Link className="nav-link" to={`${frontUrl}/member/mypage`}><FontAwesomeIcon icon={faAddressCard} /> 마이페이지</Link></li>
                 <li><button className="nav-link" onClick={logoutProcess}><FontAwesomeIcon icon={faDoorClosed} />로그아웃</button></li>
               </>
             ) : (
               <>
-                <li><Link className="nav-link" to="${frontUrl}/member/signup"><FontAwesomeIcon icon={faUserPlus} /> 회원가입</Link></li>
-                <li><Link className="nav-link" to="${frontUrl}/member/login"><FontAwesomeIcon icon={faDoorOpen} /> 로그인</Link></li>
+                <li><Link className="nav-link" to={`${frontUrl}/member/signup`}><FontAwesomeIcon icon={faUserPlus} /> 회원가입</Link></li>
+                <li><Link className="nav-link" to={`${frontUrl}/member/login`}><FontAwesomeIcon icon={faDoorOpen} /> 로그인</Link></li>
               </>
             )}
           </ul>
         </div>
       </div>
       <div className="navbar-center">
-        <Link className="btn btn-ghost text-xl" to="/">Img_Forest</Link>
+        <Link className="btn btn-ghost text-xl" to={`/`}>Img_Forest</Link>
       </div>
       <div className="navbar-end flex items-center">
         <div tabIndex="-1" role="button" className="btn btn-ghost btn-circle">
