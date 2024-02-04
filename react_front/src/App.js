@@ -5,6 +5,8 @@ import { toastNotice } from './components/ToastrConfig';
 import { AuthProvider } from './api/AuthContext';
 import Header from './components/layouts/Header';
 import Footer from './components/layouts/Footer';
+import { BrowserRouter as Router } from 'react-router-dom';
+
 
 function App() {
 
@@ -14,25 +16,28 @@ function App() {
 
   return (
     <AuthProvider>
-    <Header/>
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-      <button onClick={handleAlert}>경고 표시</button>
-    </div>
-    <Footer/>
+      <Router>
+        <Header/>
+        <div className="App">
+          <header className="App-header">
+            <img src={logo} className="App-logo" alt="logo" />
+            <p>
+              Edit <code>src/App.js</code> and save to reload.
+            </p>
+            <a
+              className="App-link"
+              href="https://reactjs.org"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Learn React
+            </a>
+          </header>
+          <button onClick={handleAlert}>경고 표시</button>
+        </div>
+        <Footer/>
+      </Router>
+    
     </AuthProvider>
   );
 }
