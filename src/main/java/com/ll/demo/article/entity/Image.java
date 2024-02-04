@@ -19,6 +19,8 @@ public class Image {
 
     private String fileName;
 
+    private String path;
+
     @JsonIgnore
     @OneToOne
     private Article article;

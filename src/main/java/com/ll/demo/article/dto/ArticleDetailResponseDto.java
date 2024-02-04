@@ -21,6 +21,7 @@ public class ArticleDetailResponseDto {
     private Long price;
     private Set<String> tags;
     private String imgFileName;
+    private String imgFilePath;
     private int likes;
     private boolean likeValue;
     private List<ListCommentResponse> listCommentResponses;
@@ -36,6 +37,7 @@ public class ArticleDetailResponseDto {
                 .map(articleTag -> articleTag.getTag().getTagName())
                 .collect(Collectors.toSet());
         this.imgFileName = article.getImage().getFileName();
+        this.imgFilePath = article.getImage().getPath();
 
         this.listCommentResponses = article.getCommentList().stream()
                 .map(comment -> new ListCommentResponse(comment))
