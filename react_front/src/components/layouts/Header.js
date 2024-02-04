@@ -1,7 +1,10 @@
-import logo from './logo.svg';
-import '../App.css';
+import '../../App.css';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import { useState, useEffect } from 'react';
+import { toastNotice } from '../ToastrConfig';
+
 
 const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
 const frontUrl = process.env.REACT_APP_CORE_FRONT_BASE_URL;
@@ -14,7 +17,7 @@ const Navbar = () => {
   
     const logoutProcess = async () => {
       await logout();
-      toastNotice('로그아웃 되었습니다.'); 
+      toastNotice('로그아웃 되었습니다.')}; 
 
 return (
     <div className="navbar bg-base-100">
@@ -52,4 +55,4 @@ return (
 };
 
 
-export default header;
+export default Header;
