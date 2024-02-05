@@ -44,3 +44,4 @@ demo_dev.trace.db
 /src/main/resources/static/*
 .DS_Store
 /react_front/.env
+react_front/src/imgFiles/*
