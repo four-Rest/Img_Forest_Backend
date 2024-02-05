@@ -41,10 +41,10 @@ public class ImgTestDataConfig {
             memberService.signup(memberCreateRequestDto);
 
             //테스트이미지 파일을 테스트용 multipartFile로 불러옴
-            String imgSourcePath = System.getProperty("user.dir") + "\\react_front\\src\\imgFiles\\testImage.png";
+            String imgSourcePath = System.getProperty("user.dir") + "\\react_front\\public\\imgFiles\\testImage.png";
             String os = System.getProperty("os.name").toLowerCase();
             if (!os.contains("win")) {
-                imgSourcePath = System.getProperty("user.dir") + "/react_front/src/imgFiles/testImage.png";
+                imgSourcePath = System.getProperty("user.dir") + "/react_front/public/imgFiles/testImage.png";
             }
 
             Path path = Paths.get(imgSourcePath);
