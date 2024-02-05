@@ -34,10 +34,10 @@ public class ImageService {
         String formattedDateTime = createdTime.format(formatter);
 
         //저장 디렉토리 결정
-        String projectPath = System.getProperty("user.dir") + "\\react_front\\src\\imgFiles\\%s".formatted(formattedDateTime);
+        String projectPath = System.getProperty("user.dir") + "\\react_front\\public\\imgFiles\\%s".formatted(formattedDateTime);
         String os = System.getProperty("os.name").toLowerCase();
         if (!os.contains("win")) {
-            projectPath = System.getProperty("user.dir") + "/react_front/src/imgFiles/%s".formatted(formattedDateTime);
+            projectPath = System.getProperty("user.dir") + "/react_front/public/imgFiles/%s".formatted(formattedDateTime);
         }
 
         //해당 날짜의 디렉토리가 존재하지 않으면 생성
