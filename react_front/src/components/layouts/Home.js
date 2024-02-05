@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Masonry from 'react-masonry-css';
-
 
 function Home() {
   const [articleData, setArticleData] = useState([]);
@@ -29,7 +27,7 @@ function Home() {
           {articleData.map((article) => (
               <li>
                 <p>{article.id}</p>
-                <img src={`/src/imgFiles/2024-02-03/${article.imgFileName}`} alt="" />
+                <img src={"exp/logo192.png"} alt="" />
               </li>
           ))}
         </ul>
