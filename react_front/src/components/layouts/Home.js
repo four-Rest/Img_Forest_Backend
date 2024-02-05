@@ -27,7 +27,7 @@ function Home() {
           {articleData.map((article) => (
               <li>
                 <p>{article.id}</p>
-                <img src={"exp/logo192.png"} alt="" />
+                <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
               </li>
           ))}
         </ul>
