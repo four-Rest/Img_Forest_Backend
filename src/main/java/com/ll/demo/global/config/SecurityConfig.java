@@ -9,15 +9,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -25,37 +21,60 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        System.out.println("filterChain 실행");
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
-                        .requestMatchers("/oauth2/authorization/kakao").permitAll()
-                        .requestMatchers("/**").permitAll()
+                .authorizeRequests(authorizeRequests ->
+                        {
+                            authorizeRequests
+                                    .requestMatchers("/gen/**")
+                                    .permitAll()
+                                    .requestMatchers("/resource/**")
+                                    .permitAll()
+                                    .requestMatchers("/h2-console/**")
+                                    .permitAll();
+
+                             authorizeRequests
+                                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+                                    .hasRole("ADMIN");
+
+                            authorizeRequests
+                                    .anyRequest()
+                                    .permitAll();
+                        }
                 )
-                .csrf((csrf) -> csrf
-                        .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
-                .headers((headers) -> headers
-                        .addHeaderWriter(new XFrameOptionsHeaderWriter(
-                                XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin((formLogin) -> formLogin
-                        .loginPage("/member/login")
-                        .defaultSuccessUrl("/"))
+                .headers(
+                        headers ->
+                                headers.frameOptions(
+                                        frameOptions ->
+                                                frameOptions.sameOrigin()
+                                )
+                )
+                .csrf(
+                        csrf ->
+                                csrf.disable()
+                )
+                .formLogin(
+                        formLogin ->
+                                formLogin
+                                        .loginPage("/member/login") // react 사용, Swagger 사용 시 필요
+                                        .permitAll()
+                )
+                .logout(
+                        logout ->
+                                logout
+                                        .logoutRequestMatcher(
+                                                new AntPathRequestMatcher("/member/logout")
+                                        )
+                )
                 .oauth2Login(
-                        oauth2Login -> oauth2Login
-                                .loginPage("/member/login")
-                )
-                .logout((logout) -> logout
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))
-                        .logoutSuccessUrl("/")
-                        .invalidateHttpSession(true))
-                .sessionManagement(sessionManagement -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        ;
+                        oauth2Login ->
+                                oauth2Login
+                                        .successHandler(customAuthenticationSuccessHandler)
+                );
+
         return http.build();
     }
 
