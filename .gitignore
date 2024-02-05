@@ -43,4 +43,3 @@ demo_dev.mv.db
 demo_dev.trace.db
 .DS_Store
 /react_front/.env
-/react_front/src/imgFiles/*
