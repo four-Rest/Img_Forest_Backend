@@ -38,6 +38,7 @@ public class ArticleDetailResponseDto {
                 .collect(Collectors.toSet());
         this.imgFilePath = article.getImage().getPath().substring(article.getImage().getPath().length()-10);
         this.imgFileName = article.getImage().getFileName();
+        this.imgFilePath = article.getImage().getPath();
 
         this.listCommentResponses = article.getCommentList().stream()
                 .map(comment -> new ListCommentResponse(comment))
