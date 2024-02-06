@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 function Home() {
   const [articleData, setArticleData] = useState([]);
@@ -7,17 +7,15 @@ function Home() {
   useEffect(() => {
     const fetchArticleData = async () => {
       try {
-        const res = await fetch(`/article`);
+        const res = await fetch(`/api/article`);
         const data = await res.json();
         setArticleData(data.data);
       } catch (error) {
-        console.error('Error fetching article data:', error);
+        console.error("Error fetching article data:", error);
       }
     };
 
     fetchArticleData();
-
-    
   }, [apiBaseUrl]);
 
   return (
@@ -25,15 +23,18 @@ function Home() {
       <div className="main-container grid">
         <ul className="grid-1">
           {articleData.map((article) => (
-              <li>
-                <p>{article.id}</p>
-                <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
-              </li>
+            <li key={article.id}>
+              <p>{article.id}</p>
+              <img
+                src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`}
+                alt=""
+              />
+            </li>
           ))}
         </ul>
       </div>
     </section>
   );
-};
+}
 
 export default Home;
