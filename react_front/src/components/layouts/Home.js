@@ -1,39 +1,72 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import './styles.css';
 
 function Home() {
   const [articleData, setArticleData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
   const apiBaseUrl = process.env.REACT_APP_CORE_API_BASE_URL;
 
+  const target = useRef(null);
+
   useEffect(() => {
-    const fetchArticleData = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const res = await fetch(`/article`);
+        const res = await fetch(`/api/article?page=${page}`);
         const data = await res.json();
-        setArticleData(data.data);
+        setArticleData(prevData => [...prevData, ...data.data]);
+        setPage(prevPage => prevPage + 1);
       } catch (error) {
         console.error('Error fetching article data:', error);
       }
+      setLoading(false);
     };
 
-    fetchArticleData();
+    // useEffect(() => {
+    //   const fetchArticleData = async () => {
+    //     try {
+    //       const res = await fetch(`/article`);
+    //       const data = await res.json();
+    //       setArticleData(data.data);
+    //     } catch (error) {
+    //       console.error('Error fetching article data:', error);
+    //     }
+    //   };
+  
+    //   fetchArticleData();
+  
+      
+    // }, [apiBaseUrl]);
 
-    
-  }, [apiBaseUrl]);
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        fetchData();
+      }
+    }, { threshold: 1 });
+
+    if (target.current) {
+      observer.observe(target.current);
+    }
+
+    return () => {
+      if (target.current) {
+        observer.unobserve(target.current);
+      }
+    };
+  }, [apiBaseUrl, page]);
 
   return (
-    <section className="main-wrapper flex flex-row w-full">
-      <div className="main-container grid">
-        <ul className="grid-1">
-          {articleData.map((article) => (
-              <li>
-                <p>{article.id}</p>
-                <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
-              </li>
-          ))}
-        </ul>
-      </div>
-    </section>
+    <div className="container">
+      {articleData.map((article, index) => (
+        <div className="box">
+          <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
+        </div>
+      ))}
+      {loading && <div>Loading...</div>}
+      <div ref={target}></div>
+    </div>
   );
-};
+}
 
 export default Home;
