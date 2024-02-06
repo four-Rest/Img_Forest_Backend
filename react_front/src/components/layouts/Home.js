@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Component } from "react";
+import "./styles.css";
 
 function Home() {
   const [articleData, setArticleData] = useState([]);
@@ -19,21 +20,16 @@ function Home() {
   }, [apiBaseUrl]);
 
   return (
-    <section className="main-wrapper flex flex-row w-full">
-      <div className="main-container grid">
-        <ul className="grid-1">
-          {articleData.map((article) => (
-            <li key={article.id}>
-              <p>{article.id}</p>
-              <img
-                src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`}
-                alt=""
-              />
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
+    <div className="container">
+      {articleData.map((article) => (
+        <div className="box">
+          <img
+            src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`}
+            alt=""
+          />
+        </div>
+      ))}
+    </div>
   );
 }
 
