@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component } from 'react';
+import './styles.css';
+
 
 function Home() {
   const [articleData, setArticleData] = useState([]);
@@ -7,7 +9,7 @@ function Home() {
   useEffect(() => {
     const fetchArticleData = async () => {
       try {
-        const res = await fetch(`/article`);
+        const res = await fetch(`/api/article`);
         const data = await res.json();
         setArticleData(data.data);
       } catch (error) {
@@ -21,18 +23,13 @@ function Home() {
   }, [apiBaseUrl]);
 
   return (
-    <section className="main-wrapper flex flex-row w-full">
-      <div className="main-container grid">
-        <ul className="grid-1">
+      <div className="container">
           {articleData.map((article) => (
-              <li>
-                <p>{article.id}</p>
+              <div className= "box">
                 <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
-              </li>
+              </div>
           ))}
-        </ul>
       </div>
-    </section>
   );
 };
 
