@@ -37,6 +37,7 @@ out/
 .vscode/
 
 ## custom ##
+application-secret.yml
 db_dev.mv.db
 db_dev.trace.db
 demo_dev.mv.db

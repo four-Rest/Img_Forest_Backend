@@ -21,7 +21,6 @@ import java.util.List;
 public class Member extends BaseEntity {
     @Column(unique = true)
     private String username;
-
     private String password;
     private String email;
     private String nickname;
