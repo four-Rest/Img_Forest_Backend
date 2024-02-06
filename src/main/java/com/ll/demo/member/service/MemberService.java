@@ -1,22 +1,17 @@
 package com.ll.demo.member.service;
 
 import com.ll.demo.global.config.JwtProperties;
-import com.ll.demo.global.config.JwtUtil;
-import com.ll.demo.global.config.SecurityUser;
 import com.ll.demo.global.response.GlobalResponse;
-import com.ll.demo.member.dto.MyPageRequestDto;
 import com.ll.demo.member.dto.MemberCreateRequestDto;
+import com.ll.demo.member.dto.MyPageRequestDto;
+import com.ll.demo.member.dto.kakkoMemberCreateRequestDto;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.repository.MemberRepository;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -27,8 +22,8 @@ public class MemberService {
     private final JwtProperties jwtProperties;
 
 
-    public GlobalResponse signup(MemberCreateRequestDto dto) {
-        if (!validDuplicationUsername(dto.getUsername())) {
+    public GlobalResponse<Member> signup(MemberCreateRequestDto dto) {
+        if (validDuplicationUsername(dto.getUsername()).isPresent()) {
             return GlobalResponse.of("409", "중복된 이름입니다.");
         }
         Member member = Member.builder()
@@ -41,8 +36,22 @@ public class MemberService {
         return GlobalResponse.of("200", "회원가입 완료");
     }
 
-    public boolean validDuplicationUsername(String username) {
-        return memberRepository.findByUsername(username).isPresent() ? false : true;
+    @Transactional
+    public GlobalResponse<Member> socialSignup(kakkoMemberCreateRequestDto dto) {
+        if (validDuplicationUsername(dto.getUsername()).isPresent()) {
+            return GlobalResponse.of("409", "중복된 이름입니다.");
+        }
+        Member member = Member.builder()
+                .username(dto.getUsername())
+                .nickname(dto.getNickname())
+                .build();
+
+        memberRepository.saveAndFlush(member);
+        return GlobalResponse.of("200", "회원가입 완료", member);
+    }
+
+    public Optional<Member> validDuplicationUsername(String username) {
+        return memberRepository.findByUsername(username);
     }
 
     public GlobalResponse<Member> checkMembernameAndPassword(String username, String password) {
@@ -67,25 +76,6 @@ public class MemberService {
         return memberRepository.findByRefreshToken(refreshToken);
     }
 
-    public SecurityUser getMemberFromApiKey(String token) {
-        Claims claims = JwtUtil.decode(token, jwtProperties.getSecretKey());
-
-        Map<String, Object> data = (Map<String, Object>) claims.get("data");
-        long id = Long.parseLong((String) data.get("id"));
-        String username = (String) data.get("username");
-        List<? extends GrantedAuthority> authorities = ((List<String>) data.get("authorities"))
-                .stream()
-                .map(SimpleGrantedAuthority::new)
-                .toList();
-
-        return new SecurityUser(
-                id,
-                username,
-                "",
-                authorities
-        );
-    }
-
     public Member findByUsername(String username){
         Optional<Member> userOp = memberRepository.findByUsername(username);
         if(userOp.isPresent()){
@@ -106,5 +96,17 @@ public class MemberService {
         }
         memberRepository.save(member);
         return GlobalResponse.of("200",msg + "변경완료");
+    }
+
+    @Transactional
+    public GlobalResponse<Member> whenSocialLogin(String providerTypeCode, String username, String nickname, String profileImgUrl) {
+        Optional<Member> opMember = validDuplicationUsername(username);
+
+        if (opMember.isPresent()) return GlobalResponse.of("200", "이미 존재합니다.", opMember.get());
+
+        kakkoMemberCreateRequestDto dto = new kakkoMemberCreateRequestDto();
+        dto.setUsername(username);
+        dto.setNickname(nickname);
+        return socialSignup(dto);
     }
 }

@@ -5,10 +5,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
+import java.util.Map;
 
-public class SecurityUser extends User {
+public class SecurityUser extends User implements OAuth2User {
 
     @Getter
     private long id;
@@ -16,6 +18,11 @@ public class SecurityUser extends User {
     // 생성자: id, username, password, 권한을 받아서 User클래스 생성자 호출
     public SecurityUser(long id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);
+        this.id = id;
+    }
+
+    public SecurityUser(long id, String username, Collection<? extends GrantedAuthority> authorities) {
+        super(username, "N/A", authorities);
         this.id = id;
     }
 
@@ -33,5 +40,15 @@ public class SecurityUser extends User {
                 this.getAuthorities()  // 사용자 권한
         );
         return auth;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return getUsername();
     }
 }
