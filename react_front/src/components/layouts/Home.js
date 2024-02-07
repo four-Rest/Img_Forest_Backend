@@ -35,8 +35,9 @@ function Home() {
       async(entries) => {
         if (entries[0].isIntersecting && !loading) { // target 요소가 화면에 나타났고 로딩 중이 아닌 경우
           setLoading(true); // 로딩 상태를 true로 설정
-          //setEndIndex(prevEndIndex => Math.max(prevEndIndex + 10, Math.min(prevEndIndex + 10, articleData.length))); // endIndex를 업데이트하여 추가 이미지를 표시
-          setEndIndex(prevEndIndex => Math.min(prevEndIndex + 10, articleData.length));
+          setEndIndex(prevEndIndex => Math.max(prevEndIndex + 10, Math.min(prevEndIndex + 10, articleData.length))); // endIndex를 업데이트하여 추가 이미지를 표시
+          //setEndIndex(prevEndIndex => Math.min(prevEndIndex + 10, articleData.length));
+          // 현재 ArticleData.length=45, 어떨때는 40개 렌더링 어떨때는 50개 렌더링 
         }
       }, { threshold: 0 }); // IntersectionObserver 옵션 설정
 
