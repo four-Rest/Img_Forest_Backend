@@ -55,8 +55,9 @@ jobs:
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ./react_front
+          file: ./react_front/Dockerfile
           push: true
-          tags: |
+          tags: 
             ghcr.io/${{ env.OWNER_LC }}/imgforest-client:${{ needs.makeTagAndRelease.outputs.tag_name }},
             ghcr.io/${{ env.OWNER_LC }}/imgforest-client:latest
