@@ -1,4 +1,4 @@
-name: deployimgforest
+name: deployimgforest_server
 on:
   push:
     paths:
