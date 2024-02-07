@@ -24,7 +24,7 @@ spring:
             scope: profile_nickname, profile_image
             client-name: Kakao
             authorization-grant-type: authorization_code
-            redirect-uri: '${custom.site.baseUrl}/{action}/oauth2/code/{registrationId}'
+            redirect-uri: '${custom.dev.backUrl}/{action}/oauth2/code/{registrationId}'
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
@@ -39,5 +39,16 @@ logging:
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
 custom:
+  dev:
+    cookieDomain: localhost
+    frontUrl: "http://${custom.dev.cookieDomain}:3000"
+    backUrl: "http://${custom.dev.cookieDomain}:${server.port}"
+  prod:
+    cookieDomain: //img_Forest
+    frontUrl: "https://${custom.prod.cookieDomain}"
+    backUrl: "https://api.${custom.prod.cookieDomain}"
   site:
-    baseUrl: "http://localhost:${server.port}"
+    cookieDomain: "${custom.dev.cookieDomain}"
+    frontUrl: "${custom.dev.frontUrl}"
+    backUrl: "${custom.dev.backUrl}"
+    name: img_Forest

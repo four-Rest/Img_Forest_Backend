@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     @SneakyThrows
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
-        System.out.println("JwtAuthenticationFilter 실행");
         String apiKey = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
