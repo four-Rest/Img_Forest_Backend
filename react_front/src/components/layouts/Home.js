@@ -9,35 +9,21 @@ function Home() {
 
   const target = useRef(null);
 
+
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const res = await fetch(`/api/article?page=${page}`);
         const data = await res.json();
-        setArticleData(prevData => [...prevData, ...data.data]);
+        setArticleData(prevData => shuffleArray([...prevData, ...data.data]));
         setPage(prevPage => prevPage + 1);
       } catch (error) {
         console.error('Error fetching article data:', error);
       }
       setLoading(false);
     };
-
-    // useEffect(() => {
-    //   const fetchArticleData = async () => {
-    //     try {
-    //       const res = await fetch(`/article`);
-    //       const data = await res.json();
-    //       setArticleData(data.data);
-    //     } catch (error) {
-    //       console.error('Error fetching article data:', error);
-    //     }
-    //   };
-  
-    //   fetchArticleData();
-  
-      
-    // }, [apiBaseUrl]);
 
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
@@ -55,6 +41,16 @@ function Home() {
       }
     };
   }, [apiBaseUrl, page]);
+
+   // 배열을 섞어주는 함수
+   function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
 
   return (
     <div className="container">
