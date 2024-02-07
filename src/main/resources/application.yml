@@ -45,10 +45,10 @@ custom:
     backUrl: "http://${custom.dev.cookieDomain}:${server.port}"
   prod:
     cookieDomain: img.for-rest.site
-      frontUrl: "https://${custom.prod.cookieDomain}"
-      backUrl: "https://api.${custom.prod.cookieDomain}"
+    frontUrl: "https://${custom.prod.cookieDomain}"
+    backUrl: "https://api/${custom.prod.cookieDomain}"
   site:
     cookieDomain: "${custom.dev.cookieDomain}"
-      frontUrl: "${custom.dev.frontUrl}"
-      backUrl: "${custom.dev.backUrl}"
-      name: img_Forest
+    frontUrl: "${custom.dev.frontUrl}"
+    backUrl: "${custom.dev.backUrl}"
+    name: img_Forest
