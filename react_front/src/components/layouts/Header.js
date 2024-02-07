@@ -1,9 +1,9 @@
 /*esLint-disable */
 
 import "../../App.css";
-import React from "react";
+import React, { createContext, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { toastNotice } from "../ToastrConfig";
 import { Link } from "react-router-dom";
 import {
@@ -19,9 +19,6 @@ import { useAuth } from "../../api/AuthContext";
 import LoginModal from "../elements/LoginModal";
 import SignupModal from "../elements/SignupModal";
 
-const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
-const frontUrl = process.env.REACT_APP_CORE_FRONT_BASE_URL;
-
 const Header = () => {
   const [showModal, setShowModal] = useState(false);
 
@@ -29,6 +26,7 @@ const Header = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
 
   const { isLogin, logout } = useAuth();
+
 
   const logoutProcess = async () => {
     await logout();
@@ -124,7 +122,8 @@ const Header = () => {
           </Link>
         </div>
         <div className="navbar-end">
-          <button className="btn btn-ghost btn-circle">
+          {/* 검색버튼 있는곳  */}
+          <button className="btn btn-ghost btn-circle"> 
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
