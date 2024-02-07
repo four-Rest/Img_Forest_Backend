@@ -9,7 +9,7 @@ function Router() {
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/article" element={<Article />} />
       </Routes>
       <Footer />
