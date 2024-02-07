@@ -41,7 +41,7 @@ function Article() {
 
         if (selectedFile) {
             setImageFile(selectedFile);
-            console.log('선택된 파일:', selectedFile);
+            console.log('선택된 파일: ', selectedFile);
         } else {
             console.error('파일을 선택해주세요.');
         }
