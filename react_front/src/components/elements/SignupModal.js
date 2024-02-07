@@ -1,15 +1,69 @@
 import React, { useState } from "react";
+import { toastNotice } from "../ToastrConfig";
 
 const SignupModal = ({ showModal, setShowModal }) => {
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [password1, setPassword1] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [email, setEmail] = useState("");
+  const [nickname, setNickname] = useState("");
   const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // 여기에 로그인 로직 구현
-    console.log(username, password);
-    setShowModal(false); // 로그인 시도 후 모달 닫기
+
+  const signupData = {
+    username,
+    password1,
+    password2,
+    email,
+    nickname,
   };
+  const handleSignup = async (e) => {
+    e.preventDefault();
+
+    if (!passwordCheck()) {
+      toastNotice("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    if (!blankCheck()) {
+      toastNotice("필수 정보를 모두 입력해주세요.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiUrl}/api/member/signup`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(signupData),
+      });
+
+      if (response.ok) {
+        setShowModal(false); // 회원가입 성공 후 모달 닫기
+        toastNotice("회원가입 완료.");
+      } else {
+        // 서버 에러 처리
+        const errorData = await response.json();
+        console.error("Signup Failed:", errorData);
+      }
+    } catch (error) {
+      console.error("Signup Error:", error);
+    }
+  };
+
+  function passwordCheck() {
+    return password1 === password2;
+  }
+
+  function blankCheck() {
+    return (
+      username.trim() &&
+      password1.trim() &&
+      password2.trim() &&
+      email.trim() &&
+      nickname.trim()
+    );
+  }
 
   if (!showModal) return null;
 
@@ -46,6 +100,8 @@ const SignupModal = ({ showModal, setShowModal }) => {
                   type="text"
                   placeholder="ID를 입력해주세요."
                   className="input input-bordered w-full max-w-md"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
               <div className="form-control w-full mb-4 flex flex-col items-center">
@@ -56,6 +112,8 @@ const SignupModal = ({ showModal, setShowModal }) => {
                   type="password"
                   placeholder="비밀번호를 입력해주세요."
                   className="input input-bordered w-full max-w-md"
+                  value={password1}
+                  onChange={(e) => setPassword1(e.target.value)}
                 />
               </div>
               <div className="form-control w-full mb-4 flex flex-col items-center">
@@ -66,6 +124,8 @@ const SignupModal = ({ showModal, setShowModal }) => {
                   type="password"
                   placeholder="비밀번호를 확인해주세요."
                   className="input input-bordered w-full max-w-md"
+                  value={password2}
+                  onChange={(e) => setPassword2(e.target.value)}
                 />
               </div>
               <div className="form-control w-full mb-4 flex flex-col items-center">
@@ -76,6 +136,8 @@ const SignupModal = ({ showModal, setShowModal }) => {
                   type="email"
                   placeholder="이메일를 입력해주세요."
                   className="input input-bordered w-full max-w-md"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className="form-control w-full mb-4 flex flex-col items-center">
@@ -86,6 +148,8 @@ const SignupModal = ({ showModal, setShowModal }) => {
                   type="text"
                   placeholder="닉네임을 입력해주세요."
                   className="input input-bordered w-full max-w-md"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
                 />
               </div>
 
@@ -93,6 +157,7 @@ const SignupModal = ({ showModal, setShowModal }) => {
                 <button
                   type="submit"
                   className="btn btn-primary w-full max-w-xs"
+                  onClick={handleSignup}
                 >
                   회원가입
                 </button>
