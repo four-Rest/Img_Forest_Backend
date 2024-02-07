@@ -1,11 +1,12 @@
-name: deployimgforest_server
+name: deployimgforest_client
 on:
   push:
     paths:
-      - '.github/workflows/deploy_server.yml'
-      - 'src/**'
-      - 'build.gradle'
-      - 'Dockerfile'
+      - '.github/workflows/deploy_client.yml'
+      - 'react_front/Dockerfile'
+      - 'react_front/src/**'
+      - 'react_front/package.json'
+      - 'react_front/package-lock.json'
 
     branches:
       - deploy
@@ -54,8 +55,9 @@ jobs:
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ./react_front
+          file: ./react_front/Dockerfile
           push: true
-          tags: |
-            ghcr.io/${{ env.OWNER_LC }}/imgforest-server:${{ needs.makeTagAndRelease.outputs.tag_name }},
-            ghcr.io/${{ env.OWNER_LC }}/imgforest-server:latest
+          tags: 
+            ghcr.io/${{ env.OWNER_LC }}/imgforest-client:${{ needs.makeTagAndRelease.outputs.tag_name }},
+            ghcr.io/${{ env.OWNER_LC }}/imgforest-client:latest
