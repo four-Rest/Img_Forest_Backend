@@ -1,14 +1,44 @@
 import React, { useState } from "react";
+import { toastNotice } from "../ToastrConfig";
+import { useAuth } from "../../api/AuthContext";
 
 const LoginModal = ({ showModal, setShowModal }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
-  const handleLogin = (e) => {
+
+  const { login } = useAuth();
+  const signupData = {
+    username,
+    password,
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // 여기에 로그인 로직 구현
-    console.log(username, password);
-    setShowModal(false); // 로그인 시도 후 모달 닫기
+    try {
+      const response = await fetch(`${apiUrl}/api/member/login`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(signupData),
+      });
+      if (response.ok) {
+        const res = await response.json(); // 응답이 성공적인 경우에만 JSON 파싱
+        localStorage.setItem("username", res.data.username);
+        localStorage.setItem("nickname", res.data.nickname);
+        login();
+        setShowModal(false); // 로그인 성공 후 모달 닫기
+        toastNotice("로그인 완료.");
+      } else {
+        // 서버 에러 처리
+        const errorData = await response.json();
+        console.error("login Failed:", errorData);
+      }
+    } catch (error) {
+      console.error("login Error:", error);
+    }
   };
 
   if (!showModal) return null;
@@ -44,6 +74,8 @@ const LoginModal = ({ showModal, setShowModal }) => {
                   type="text"
                   placeholder="ID를 입력해주세요."
                   className="input input-bordered w-full max-w-md"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
               <div className="form-control w-full mb-4 flex flex-col items-center">
@@ -54,6 +86,8 @@ const LoginModal = ({ showModal, setShowModal }) => {
                   type="password"
                   placeholder="비밀번호를 입력해주세요."
                   className="input input-bordered w-full max-w-md"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
 
@@ -61,6 +95,7 @@ const LoginModal = ({ showModal, setShowModal }) => {
                 <button
                   type="submit"
                   className="btn btn-primary w-full max-w-xs"
+                  onClick={handleLogin}
                 >
                   로그인
                 </button>

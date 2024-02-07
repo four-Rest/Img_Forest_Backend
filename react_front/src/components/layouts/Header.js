@@ -28,11 +28,7 @@ const Header = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
 
-  const [isLogin, setIsLogin] = useState(false);
-  const { logout } = useAuth();
-  useEffect(() => {
-    setIsLogin(!!localStorage.getItem("nickname"));
-  }, []);
+  const { isLogin, logout } = useAuth();
 
   const logoutProcess = async () => {
     await logout();
