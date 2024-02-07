@@ -6,7 +6,7 @@ on:
       - 'src/**'
       - 'build.gradle'
       - 'Dockerfile'
-      - 'react_front/**'
+
     branches:
       - deploy
 jobs:
@@ -57,5 +57,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ env.OWNER_LC }}/imgforest:${{ needs.makeTagAndRelease.outputs.tag_name }},
-            ghcr.io/${{ env.OWNER_LC }}/imgforest:latest
+            ghcr.io/${{ env.OWNER_LC }}/imgforest-server:${{ needs.makeTagAndRelease.outputs.tag_name }},
+            ghcr.io/${{ env.OWNER_LC }}/imgforest-server:latest
