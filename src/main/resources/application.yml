@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod
+    active: dev
     include: secret
   servlet:
     multipart:
@@ -42,12 +42,11 @@ custom:
   dev:
     cookieDomain: localhost
     frontUrl: "http://${custom.dev.cookieDomain}:3000"
-    backUrl: "http://${custom.dev.cookieDomain}:8090"
+    backUrl: "http://${custom.dev.cookieDomain}:${server.port}"
   prod:
     frontUrl: "https://172.17.0.1:3000"
     backUrl: "https://172.17.0.1:8090"
   site:
-    cookieDomain: "${custom.dev.cookieDomain}"
-    frontUrl: "${custom.dev.frontUrl}"
-    backUrl: "${custom.dev.backUrl}"
+    frontUrl: "https://img.for-rest.site"
+    backUrl: "https://api.img.for-rest.site"
     name: img_Forest
