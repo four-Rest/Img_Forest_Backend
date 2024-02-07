@@ -2,7 +2,7 @@ name: deployimgforest_client
 on:
   push:
     paths:
-      - '.github/workflows/deploy_client'
+      - '.github/workflows/deploy_client.yml'
       - 'react_front/Dockerfile'
       - 'react_front/src/**'
       - 'react_front/package.json'
