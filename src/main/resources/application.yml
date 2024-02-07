@@ -46,7 +46,7 @@ custom:
   prod:
     cookieDomain: img.for-rest.site
     frontUrl: "https://${custom.prod.cookieDomain}"
-    backUrl: "https://api/${custom.prod.cookieDomain}"
+    backUrl: "https://api.${custom.prod.cookieDomain}"
   site:
     cookieDomain: "${custom.prod.cookieDomain}"
     frontUrl: "${custom.prod.frontUrl}"
