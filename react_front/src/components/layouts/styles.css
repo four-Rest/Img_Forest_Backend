@@ -27,6 +27,10 @@
 
 }
 
+.hidden-svg {
+    display : none;
+}
+
 @media (max-width: 1200px) {
     .container
     {

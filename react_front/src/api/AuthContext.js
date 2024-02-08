@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-
+import cookie from 'react-cookies';
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
@@ -10,17 +10,20 @@ export const AuthProvider = ({ children }) => {
   const login = () => setIsLogin(true);
 
   function deleteCookie(name) {
-    document.cookie =
-      name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-  }
+    cookie.remove(name, { path: '/' },1000);
+}
 
   const logout = () => {
     localStorage.removeItem("username");
     localStorage.removeItem("nickname");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     deleteCookie("accessToken");
     deleteCookie("refreshToken");
-
-    setIsLogin(false);
+    deleteCookie("JSESSIONID"); 
+    setIsLogin(false)
+    window.location.href = `/`;
+    ;
   };
   return (
     <AuthContext.Provider value={{ isLogin, login, logout }}>

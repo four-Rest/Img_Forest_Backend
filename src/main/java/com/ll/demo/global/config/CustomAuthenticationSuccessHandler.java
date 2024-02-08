@@ -3,7 +3,6 @@ package com.ll.demo.global.config;
 import com.ll.demo.global.rq.Rq;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.repository.MemberRepository;
-import com.ll.demo.member.service.MemberService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,8 +13,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Component
@@ -31,7 +32,7 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException, IOException {
         Cookie[] cookies = request.getCookies();
-        String redirectUrlAfterSocialLogin = rq.getCookieValue("redirectUrlAfterSocialLogin", "http://localhost:3000");
+        String redirectUrlAfterSocialLogin = rq.getCookieValue("redirectUrlAfterSocialLogin", "http://localhost:3000/check-social-login");
         if (rq.isFrontUrl(redirectUrlAfterSocialLogin)) {
             String username = authentication.getName();
             Member member = memberRepository.findByUsername(username)
@@ -57,8 +58,11 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
             rq.setCrossDomainCookie("accessToken", accessToken);
             rq.setCrossDomainCookie("refreshToken", refreshToken);
             rq.removeCookie("redirectUrlAfterSocialLogin");
-
-            response.sendRedirect(redirectUrlAfterSocialLogin);
+            //accesToken,refreshToken URL에 보내기 위해 String에 저장
+            String queryParameters = String.format("accessToken=%s&refreshToken=%s",
+                    UriUtils.encode(accessToken, StandardCharsets.UTF_8),
+                    UriUtils.encode(refreshToken, StandardCharsets.UTF_8));
+            response.sendRedirect(redirectUrlAfterSocialLogin+"?"+queryParameters);
             return;
         }
 

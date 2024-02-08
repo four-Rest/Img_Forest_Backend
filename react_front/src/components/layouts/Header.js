@@ -1,9 +1,8 @@
 /*esLint-disable */
 
 import "../../App.css";
-import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState, useEffect } from "react";
+import React,{ useState} from "react";
 import { toastNotice } from "../ToastrConfig";
 import { Link } from "react-router-dom";
 import {
@@ -19,16 +18,16 @@ import { useAuth } from "../../api/AuthContext";
 import LoginModal from "../elements/LoginModal";
 import SignupModal from "../elements/SignupModal";
 
-const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
-const frontUrl = process.env.REACT_APP_CORE_FRONT_BASE_URL;
-
 const Header = () => {
   const [showModal, setShowModal] = useState(false);
 
+  const [iconVisible, setIconVisible] = useState(true);
+  const [searchVisible, setSearchVisible] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
 
   const { isLogin, logout } = useAuth();
+
 
   const logoutProcess = async () => {
     await logout();
@@ -44,6 +43,14 @@ const Header = () => {
     setShowSignupModal(true);
     setShowLoginModal(false); // 로그인 모달이 열려있을 수 있으므로 닫는다
   };
+
+  const handleButtonClick = () => {
+    setIconVisible(false);
+    setSearchVisible(true);
+    console.log("searchVisible is now true:", searchVisible);
+  };
+
+
 
   return (
     <>
@@ -124,21 +131,29 @@ const Header = () => {
           </Link>
         </div>
         <div className="navbar-end">
-          <button className="btn btn-ghost btn-circle">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+          {/* 검색버튼 있는곳  */}
+          <button className="btn btn-ghost btn-circle" onClick={handleButtonClick}>
+            {!searchVisible && (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-5 w-5`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            )}
+            {searchVisible && (
+                <div className = "search-wrapper mr-48" > 
+                  <input type="text" placeholder ="Type here" className="input input-bordered w-170 max-w-xs" />
+                </div>
+            )}
           </button>
           <button className="btn btn-ghost btn-circle">
             <div className="indicator">
@@ -169,5 +184,6 @@ const Header = () => {
     </>
   );
 };
+
 
 export default Header;
