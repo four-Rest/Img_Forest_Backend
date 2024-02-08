@@ -2,7 +2,7 @@
   "name": "react_front",
   "version": "0.1.0",
   "private": true,
-  "proxy": "172.17.0.1:8090",
+  "proxy": "http://localhost:8090",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",

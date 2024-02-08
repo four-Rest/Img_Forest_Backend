@@ -1,5 +1,5 @@
 # 1단계: 빌드 환경 설정
-FROM node:20-alpine AS builder
+FROM node:20.11-alpine AS builder
 
 # 작업 디렉토리 설정
 WORKDIR /app
