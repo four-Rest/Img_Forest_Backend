@@ -4,7 +4,7 @@ module.exports = function(app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'https://img.for-rest.site',
+      target: 'https://api.img.for-rest.site',
       changeOrigin: true,
     })
   );
