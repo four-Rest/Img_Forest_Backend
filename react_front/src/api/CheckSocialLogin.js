@@ -1,7 +1,11 @@
-import React, { useEffect } from 'react';
-
+import React, { useEffect,useState } from 'react';
+import { useAuth } from "./AuthContext";
+import { useNavigate, Navigate } from 'react-router-dom';
 const CheckSocialLogin = () => {
+    const navigate = useNavigate();
     const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
+    const frontUrl = process.env.REACT_APP_CORE_FRONT_BASE_URL;
+    const { login } = useAuth();
     useEffect(() => {
         // URL에서 쿼리 파라미터 추출
         const queryParams = new URLSearchParams(window.location.search);
@@ -25,7 +29,8 @@ const CheckSocialLogin = () => {
                     // localStorage에 토큰 저장
                     localStorage.setItem('accessToken', accessToken);
                     localStorage.setItem('refreshToken', refreshToken);
-                    console.log('유효한 토큰입니다.');
+                    login();
+                    navigate("/", { replace: true });
                 } else {
                     console.log('유효하지 않은 토큰입니다.');
                 }

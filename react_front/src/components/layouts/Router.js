@@ -12,7 +12,7 @@ function Router() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/article" element={<Article />} />
-        <Route path="/check-social-login" element={CheckSocialLogin()} />
+        <Route path="/check-social-login" element={<CheckSocialLogin />} /> 
       </Routes>
       <Footer />
     </BrowserRouter>
