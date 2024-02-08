@@ -6,6 +6,7 @@ import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.member.dto.*;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -132,6 +133,19 @@ public class MemberController {
         } else{
             return GlobalResponse.of("403", "확인되지 않은 유저입니다.");
         }
+    }
+
+    @PostMapping("/checkAccessToken")
+    public boolean checkAccessToken(@RequestBody Map<String, String> payload) {
+        try{
+            String accessToken = payload.get("accessToken");
+            Claims claims = JwtUtil.decode(accessToken, jwtProperties.getSecretKey());
+            return true;
+        } catch (Exception e) {
+            // 다른 예외들 (토큰 만료, 지원하지 않는 JWT 등)
+            System.err.println("Token validation error: " + e.getMessage());
+        }
+        return false;
     }
 
     private void removeCrossDomainCookie() {
