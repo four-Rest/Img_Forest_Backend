@@ -32,7 +32,6 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException, IOException {
         Cookie[] cookies = request.getCookies();
         String redirectUrlAfterSocialLogin = rq.getCookieValue("redirectUrlAfterSocialLogin", "http://localhost:3000");
-        System.out.println("redirectUrlAfterSocialLogin !!!!!!!!!!!!" + redirectUrlAfterSocialLogin);
         if (rq.isFrontUrl(redirectUrlAfterSocialLogin)) {
             String username = authentication.getName();
             Member member = memberRepository.findByUsername(username)
