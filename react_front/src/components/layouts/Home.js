@@ -4,6 +4,11 @@ import './styles.css';
 function Home() { 
   
   const [articleData, setArticleData] = useState([]); // 이미지 데이터 배열
+
+  useEffect(() => {
+    setArticleData([]);
+  }, []); // 초기 상태를 빈 배열로 설정
+
   const [loading, setLoading] = useState(false); // 로딩 상태
   const [startIndex, setStartIndex] = useState(0); // 표시할 이미지의 시작 인덱스
   const [endIndex, setEndIndex] = useState(30); // 표시할 이미지의 마지막 인덱스
