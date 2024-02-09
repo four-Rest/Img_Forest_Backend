@@ -8,7 +8,6 @@ function Home() {
   const [startIndex, setStartIndex] = useState(0); // 표시할 이미지의 시작 인덱스
   const [endIndex, setEndIndex] = useState(30); // 표시할 이미지의 마지막 인덱스
   const apiBaseUrl = process.env.REACT_APP_CORE_API_BASE_URL; // 환경 변수에서 API 기본 URL을 가져옴
-  let key = 1;
 
   const target = useRef(null); // IntersectionObserver를 위한 ref 생성
 
@@ -56,7 +55,7 @@ function Home() {
   return (
     <div className="container">
       {articleData.slice(startIndex, endIndex).map((article) => (
-        <div key={++key} className="box">
+        <div key={article.id} className="box">
           <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
         </div>
       ))}
