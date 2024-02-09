@@ -64,4 +64,4 @@ function Home() {
   );
 }
 
-export default Home; // Home 컴포넌트를 내보냄
+export default Home; // Home 컴포넌트 내보냄
