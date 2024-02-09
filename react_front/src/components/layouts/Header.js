@@ -2,9 +2,10 @@
 
 import "../../App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React,{ useState} from "react";
+import React,{ useContext, useState} from "react";
 import { toastNotice } from "../ToastrConfig";
 import { Link } from "react-router-dom";
+import { SearchTagContext}  from "../../api/SearchTagContext";
 import {
   faBars,
   faRectangleList,
@@ -19,6 +20,9 @@ import LoginModal from "../elements/LoginModal";
 import SignupModal from "../elements/SignupModal";
 
 const Header = () => {
+  const [searchTag,setSearchTag] = useState('');
+  const {updateSearchTag}  = useContext(SearchTagContext);
+
   const [showModal, setShowModal] = useState(false);
 
   const [iconVisible, setIconVisible] = useState(true);
@@ -48,6 +52,17 @@ const Header = () => {
     setIconVisible(false);
     setSearchVisible(true);
     console.log("searchVisible is now true:", searchVisible);
+  };
+
+  const handleInputChange = (e) => {
+    setSearchTag(e.target.value);
+  };
+
+  const handleKeyDown = (e) => {
+    if(e.key === 'Enter') {
+      updateSearchTag({tag:searchTag});
+      console.log(searchTag);
+    }
   };
 
 
@@ -151,7 +166,14 @@ const Header = () => {
             )}
             {searchVisible && (
                 <div className = "search-wrapper mr-48" > 
-                  <input type="text" placeholder ="Type here" className="input input-bordered w-170 max-w-xs" />
+                  <input 
+                  type="text" 
+                  placeholder ="Type here" 
+                  className="input input-bordered w-170 max-w-xs"
+                  value = {searchTag}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  />
                 </div>
             )}
           </button>
