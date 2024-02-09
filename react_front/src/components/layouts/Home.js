@@ -55,7 +55,7 @@ function Home() {
   return (
     <div className="container">
       {articleData.slice(startIndex, endIndex).map((article) => (
-        <div key={article.id} className="box">
+        <div className="box">
           <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
         </div>
       ))}
