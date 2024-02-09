@@ -24,7 +24,7 @@ public class ApiSecurityConfig {
                         authorizeRequests -> authorizeRequests
                                 .requestMatchers(HttpMethod.GET, "/api/*/posts/{id:\\d+}", "/api/*/posts", "/api/*/postComments/{id:\\d+}")
                                 .permitAll()
-                                .requestMatchers("/api/member/login", "/api/member/logout", "/api/member/signup","/api/article")
+                                .requestMatchers("/api/member/login", "/api/member/logout", "/api/member/signup","/api/article", "api/member/checkAccessToken")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
