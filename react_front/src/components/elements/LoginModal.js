@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { toastNotice } from "../ToastrConfig";
+import { toastNotice, toastWarning } from "../ToastrConfig";
 import { useAuth } from "../../api/AuthContext";
 
 const LoginModal = ({ showModal, setShowModal }) => {
@@ -34,7 +34,7 @@ const LoginModal = ({ showModal, setShowModal }) => {
       } else {
         // 서버 에러 처리
         const errorData = await response.json();
-        console.error("login Failed:", errorData);
+        toastWarning("존재하지 않는 회원입니다.");
       }
     } catch (error) {
       console.error("login Error:", error);
