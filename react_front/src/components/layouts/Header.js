@@ -4,7 +4,7 @@ import "../../App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React,{ useContext, useState, useEffect, useRef } from "react";
 import { toastNotice } from "../ToastrConfig";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SearchTagContext}  from "../../api/SearchTagContext";
 import {
   faBars,
@@ -28,6 +28,8 @@ const Header = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);//회원가입을 위한 변수
   const { isLogin, logout } = useAuth(); // AuthContext
   const searchRef = useRef(null);// 입력 필드에 대한 참조
+  const navigate = useNavigate();
+
 
   const logoutProcess = async () => {
     await logout();
@@ -47,7 +49,6 @@ const Header = () => {
   const handleButtonClick = () => {
     setIconVisible(false);
     setSearchVisible(true);
-    console.log("searchVisible is now true:", searchVisible);
   };
 
   const handleInputChange = (e) => {
@@ -57,7 +58,7 @@ const Header = () => {
   const handleKeyDown = (e) => {
     if(e.key === 'Enter') {
       updateSearchTag({tag:searchTag});
-      console.log(searchTag);
+      navigate(`/article/${searchTag}`);
     }
   };
 
@@ -88,8 +89,7 @@ const Header = () => {
               className="btn btn-ghost btn-circle"
             >
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg" 
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -151,7 +151,7 @@ const Header = () => {
           </div>
         </div>
         <div className="navbar-center">
-          <Link className="btn btn-ghost text-xl" to={`/home`}>
+          <Link className="btn btn-ghost text-xl" to={`/`}>
             Img_Forest
           </Link>
         </div>

@@ -73,7 +73,7 @@ function Article() {
                     </form>
                 </div>
             </div>
-            <Link to="/home">홈으로 이동</Link>
+            <Link to="/">홈으로 이동</Link>
         </section>
     );
 };
