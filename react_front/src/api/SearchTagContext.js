@@ -24,6 +24,8 @@ function SearchTagProvider({children}) {
         [searchTag,updateSearchTag],
     );
 
+    console.log("Tag is : ", searchTag.tag); 
+
     return (
         <SearchTagContext.Provider value = {SearchTagValue}>
             {children}
