@@ -1,5 +1,6 @@
 package com.ll.demo.article.service;
 
+import com.ll.demo.article.dto.ArticlePageResponseDto;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.dto.ArticleListResponseDto;
 import com.ll.demo.article.entity.Article;
@@ -9,10 +10,15 @@ import com.ll.demo.article.repository.ArticleRepository;
 import com.ll.demo.article.repository.LikeTableRepository;
 import com.ll.demo.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -126,5 +132,37 @@ public class ArticleService {
             likeTableRepository.delete(likeTable);
             article.setLikes(article.getLikes() - 1);
         }
+    }
+
+    // 게시물 페이징
+    public ArticlePageResponseDto searchAllPaging(int pageNo, int pageSize, String sortBy) {
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize,Sort.by(sortBy).descending());
+        Page<Article> articlePage = articleRepository.findAll(pageable);
+
+
+        List<Article> listArticle = articlePage.getContent();
+
+        List<ArticleListResponseDto> content = listArticle.stream()
+                .map(article -> {
+                    ArticleListResponseDto dto = new ArticleListResponseDto(article);
+                    dto.setId(article.getId());
+                    dto.setPaid(article.isPaid());
+                    dto.setImgFilePath(article.getImage().getPath());
+                    dto.setImgFileName(article.getImage().getFileName());
+                    dto.setLikes(article.getLikes());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+
+        return ArticlePageResponseDto.builder()
+                .content(content)
+                .pageNo(pageNo)
+                .pageSize(pageSize)
+                .totalElements(articlePage.getTotalElements())
+                .totalPages(articlePage.getTotalPages())
+                .last(articlePage.isLast())
+                .build();
     }
 }
