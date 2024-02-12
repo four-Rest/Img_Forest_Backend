@@ -57,7 +57,7 @@ function Home() {
       {(
         articleData.slice(startIndex, endIndex).map((article) => (
           <div key={article.id} className="box">
-            <img src={`public/imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
+            <img src={`/public/imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
           </div>
         ))
       )}
