@@ -18,7 +18,7 @@ function Home() {
       try {
         const res = await fetch(`/api/article`); // API에서 이미지 데이터를 가져옴
         const data = await res.json(); // 응답 데이터를 JSON 형식으로 변환
-        setArticleData(prevData => data.data); // 기존 이미지 데이터에 새로운 데이터를 추가
+        setArticleData(prevData => prevData.concat(data.data)); // 기존 이미지 데이터에 새로운 데이터를 추가
         console.log('데이터 개수:', data.data.length); // 데이터 개수를 콘솔에 출력
 
       } catch (error) {
@@ -57,7 +57,7 @@ function Home() {
       {(
         articleData.slice(startIndex, endIndex).map((article) => (
           <div key={article.id} className="box">
-            <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
+            <img src={`public/imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
           </div>
         ))
       )}
