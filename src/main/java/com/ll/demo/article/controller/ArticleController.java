@@ -4,7 +4,9 @@ import com.ll.demo.article.dto.ArticleDetailResponseDto;
 import com.ll.demo.article.dto.ArticleListResponseDto;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.entity.Article;
+import com.ll.demo.article.entity.Image;
 import com.ll.demo.article.service.ArticleService;
+import com.ll.demo.article.service.ImageService;
 import com.ll.demo.article.service.TagService;
 import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.global.rq.Rq;
@@ -12,10 +14,16 @@ import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +35,7 @@ import java.util.stream.Collectors;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final ImageService imageService;
     private final MemberService memberService;
     private final TagService tagService;
     private final Rq rq;
@@ -155,5 +164,18 @@ public class ArticleController {
         articleService.unlike(article, member);
 
         return GlobalResponse.of("200", "추천취소되었습니다.");
+    }
+
+    @GetMapping("/image/{imageName}")
+    public ResponseEntity<byte[]> getImage(@PathVariable String imageName) throws IOException {
+
+        Image image = imageService.getImageByFileName(imageName);
+        // 이미지 파일을 byte 배열로 읽어옵니다.
+        byte[] imageBytes = Files.readAllBytes(Paths.get(image.getPath(), imageName));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);  // 이미지의 MIME 타입에 따라 변경해야 합니다.
+
+        return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
     }
 }
