@@ -26,10 +26,12 @@ const Header = () => {
   const [searchVisible, setSearchVisible] = useState(false); // 검색창
   const [showLoginModal, setShowLoginModal] = useState(false);//로그인을 위한 변수
   const [showSignupModal, setShowSignupModal] = useState(false);//회원가입을 위한 변수
-  const { isLogin, logout } = useAuth(); // AuthContext
+  const { isLogin, logout , login} = useAuth(); // AuthContext
   const searchRef = useRef(null);// 입력 필드에 대한 참조
   const navigate = useNavigate();
 
+  const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
+  const frontUrl = process.env.REACT_APP_CORE_FRONT_BASE_URL;
 
   const logoutProcess = async () => {
     await logout();
@@ -77,6 +79,32 @@ const Header = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [searchVisible]);
+
+  useEffect(() => {
+    if(localStorage.getItem('isLogin')){
+      fetch(`${apiUrl}/api/member/checkAccessToken`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data === true) {
+          console.log("유효!!!!");
+          login();
+        } else {
+            console.log('유효하지 않은 토큰입니다.');
+            logout();
+        }
+    })
+    .catch(error => {
+        console.error('에러 발생 :', error);
+    });
+    }  
+    
+  }, []); 
 
   return (
     <>

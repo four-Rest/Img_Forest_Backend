@@ -4,19 +4,17 @@ import com.ll.demo.global.rq.Rq;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.repository.MemberRepository;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Component
@@ -26,12 +24,10 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
 
     private final Rq rq;
     private final JwtProperties jwtProperties;
-    //private final MemberService memberService;
     private final MemberRepository memberRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException, IOException {
-        Cookie[] cookies = request.getCookies();
         String redirectUrlAfterSocialLogin = rq.getCookieValue("redirectUrlAfterSocialLogin", "http://localhost:3000/check-social-login");
         if (rq.isFrontUrl(redirectUrlAfterSocialLogin)) {
             String username = authentication.getName();
@@ -55,14 +51,24 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
                     , jwtProperties.getSecretKey()
             );
             rq.destroySession();
-            rq.setCrossDomainCookie("accessToken", accessToken);
-            rq.setCrossDomainCookie("refreshToken", refreshToken);
+            ResponseCookie cookie1 = ResponseCookie.from("accessToken", accessToken)
+                    .path("/")
+                    .maxAge(60 * 10)
+                    .sameSite("None")
+                    .secure(true)
+                    .httpOnly(true)
+                    .build();
+            ResponseCookie cookie2 = ResponseCookie.from("refreshToken", refreshToken)
+                    .path("/")
+                    .maxAge(60 * 60 * 24)
+                    .sameSite("None")
+                    .secure(true)
+                    .httpOnly(true)
+                    .build();
+            response.addHeader("Set-Cookie", cookie1.toString());
+            response.addHeader("Set-Cookie", cookie2.toString());
             rq.removeCookie("redirectUrlAfterSocialLogin");
-            //accesToken,refreshToken URL에 보내기 위해 String에 저장
-            String queryParameters = String.format("accessToken=%s&refreshToken=%s",
-                    UriUtils.encode(accessToken, StandardCharsets.UTF_8),
-                    UriUtils.encode(refreshToken, StandardCharsets.UTF_8));
-            response.sendRedirect(redirectUrlAfterSocialLogin+"?"+queryParameters);
+            response.sendRedirect(redirectUrlAfterSocialLogin);
             return;
         }
 
