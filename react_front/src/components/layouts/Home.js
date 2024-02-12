@@ -26,7 +26,6 @@ function Home() {
       }
       setLoading(false); // 로딩 상태를 false로 설정
     };
-    fetchData(); // fetchData 함수 호출
   }, [apiBaseUrl]); // apiBaseUrl이 변경될 때만 useEffect 실행
 
   useEffect(() => {
