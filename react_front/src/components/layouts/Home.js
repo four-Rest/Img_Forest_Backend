@@ -53,17 +53,23 @@ function Home() {
   }, [loading, articleData]); // loading 또는 articleData가 변경될 때만 useEffect 실행
 
   return (
-    <div className="container">
-      {(
-        articleData.slice(startIndex, endIndex).map((article) => (
-          <div key={article.id} className="box">
-            <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
-          </div>
-        ))
-      )}
-      <div ref={target}></div> 
-    </div>
+      <div className="container">
+        {loading ? (
+            Array(10).fill().map((_, index) => <Skeleton key={index} />)
+        ) : (
+            articleData.slice(startIndex, endIndex).map((article) => (
+                <div key={article.id} className="box">
+                  <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
+                </div>
+            ))
+        )}
+        <div ref={target}></div>
+      </div>
   );
+}
+
+function Skeleton() {
+  return <div className="skeleton"></div>;
 }
 
 export default Home; // Home 컴포넌트를 내보냄
