@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import {toastNotice} from "../ToastrConfig";
-
+import {toastNotice, toastWarning} from "../ToastrConfig";
+import { useNavigate, Navigate } from 'react-router-dom';
 function Article() {
     const [content, setContent] = useState('');
     const [tagString, setTagString] = useState('');
     const [imageFile, setImageFile] = useState(null);
-
+    const navigate = useNavigate();
     const apiBaseUrl = process.env.REACT_APP_CORE_API_BASE_URL;
 
     async function createArticle() {
@@ -20,19 +20,29 @@ function Article() {
             formData.append('image', imageFile);
             formData.append('content', content);
             formData.append('tagString', tagString);
-
-            const response = await fetch(`${apiBaseUrl}/ArticleController/createArticle`, {
-                method: 'POST',
-                body: formData
+            console.log(formData);
+            const response = await fetch(`${apiBaseUrl}/api/article`, {
+                headers: {
+                    "Content-Type": "application/json",
+                  },
+                  method: "POST",
+                  credentials: "include",
+                  body: JSON.stringify(formData),
             });
 
             if (response.ok) {
                 toastNotice('게시글이 작성되었습니다.');
+                navigate("/article", { replace: true });
             } else {
-                toastNotice('게시글 작성에 실패했습니다.');
+                toastWarning('게시글 작성에 실패했습니다.');
+                const errorData = await response.json();
+                console.log(errorData);
+                navigate("/article", { replace: true });
+
             }
         } catch (error) {
             console.error('게시글 작성 중 에러 발생:', error);
+            navigate("/article", { replace: true });
         }
     }
 
@@ -73,7 +83,6 @@ function Article() {
                     </form>
                 </div>
             </div>
-            <Link to="/home">홈으로 이동</Link>
         </section>
     );
 };

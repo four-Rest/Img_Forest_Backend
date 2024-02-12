@@ -3,6 +3,7 @@ import Home from "./Home";
 import Header from "./Header";
 import Footer from "./Footer";
 import Article from "./Article";
+import ArticleTag from "./ArticleTag";
 import CheckSocialLogin from "../../api/CheckSocialLogin";
 
 function Router() {
@@ -12,7 +13,9 @@ function Router() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/article" element={<Article />} />
+        <Route path="/article/:tagString" element={<ArticleTag />} />
         <Route path="/check-social-login" element={<CheckSocialLogin />} /> 
+      
       </Routes>
       <Footer />
     </BrowserRouter>
