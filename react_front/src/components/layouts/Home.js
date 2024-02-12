@@ -18,7 +18,7 @@ function Home() {
       try {
         const res = await fetch(`/api/article`); // API에서 이미지 데이터를 가져옴
         const data = await res.json(); // 응답 데이터를 JSON 형식으로 변환
-        setArticleData(prevData => prevData.concat(data.data)); // 기존 이미지 데이터에 새로운 데이터를 추가
+        setArticleData(prevData => [...prevData, ...newData]); // 기존 이미지 데이터에 새로운 데이터를 추가
         console.log('데이터 개수:', data.data.length); // 데이터 개수를 콘솔에 출력
 
       } catch (error) {
@@ -53,23 +53,18 @@ function Home() {
   }, [loading, articleData]); // loading 또는 articleData가 변경될 때만 useEffect 실행
 
   return (
-      <div className="container">
-        {loading ? (
-            Array(10).fill().map((_, index) => <Skeleton key={index} />)
-        ) : (
-            articleData.slice(startIndex, endIndex).map((article) => (
-                <div key={article.id} className="box">
-                  <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
-                </div>
-            ))
-        )}
-        <div ref={target}></div>
-      </div>
+    <div className="container">
+      {(
+        articleData.slice(startIndex, endIndex).map((article) => (
+          <div key={article.id} className="box">
+            <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
+          </div>
+        ))
+      )}
+      <div ref={target}></div>
+    </div>
   );
 }
 
-function Skeleton() {
-  return <div className="skeleton"></div>;
-}
 
 export default Home; // Home 컴포넌트를 내보냄
