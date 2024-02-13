@@ -17,7 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("https://img.for-rest.site")
                 .allowedMethods(ALLOWED_METHOD_NAMES.split(","))
                 .allowedHeaders("*")
-                .exposedHeaders(HttpHeaders.LOCATION) // 리다이렉트에 사용하는 LOCATION 헤더 활성화
+                .exposedHeaders(HttpHeaders.LOCATION, HttpHeaders.CONTENT_TYPE) // 리다이렉트에 사용하는 LOCATION 헤더 활성화
                 .allowCredentials(true)
                 .maxAge(10800);
     }
