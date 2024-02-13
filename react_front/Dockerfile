@@ -2,10 +2,10 @@
 FROM node:20.11-alpine as builder
 
 # 작업 디렉토리 설정
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # 의존성 파일 복사
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 # 의존성 설치
 RUN npm install --force --legacy-peer-deps
@@ -16,16 +16,17 @@ COPY . .
 # React 애플리케이션 빌드
 RUN npm run build
 
-# 2단계: 실핼
+# 2단계: 실행
 FROM nginx
 
-# 작업 디렉토리 설정
-WORKDIR /app
 
-# 빌드 스테이지에서 생성된 파일 복사
-COPY --from=builder /app/build .
-COPY --from=builder /app/node_modules node_modules
-COPY --from=builder /app/package.json package.json
+COPY --from=builder /usr/src/app/build /usr/share/nginx/html
+
+#
+## 빌드 스테이지에서 생성된 파일 복사
+#COPY --from=builder /app/build .
+#COPY --from=builder /app/node_modules node_modules
+#COPY --from=builder /app/package.json package.json
 
 
 # 애플리케이션 포트 설정
