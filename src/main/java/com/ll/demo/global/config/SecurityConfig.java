@@ -55,6 +55,7 @@ public class SecurityConfig {
                                             headers1.addHeader("Access-Control-Allow-Origin", "https://img.for-rest.site");
                                             headers1.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
                                             headers1.addHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Requested-With");
+                                            headers1.addHeader("X-Content-Type-Options", "nosniff");
                                         })
                 )
                 .csrf(
