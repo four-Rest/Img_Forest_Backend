@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { toastNotice } from "../ToastrConfig";
+import { toastNotice, toastWarning } from "../ToastrConfig";
 
 const SignupModal = ({ showModal, setShowModal }) => {
   const [username, setUsername] = useState("");
@@ -20,11 +20,11 @@ const SignupModal = ({ showModal, setShowModal }) => {
     e.preventDefault();
 
     if (!passwordCheck()) {
-      toastNotice("비밀번호가 일치하지 않습니다.");
+      toastWarning("비밀번호가 일치하지 않습니다.");
       return;
     }
     if (!blankCheck()) {
-      toastNotice("필수 정보를 모두 입력해주세요.");
+      toastWarning("필수 정보를 모두 입력해주세요.");
       return;
     }
 
@@ -44,7 +44,7 @@ const SignupModal = ({ showModal, setShowModal }) => {
       } else {
         // 서버 에러 처리
         const errorData = await response.json();
-        console.error("Signup Failed:", errorData);
+        toastWarning("중복된 이름입니다.");
       }
     } catch (error) {
       console.error("Signup Error:", error);

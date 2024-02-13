@@ -1,18 +1,27 @@
 package com.ll.demo.article.service;
 
+import com.ll.demo.article.dto.ArticlePageResponseDto;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.dto.ArticleListResponseDto;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
 import com.ll.demo.article.entity.LikeTable;
+import com.ll.demo.article.entity.Tag;
 import com.ll.demo.article.repository.ArticleRepository;
 import com.ll.demo.article.repository.LikeTableRepository;
+import com.ll.demo.article.repository.TagRepository;
 import com.ll.demo.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +36,7 @@ public class ArticleService {
     private final TagService tagService;
     private final ArticleTagService articleTagService;
     private final LikeTableRepository likeTableRepository;
+    private final TagRepository tagRepository;
 
     @Transactional
     public void create(ArticleRequestDto articleRequestDto, Member member) throws IOException {
@@ -126,5 +136,74 @@ public class ArticleService {
             likeTableRepository.delete(likeTable);
             article.setLikes(article.getLikes() - 1);
         }
+    }
+
+    // 게시물 페이징
+    public ArticlePageResponseDto searchAllPaging(int pageNo, int pageSize, String sortBy) {
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize,Sort.by(sortBy).descending());
+        Page<Article> articlePage = articleRepository.findAll(pageable);
+
+
+        List<Article> listArticle = articlePage.getContent();
+
+        List<ArticleListResponseDto> content = listArticle.stream()
+                .map(article -> {
+                    ArticleListResponseDto dto = new ArticleListResponseDto(article);
+                    dto.setId(article.getId());
+                    dto.setPaid(article.isPaid());
+                    dto.setImgFilePath(article.getImage().getPath());
+                    dto.setImgFileName(article.getImage().getFileName());
+                    dto.setLikes(article.getLikes());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+
+        return ArticlePageResponseDto.builder()
+                .content(content)
+                .pageNo(pageNo)
+                .pageSize(pageSize)
+                .totalElements(articlePage.getTotalElements())
+                .totalPages(articlePage.getTotalPages())
+                .last(articlePage.isLast())
+                .build();
+    }
+
+    // 태그 게시물 페이징
+    public ArticlePageResponseDto searchAllPagingByTag(int pageNo, int pageSize, String sortBy, String tagName) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize,Sort.by(sortBy).descending());
+        Tag tag = tagRepository.findByTagName(tagName);
+
+        if(tag == null) {
+            return ArticlePageResponseDto.builder()
+                    .content(Collections.emptyList())
+                    .pageNo(pageNo)
+                    .pageSize(pageSize)
+                    .totalElements(0)
+                    .totalPages(0)
+                    .last(true)
+                    .build();
+        }
+        Page<Article> articlePage = articleRepository.findByArticleTagsTag(tag,pageable);
+        List<ArticleListResponseDto> content = articlePage.stream()
+                .map(article-> {
+                    ArticleListResponseDto dto = new ArticleListResponseDto(article);
+                    dto.setId(article.getId());
+                    dto.setPaid(article.isPaid());
+                    dto.setImgFilePath(article.getImage().getPath());
+                    dto.setImgFileName(article.getImage().getFileName());
+                    dto.setLikes(article.getLikes());
+                    return dto;
+                }).collect(Collectors.toList());
+        return ArticlePageResponseDto.builder()
+                .content(content)
+                .pageNo(pageNo)
+                .pageSize(pageSize)
+                .totalElements(articlePage.getTotalElements())
+                .totalPages(articlePage.getTotalPages())
+                .last(articlePage.isLast())
+                .build();
+
     }
 }

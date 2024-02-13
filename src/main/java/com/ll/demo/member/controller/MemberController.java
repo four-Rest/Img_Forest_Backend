@@ -14,9 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.WebUtils;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,7 +35,7 @@ public class MemberController {
     @PostMapping("/signup")
     public GlobalResponse signup(@RequestBody MemberCreateRequestDto userCreateRequestDto) {
         if (!userCreateRequestDto.getPassword1().equals(userCreateRequestDto.getPassword2())) {
-            return GlobalResponse.of("409", "비밀번호가 일치하지 않습니다");
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
         }
         return memberService.signup(userCreateRequestDto);
     }
@@ -136,16 +138,27 @@ public class MemberController {
     }
 
     @PostMapping("/checkAccessToken")
-    public boolean checkAccessToken(@RequestBody Map<String, String> payload) {
-        try{
-            String accessToken = payload.get("accessToken");
-            Claims claims = JwtUtil.decode(accessToken, jwtProperties.getSecretKey());
+    public boolean checkAccessToken(HttpServletRequest request) {
+        try {
+            Cookie cookie = WebUtils.getCookie(request, "accessToken");
+            if (cookie == null) {
+                return false;
+            }
+            String token = cookie.getValue();
+            Claims claims = JwtUtil.decode(token, jwtProperties.getSecretKey());
+
+            Date expiration = claims.getExpiration();
+            if (expiration.before(new Date())) {
+                System.err.println("Token expired");
+                return false;
+            }
+
             return true;
         } catch (Exception e) {
             // 다른 예외들 (토큰 만료, 지원하지 않는 JWT 등)
             System.err.println("Token validation error: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
     private void removeCrossDomainCookie() {

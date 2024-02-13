@@ -2,6 +2,7 @@ package com.ll.demo.article.controller;
 
 import com.ll.demo.article.dto.ArticleDetailResponseDto;
 import com.ll.demo.article.dto.ArticleListResponseDto;
+import com.ll.demo.article.dto.ArticlePageResponseDto;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.service.ArticleService;
@@ -12,7 +13,9 @@ import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -156,4 +159,26 @@ public class ArticleController {
 
         return GlobalResponse.of("200", "추천취소되었습니다.");
     }
+
+    // 게시물 페이징
+    // tag 페이징도 추가
+    // GlobalResponse에  ArticlePageResponse 담아서 보내주기
+    @GetMapping("/page")
+    public GlobalResponse readAllPaging(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(value = "tagName", required = false) String tagName
+    ) {
+
+        ArticlePageResponseDto result;
+        if(tagName != null) {
+            result = articleService.searchAllPagingByTag(pageNo,pageSize,sortBy,tagName);
+        }
+        else {
+            result = articleService.searchAllPaging(pageNo,pageSize,sortBy);
+        }
+        return GlobalResponse.of("200","success",result);
+    }
+
 }

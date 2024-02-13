@@ -2,9 +2,9 @@
 
 import "../../App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React,{ useContext, useState} from "react";
+import React,{ useContext, useState, useEffect, useRef } from "react";
 import { toastNotice } from "../ToastrConfig";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SearchTagContext}  from "../../api/SearchTagContext";
 import {
   faBars,
@@ -22,16 +22,16 @@ import SignupModal from "../elements/SignupModal";
 const Header = () => {
   const [searchTag,setSearchTag] = useState('');
   const {updateSearchTag}  = useContext(SearchTagContext);
+  const [iconVisible, setIconVisible] = useState(true); // 돋보기 svg를 위한 변수
+  const [searchVisible, setSearchVisible] = useState(false); // 검색창
+  const [showLoginModal, setShowLoginModal] = useState(false);//로그인을 위한 변수
+  const [showSignupModal, setShowSignupModal] = useState(false);//회원가입을 위한 변수
+  const { isLogin, logout , login} = useAuth(); // AuthContext
+  const searchRef = useRef(null);// 입력 필드에 대한 참조
+  const navigate = useNavigate();
 
-  const [showModal, setShowModal] = useState(false);
-
-  const [iconVisible, setIconVisible] = useState(true);
-  const [searchVisible, setSearchVisible] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showSignupModal, setShowSignupModal] = useState(false);
-
-  const { isLogin, logout } = useAuth();
-
+  const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
+  const frontUrl = process.env.REACT_APP_CORE_FRONT_BASE_URL;
 
   const logoutProcess = async () => {
     await logout();
@@ -51,7 +51,6 @@ const Header = () => {
   const handleButtonClick = () => {
     setIconVisible(false);
     setSearchVisible(true);
-    console.log("searchVisible is now true:", searchVisible);
   };
 
   const handleInputChange = (e) => {
@@ -61,15 +60,55 @@ const Header = () => {
   const handleKeyDown = (e) => {
     if(e.key === 'Enter') {
       updateSearchTag({tag:searchTag});
-      console.log(searchTag);
+      navigate(`/article/${searchTag}`);
     }
   };
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setSearchVisible(false);
+      }
+    }
+    // 입력 필드가 표시될 때만 이벤트 리스너를 추가
+    if (searchVisible) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      // 컴포넌트 정리 시 이벤트 리스너 제거
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [searchVisible]);
 
+  useEffect(() => {
+    if(localStorage.getItem('isLogin')){
+      fetch(`${apiUrl}/api/member/checkAccessToken`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data === true) {
+          console.log("유효!!!!");
+          login();
+        } else {
+            console.log('유효하지 않은 토큰입니다.');
+            logout();
+        }
+    })
+    .catch(error => {
+        console.error('에러 발생 :', error);
+    });
+    }  
+    
+  }, []); 
 
   return (
     <>
-      <div className="navbar bg-base-100">
+      <div className="navbar bg-base-100" style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <div className="navbar-start">
           <div className="dropdown">
             <div
@@ -78,8 +117,7 @@ const Header = () => {
               className="btn btn-ghost btn-circle"
             >
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg" 
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -141,31 +179,32 @@ const Header = () => {
           </div>
         </div>
         <div className="navbar-center">
-          <Link className="btn btn-ghost text-xl" to={`/home`}>
+          <Link className="btn btn-ghost text-xl" to={`/`}>
             Img_Forest
           </Link>
         </div>
         <div className="navbar-end">
           {/* 검색버튼 있는곳  */}
-          <button className="btn btn-ghost btn-circle" onClick={handleButtonClick}>
+          
             {!searchVisible && (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={`h-5 w-5`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+              <button className="btn btn-ghost btn-circle" onClick={handleButtonClick}><svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`h-5 w-5`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg></button>
+              
             )}
             {searchVisible && (
-                <div className = "search-wrapper mr-48" > 
+                <div className = "search-wrapper" ref={searchRef}> 
                   <input 
                   type="text" 
                   placeholder ="Type here" 
@@ -176,7 +215,6 @@ const Header = () => {
                   />
                 </div>
             )}
-          </button>
           <button className="btn btn-ghost btn-circle">
             <div className="indicator">
               <svg
