@@ -14,9 +14,19 @@ RUN npm install --force --legacy-peer-deps
 COPY . .
 
 # React 애플리케이션 빌드
-RUN npm install
+RUN run build
 
-COPY . .
+# 2단계: 빌드 환경 설정
+FROM node:20.11-alpine
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 빌드 스테이지에서 생성된 파일 복사
+COPY --from=builder /app/build .
+COPY --from=builder /app/node_modules node_modules
+COPY --from=builder /app/package.json package.json
+
 
 # 애플리케이션 포트 설정
 EXPOSE 3000
@@ -27,4 +37,4 @@ ENV PORT=3000
 ENV CHOKIDAR_USEPOLLING=true
 
 # 애플리케이션 실행
-CMD ["npm", "start"]
+CMD ["node", "index.js"]
