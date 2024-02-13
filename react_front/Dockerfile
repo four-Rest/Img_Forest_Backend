@@ -16,8 +16,8 @@ COPY . .
 # React 애플리케이션 빌드
 RUN npm run build
 
-# 2단계: 빌드 환경 설정
-FROM node:20.11-alpine
+# 2단계: 실핼
+FROM nginx
 
 # 작업 디렉토리 설정
 WORKDIR /app
@@ -37,4 +37,4 @@ ENV PORT=3000
 ENV CHOKIDAR_USEPOLLING=true
 
 # 애플리케이션 실행
-CMD ["node", "index.html"]
+#CMD ["node", "index.html"]
