@@ -51,6 +51,11 @@ public class SecurityConfig {
                                         frameOptions ->
                                                 frameOptions.sameOrigin()
                                 )
+                                        .addHeaderWriter((exchange, headers1) -> {
+                                            headers1.addHeader("Access-Control-Allow-Origin", "https://img.for-rest.site");
+                                            headers1.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                                            headers1.addHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Requested-With");
+                                        })
                 )
                 .csrf(
                         csrf ->
