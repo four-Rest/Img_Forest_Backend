@@ -24,6 +24,7 @@ EXPOSE 3000
 # 환경변수 설정
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV CHOKIDAR_USEPOLLING=true
 
 # 애플리케이션 실행
 CMD ["npm", "start"]
