@@ -3,12 +3,11 @@ package com.ll.demo.global.config;
 import com.ll.demo.global.rq.Rq;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.repository.MemberRepository;
-import com.ll.demo.member.service.MemberService;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -25,13 +24,11 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
 
     private final Rq rq;
     private final JwtProperties jwtProperties;
-    //private final MemberService memberService;
     private final MemberRepository memberRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException, IOException {
-        Cookie[] cookies = request.getCookies();
-        String redirectUrlAfterSocialLogin = rq.getCookieValue("redirectUrlAfterSocialLogin", "http://localhost:3000");
+        String redirectUrlAfterSocialLogin = rq.getCookieValue("redirectUrlAfterSocialLogin", "http://localhost:3000/check-social-login");
         if (rq.isFrontUrl(redirectUrlAfterSocialLogin)) {
             String username = authentication.getName();
             Member member = memberRepository.findByUsername(username)
@@ -54,10 +51,23 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
                     , jwtProperties.getSecretKey()
             );
             rq.destroySession();
-            rq.setCrossDomainCookie("accessToken", accessToken);
-            rq.setCrossDomainCookie("refreshToken", refreshToken);
+            ResponseCookie cookie1 = ResponseCookie.from("accessToken", accessToken)
+                    .path("/")
+                    .maxAge(60 * 10)
+                    .sameSite("None")
+                    .secure(true)
+                    .httpOnly(true)
+                    .build();
+            ResponseCookie cookie2 = ResponseCookie.from("refreshToken", refreshToken)
+                    .path("/")
+                    .maxAge(60 * 60 * 24)
+                    .sameSite("None")
+                    .secure(true)
+                    .httpOnly(true)
+                    .build();
+            response.addHeader("Set-Cookie", cookie1.toString());
+            response.addHeader("Set-Cookie", cookie2.toString());
             rq.removeCookie("redirectUrlAfterSocialLogin");
-
             response.sendRedirect(redirectUrlAfterSocialLogin);
             return;
         }

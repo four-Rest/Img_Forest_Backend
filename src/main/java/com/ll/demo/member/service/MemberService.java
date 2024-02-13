@@ -21,10 +21,10 @@ public class MemberService {
     private final PasswordEncoder encoder;
     private final JwtProperties jwtProperties;
 
-
+    @Transactional
     public GlobalResponse<Member> signup(MemberCreateRequestDto dto) {
         if (validDuplicationUsername(dto.getUsername()).isPresent()) {
-            return GlobalResponse.of("409", "중복된 이름입니다.");
+            throw new IllegalArgumentException("중복된 이름입니다.");
         }
         Member member = Member.builder()
                 .username(dto.getUsername())

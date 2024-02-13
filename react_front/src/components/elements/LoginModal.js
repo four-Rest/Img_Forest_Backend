@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { toastNotice } from "../ToastrConfig";
+import { toastNotice, toastWarning } from "../ToastrConfig";
 import { useAuth } from "../../api/AuthContext";
 
 const LoginModal = ({ showModal, setShowModal }) => {
@@ -7,7 +7,7 @@ const LoginModal = ({ showModal, setShowModal }) => {
   const [password, setPassword] = useState("");
   const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
 
-  const { login } = useAuth();
+  const { login , logout } = useAuth();
   const signupData = {
     username,
     password,
@@ -28,16 +28,20 @@ const LoginModal = ({ showModal, setShowModal }) => {
         const res = await response.json(); // 응답이 성공적인 경우에만 JSON 파싱
         localStorage.setItem("username", res.data.username);
         localStorage.setItem("nickname", res.data.nickname);
+        localStorage.setItem('isLogin', 'true');
+      
         login();
         setShowModal(false); // 로그인 성공 후 모달 닫기
         toastNotice("로그인 완료.");
       } else {
         // 서버 에러 처리
         const errorData = await response.json();
-        console.error("login Failed:", errorData);
+        toastWarning("존재하지 않는 회원입니다.");
+        logout();
       }
     } catch (error) {
       console.error("login Error:", error);
+      logout();
     }
   };
 

@@ -1,18 +1,54 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import {toastNotice} from "../ToastrConfig";
+import React, { useEffect, useState } from 'react';
+import { toastNotice, toastWarning } from "../ToastrConfig";
+import { useNavigate, Navigate } from 'react-router-dom';
+import { useAuth } from "../../api/AuthContext";
 
 function Article() {
     const [content, setContent] = useState('');
     const [tagString, setTagString] = useState('');
     const [imageFile, setImageFile] = useState(null);
+    const navigate = useNavigate();
+    const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
+    const { isLogin, login } = useAuth();
 
-    const apiBaseUrl = process.env.REACT_APP_CORE_API_BASE_URL;
+    useEffect(() => {
+        if (localStorage.getItem('isLogin')) {
+            fetch(`${apiUrl}/api/member/checkAccessToken`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data === true) {
+                        console.log("유효");
+                        login();
+                    } else {
+                        console.log('유효하지 않은 토큰입니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('에러 발생 :', error);
+                });
+        }
+    }, [apiUrl, login]);
 
     async function createArticle() {
         try {
+            if (!isLogin) {
+                toastWarning('로그인을 먼저 해주세요.');
+                return;
+            }
+
             if (!imageFile) {
                 console.error('이미지를 선택해주세요.');
+                return;
+            }
+
+            if (!content.trim()) {
+                toastWarning('게시글 제목을 작성해주세요.');
                 return;
             }
 
@@ -20,19 +56,25 @@ function Article() {
             formData.append('image', imageFile);
             formData.append('content', content);
             formData.append('tagString', tagString);
-
-            const response = await fetch(`${apiBaseUrl}/ArticleController/createArticle`, {
-                method: 'POST',
-                body: formData
+            console.log(formData);
+            const response = await fetch(`${apiUrl}/api/article`, {
+                method: "POST",
+                credentials: "include",
+                body: formData,
             });
 
             if (response.ok) {
                 toastNotice('게시글이 작성되었습니다.');
+                navigate("/article", { replace: true });
             } else {
-                toastNotice('게시글 작성에 실패했습니다.');
+                toastWarning('게시글 작성에 실패했습니다.');
+                const errorData = await response.json();
+                console.log(errorData);
+                navigate("/article", { replace: true });
             }
         } catch (error) {
             console.error('게시글 작성 중 에러 발생:', error);
+            navigate("/article", { replace: true });
         }
     }
 
@@ -73,7 +115,6 @@ function Article() {
                     </form>
                 </div>
             </div>
-            <Link to="/home">홈으로 이동</Link>
         </section>
     );
 };
