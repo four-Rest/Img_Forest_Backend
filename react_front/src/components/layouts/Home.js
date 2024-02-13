@@ -56,7 +56,7 @@ function Home() {
       <div className="container">
         {articleData.slice(startIndex, endIndex).map((article) => (
             <div key={article.id} className="box">
-              <img src={`${apiBaseUrl}}/api/article/image/${article.imgFileName}`} alt="" />
+              <img src={`${apiBaseUrl}/api/article/image/${article.imgFileName}`} alt="" />
             </div>
         ))}
         <div ref={target}></div>
