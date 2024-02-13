@@ -165,20 +165,17 @@ public class ArticleController {
     // GlobalResponse에  ArticlePageResponse 담아서 보내주기
     @GetMapping("/page")
     public GlobalResponse readAllPaging(
-            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
             @RequestParam(value = "tagName", required = false) String tagName
     ) {
-
-        ArticlePageResponseDto result;
+        Page<ArticleListResponseDto> result;
         if(tagName != null) {
-            result = articleService.searchAllPagingByTag(pageNo,pageSize,sortBy,tagName);
+            result = articleService.searchAllPagingByTag(pageNo,tagName);
         }
         else {
-            result = articleService.searchAllPaging(pageNo,pageSize,sortBy);
+            result = articleService.searchAllPaging(pageNo);
         }
-        return GlobalResponse.of("200","success",result);
+        return GlobalResponse.of("200","success", result);
     }
 
 }

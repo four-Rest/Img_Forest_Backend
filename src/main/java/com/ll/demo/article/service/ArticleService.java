@@ -139,71 +139,27 @@ public class ArticleService {
     }
 
     // 게시물 페이징
-    public ArticlePageResponseDto searchAllPaging(int pageNo, int pageSize, String sortBy) {
+    public Page<ArticleListResponseDto> searchAllPaging(int pageNo) {
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize,Sort.by(sortBy).descending());
-        Page<Article> articlePage = articleRepository.findAll(pageable);
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("likes"));
+        Pageable pageable = PageRequest.of(pageNo,10, Sort.by(sorts));
 
-
-        List<Article> listArticle = articlePage.getContent();
-
-        List<ArticleListResponseDto> content = listArticle.stream()
-                .map(article -> {
-                    ArticleListResponseDto dto = new ArticleListResponseDto(article);
-                    dto.setId(article.getId());
-                    dto.setPaid(article.isPaid());
-                    dto.setImgFilePath(article.getImage().getPath());
-                    dto.setImgFileName(article.getImage().getFileName());
-                    dto.setLikes(article.getLikes());
-                    return dto;
-                })
-                .collect(Collectors.toList());
-
-
-        return ArticlePageResponseDto.builder()
-                .content(content)
-                .pageNo(pageNo)
-                .pageSize(pageSize)
-                .totalElements(articlePage.getTotalElements())
-                .totalPages(articlePage.getTotalPages())
-                .last(articlePage.isLast())
-                .build();
+        return articleRepository.findAll(pageable).map(article -> new ArticleListResponseDto(article));
     }
 
     // 태그 게시물 페이징
-    public ArticlePageResponseDto searchAllPagingByTag(int pageNo, int pageSize, String sortBy, String tagName) {
-        Pageable pageable = PageRequest.of(pageNo,pageSize,Sort.by(sortBy).descending());
+    public Page<ArticleListResponseDto> searchAllPagingByTag(int pageNo, String tagName) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("likes"));
+        Pageable pageable = PageRequest.of(pageNo,10, Sort.by(sorts));
         Tag tag = tagRepository.findByTagName(tagName);
 
         if(tag == null) {
-            return ArticlePageResponseDto.builder()
-                    .content(Collections.emptyList())
-                    .pageNo(pageNo)
-                    .pageSize(pageSize)
-                    .totalElements(0)
-                    .totalPages(0)
-                    .last(true)
-                    .build();
+            return articleRepository.findAll(pageable).map(article -> new ArticleListResponseDto(article));
         }
-        Page<Article> articlePage = articleRepository.findByArticleTagsTag(tag,pageable);
-        List<ArticleListResponseDto> content = articlePage.stream()
-                .map(article-> {
-                    ArticleListResponseDto dto = new ArticleListResponseDto(article);
-                    dto.setId(article.getId());
-                    dto.setPaid(article.isPaid());
-                    dto.setImgFilePath(article.getImage().getPath());
-                    dto.setImgFileName(article.getImage().getFileName());
-                    dto.setLikes(article.getLikes());
-                    return dto;
-                }).collect(Collectors.toList());
-        return ArticlePageResponseDto.builder()
-                .content(content)
-                .pageNo(pageNo)
-                .pageSize(pageSize)
-                .totalElements(articlePage.getTotalElements())
-                .totalPages(articlePage.getTotalPages())
-                .last(articlePage.isLast())
-                .build();
+
+        return articleRepository.findByArticleTagsTag(tag, pageable).map(article -> new ArticleListResponseDto(article));
 
     }
 }
