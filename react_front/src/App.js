@@ -10,7 +10,7 @@ function App() {
   return (
     <AuthProvider>
       <SearchTagProvider>
-        <Router/>
+          <Router> </Router>
       </SearchTagProvider>
     </AuthProvider>
   );
