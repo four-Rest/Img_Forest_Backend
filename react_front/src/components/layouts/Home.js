@@ -16,7 +16,7 @@ function Home() {
     const fetchData = async () => {
       setLoading(true); // 로딩 상태를 true로 설정
       try {
-        const res = await fetch(`${apiBaseUrl}/api/article`); // API에서 이미지 데이터를 가져옴
+        const res = await fetch(`/api/article`); // API에서 이미지 데이터를 가져옴
         const data = await res.json(); // 응답 데이터를 JSON 형식으로 변환
         setArticleData(prevData => prevData.concat(data.data)); // 기존 이미지 데이터에 새로운 데이터를 추가
         console.log('데이터 개수:', data.data.length); // 데이터 개수를 콘솔에 출력
@@ -56,7 +56,7 @@ function Home() {
       <div className="container">
         {articleData.slice(startIndex, endIndex).map((article) => (
             <div key={article.id} className="box">
-              <img src={`${apiBaseUrl}/api/article/image/${article.imgFileName}`} alt="" />
+              <img src={`/api/article/image/${article.imgFileName}`} alt="" />
             </div>
         ))}
         <div ref={target}></div>
