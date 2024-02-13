@@ -166,6 +166,7 @@ public class ArticleController {
         return GlobalResponse.of("200", "추천취소되었습니다.");
     }
 
+    @CrossOrigin
     @GetMapping("/image/{imageName}")
     public ResponseEntity<byte[]> getImage(@PathVariable String imageName) throws IOException {
 
