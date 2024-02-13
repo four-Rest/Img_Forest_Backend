@@ -37,4 +37,4 @@ ENV PORT=3000
 ENV CHOKIDAR_USEPOLLING=true
 
 # 애플리케이션 실행
-CMD ["node", "index.js"]
+CMD ["node", "index.html"]
