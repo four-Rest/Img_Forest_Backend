@@ -161,15 +161,23 @@ public class ArticleController {
     }
 
     // 게시물 페이징
+    // tag 페이징도 추가
     // GlobalResponse에  ArticlePageResponse 담아서 보내주기
     @GetMapping("/page")
     public GlobalResponse readAllPaging(
             @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy
+            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(value = "tagName", required = false) String tagName
     ) {
 
-        ArticlePageResponseDto result = articleService.searchAllPaging(pageNo,pageSize,sortBy);
+        ArticlePageResponseDto result;
+        if(tagName != null) {
+            result = articleService.searchAllPagingByTag(pageNo,pageSize,sortBy,tagName);
+        }
+        else {
+            result = articleService.searchAllPaging(pageNo,pageSize,sortBy);
+        }
         return GlobalResponse.of("200","success",result);
     }
 
