@@ -12,7 +12,7 @@ function Router() {
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route path="/" element={<HomePaging />} />
+        <Route path="/" element={<Home />} />
         <Route path="/article" element={<Article />} />
         <Route path="/article/:tagString" element={<ArticleTag />} />
         <Route path="/check-social-login" element={<CheckSocialLogin />} /> 
