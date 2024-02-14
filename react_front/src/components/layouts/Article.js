@@ -9,32 +9,7 @@ function Article() {
     const [imageFile, setImageFile] = useState(null);
     const navigate = useNavigate();
     const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
-    const { isLogin, login } = useAuth();
-
-    useEffect(() => {
-        if (localStorage.getItem('isLogin')) {
-            fetch(`${apiUrl}/api/member/checkAccessToken`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data)
-                    if (data === true) {
-                        console.log("유효");
-                        login();
-                    } else {
-                        console.log('유효하지 않은 토큰입니다.');
-                    }
-                })
-                .catch(error => {
-                    console.error('에러 발생 :', error);
-                });
-        }
-    }, [apiUrl, login]);
+    const { isLogin } = useAuth();
 
     async function createArticle() {
     
