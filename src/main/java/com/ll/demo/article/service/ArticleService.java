@@ -1,18 +1,27 @@
 package com.ll.demo.article.service;
 
+import com.ll.demo.article.dto.ArticlePageResponseDto;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.dto.ArticleListResponseDto;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
 import com.ll.demo.article.entity.LikeTable;
+import com.ll.demo.article.entity.Tag;
 import com.ll.demo.article.repository.ArticleRepository;
 import com.ll.demo.article.repository.LikeTableRepository;
+import com.ll.demo.article.repository.TagRepository;
 import com.ll.demo.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +36,7 @@ public class ArticleService {
     private final TagService tagService;
     private final ArticleTagService articleTagService;
     private final LikeTableRepository likeTableRepository;
+    private final TagRepository tagRepository;
 
     @Transactional
     public void create(ArticleRequestDto articleRequestDto, Member member) throws IOException {
@@ -126,5 +136,30 @@ public class ArticleService {
             likeTableRepository.delete(likeTable);
             article.setLikes(article.getLikes() - 1);
         }
+    }
+
+    // 게시물 페이징
+    public Page<ArticleListResponseDto> searchAllPaging(int pageNo) {
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("likes"));
+        Pageable pageable = PageRequest.of(pageNo,10, Sort.by(sorts));
+
+        return articleRepository.findAll(pageable).map(article -> new ArticleListResponseDto(article));
+    }
+
+    // 태그 게시물 페이징
+    public Page<ArticleListResponseDto> searchAllPagingByTag(int pageNo, String tagName) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("likes"));
+        Pageable pageable = PageRequest.of(pageNo,10, Sort.by(sorts));
+        Tag tag = tagRepository.findByTagName(tagName);
+
+        if(tag == null) {
+            return articleRepository.findAll(pageable).map(article -> new ArticleListResponseDto(article));
+        }
+
+        return articleRepository.findByArticleTagsTag(tag, pageable).map(article -> new ArticleListResponseDto(article));
+
     }
 }

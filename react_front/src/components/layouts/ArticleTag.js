@@ -17,7 +17,8 @@ function ArticleTag () {
             try{
                 const res = await fetch(`/api/article/${tagString}`);
                 const data = await res.json();
-                const dataArray = Array.from (data);
+                const dataArray = Array.from (data.data);
+                console.log(dataArray);
                 setArticleData(dataArray);
             }
             catch(error) {
@@ -30,12 +31,16 @@ function ArticleTag () {
     
     return ( 
         <div className="container">
-          {articleData.map((article) => (
-              <div className= "box">
-                <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
-              </div>
-          ))}
+        {articleData.map((article,index) => {
+          console.log(`imgFiles/${article.imgFilePath}/${article.imgFileName}`);
+          return (
+            <div key={index} className= "box">
+              <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
+            </div>
+          );
+        })}
       </div>
+       
     );
 }
 

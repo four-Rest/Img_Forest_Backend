@@ -1,18 +1,54 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import {toastNotice, toastWarning} from "../ToastrConfig";
+import React, { useEffect, useState } from 'react';
+import { toastNotice, toastWarning } from "../ToastrConfig";
 import { useNavigate, Navigate } from 'react-router-dom';
+import { useAuth } from "../../api/AuthContext";
+
 function Article() {
     const [content, setContent] = useState('');
     const [tagString, setTagString] = useState('');
     const [imageFile, setImageFile] = useState(null);
     const navigate = useNavigate();
-    const apiBaseUrl = process.env.REACT_APP_CORE_API_BASE_URL;
+    const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
+    const { isLogin, login } = useAuth();
+
+    useEffect(() => {
+        if (localStorage.getItem('isLogin')) {
+            fetch(`${apiUrl}/api/member/checkAccessToken`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data === true) {
+                        console.log("유효");
+                        login();
+                    } else {
+                        console.log('유효하지 않은 토큰입니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('에러 발생 :', error);
+                });
+        }
+    }, [apiUrl, login]);
 
     async function createArticle() {
         try {
+            if (!isLogin) {
+                toastWarning('로그인을 먼저 해주세요.');
+                return;
+            }
+
             if (!imageFile) {
                 console.error('이미지를 선택해주세요.');
+                return;
+            }
+
+            if (!content.trim()) {
+                toastWarning('게시글 제목을 작성해주세요.');
                 return;
             }
 
@@ -21,13 +57,10 @@ function Article() {
             formData.append('content', content);
             formData.append('tagString', tagString);
             console.log(formData);
-            const response = await fetch(`${apiBaseUrl}/api/article`, {
-                headers: {
-                    "Content-Type": "application/json",
-                  },
-                  method: "POST",
-                  credentials: "include",
-                  body: JSON.stringify(formData),
+            const response = await fetch(`${apiUrl}/api/article`, {
+                method: "POST",
+                credentials: "include",
+                body: formData,
             });
 
             if (response.ok) {
@@ -38,7 +71,6 @@ function Article() {
                 const errorData = await response.json();
                 console.log(errorData);
                 navigate("/article", { replace: true });
-
             }
         } catch (error) {
             console.error('게시글 작성 중 에러 발생:', error);

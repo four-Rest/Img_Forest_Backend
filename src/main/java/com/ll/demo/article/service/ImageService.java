@@ -30,7 +30,7 @@ public class ImageService {
 
         //현재 날짜를 폴더 이름으로 지정
         LocalDateTime createdTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String formattedDateTime = createdTime.format(formatter);
 
         //저장 디렉토리 결정

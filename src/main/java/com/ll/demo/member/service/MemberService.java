@@ -24,7 +24,7 @@ public class MemberService {
     @Transactional
     public GlobalResponse<Member> signup(MemberCreateRequestDto dto) {
         if (validDuplicationUsername(dto.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("중복된 이름입니다.");
+            return GlobalResponse.of("409", "중복된 이름입니다.");
         }
         Member member = Member.builder()
                 .username(dto.getUsername())
