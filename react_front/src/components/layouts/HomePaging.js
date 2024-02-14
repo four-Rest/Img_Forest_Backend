@@ -20,7 +20,12 @@ function HomePaging() {
         const res = await fetch(`/api/article?pageNo=${pageNo}&pageSize=${pageSize}`); 
         const data = await res.json(); 
         console.log(data.data);
-        setArticleData(prevData => prevData.concat(data.data)); // 기존 이미지 데이터에 새로운 데이터를 추가
+        // setArticleData(prevData => prevData.concat(data.data)); 
+        setArticleData(prevData => {
+          const newData = data.data.filter(newArticle => !prevData.some(prevArticle => prevArticle.id === newArticle.id));
+          return [...prevData, ...newData];
+        
+        });
         setTotalPages(data.totalPages);
 
       } catch (error) {
@@ -50,15 +55,23 @@ function HomePaging() {
       }
     };
   }, [loading, pageNo, totalPages]); 
+
+  // if ( articleData.length >= 1 ) {
+  //   const firstArticle = articleData[0]
+  //   console.log(`/imgFiles/${firstArticle.imgFilePath}/${firstArticle.imgFileName}`)
+  // }
+
   return (
-    <div className="container">
-       {articleData.map((article, index) => (
-        <div key={index} className="box">
-          <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
+    articleData.length !== 0
+    ? <div className="container">
+       {articleData.map((article) => (
+        <div key={article.id} className="box">
+          <img src={`/imgFiles/2024/02/14/${article.imgFileName}`} alt="a" />
         </div>
       ))}
       <div ref={target}></div> 
     </div>
+    : <></>
   );
 }
 
