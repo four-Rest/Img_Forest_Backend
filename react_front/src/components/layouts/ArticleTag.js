@@ -30,7 +30,7 @@ function ArticleTag () {
     
     return (
       articleData.length !== 0
-      ? <div className="container">
+      ? <div className="container pt-24">
          {articleData.map((article) => (
           <div key={article.id} className="box">
             <img src={`/imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="a" />

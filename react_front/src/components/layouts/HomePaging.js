@@ -78,7 +78,7 @@ function HomePaging() {
 
   // 클릭시 modal로 redirection
   return articleData.length !== 0 ? (
-    <div className="container">
+    <div className="container pt-24">
       {articleData.map((article) => (
         <div key={article.id} className="box">
           <img
