@@ -38,11 +38,27 @@ const Detail = () => {
     likeValue,
     listCommentResponses,
   } = detail;
+
+  const downloadImage = (path, filename) => {
+    const link = document.createElement("a");
+    link.href = path;
+    link.download = filename;
+    document.body.appendChild(link); // DOM에 링크 추가
+    link.click(); // 링크 클릭
+    document.body.removeChild(link); // DOM에서 링크 제거
+  };
+
+  const handleDownload = () => {
+    const imagePath = `/imgFiles/${imgFilePath}/${imgFileName}`;
+    downloadImage(imagePath, imgFileName);
+  };
+
   return (
     <div>
       <div>
         <div className="box">
           <img src={`/imgFiles/${imgFilePath}/${imgFileName}`} alt="dd" />
+          <button onClick={handleDownload}>Download Image</button>
         </div>
         <h2>content == {content}</h2>
         <h2>username == {username}</h2>
