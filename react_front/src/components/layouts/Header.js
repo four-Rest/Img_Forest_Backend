@@ -108,7 +108,16 @@ const Header = () => {
 
   return (
     <>
-      <div className="navbar bg-base-100" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <div className="navbar bg-base-100" 
+        style={{
+        display: 'flex', 
+        justifyContent: 'flex-end',
+        position: 'fixed',
+        left:0,
+        top:0,
+        height:'40px',
+        width: '100%',
+        zIndex: 9999 }}>
         <div className="navbar-start">
           <div className="dropdown">
             <div
