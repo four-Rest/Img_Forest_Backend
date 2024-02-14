@@ -15,7 +15,7 @@ public class AppConfig {
 
     public static String getGenFileDirPath() {
         if (isProd()) {
-            return "/react_front/public/imgFiles";
+            return "/app/react_front/public/imgFiles";
         }
         return "C:\\Users\\KDD\\Desktop\\projects\\Img_Forest_2\\react_front\\public\\imgFiles";
     }
