@@ -35,7 +35,7 @@ public class MemberController {
     @PostMapping("/signup")
     public GlobalResponse signup(@RequestBody MemberCreateRequestDto userCreateRequestDto) {
         if (!userCreateRequestDto.getPassword1().equals(userCreateRequestDto.getPassword2())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+            return GlobalResponse.of("409", "비밀번호가 일치하지 않습니다");
         }
         return memberService.signup(userCreateRequestDto);
     }
