@@ -17,7 +17,7 @@ function HomePaging() {
     const fetchData = async () => {
       setLoading(true); 
       try {
-        const res = await fetch(`/api/article/page?pageNo=${pageNo}`);
+        const res = await fetch(`${apiBaseUrl}/api/article/page?pageNo=${pageNo}`);
         const data = await res.json(); 
         console.log(data.data);
         setArticleData(prevData => prevData.concat(data.data)); // 기존 이미지 데이터에 새로운 데이터를 추가
