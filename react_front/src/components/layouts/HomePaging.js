@@ -1,17 +1,30 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useContext,useState, useEffect, useRef } from 'react';
 import './styles.css'; 
+import { useNavigate } from 'react-router-dom';
+import { IdDetailContext } from '../../api/IdDetailContext';
+//import DetailModal 
+
 
 function HomePaging() { 
-  
+  const [idDetail,setIdDetail] = useState(0);
+  const {updateIdDetail} = useContext(IdDetailContext);
+
   const [articleData, setArticleData] = useState([]); 
   const [loading, setLoading] = useState(false); 
   const [pageNo, setPageNo] = useState(0);
-  const [pageSize,setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const apiBaseUrl = process.env.REACT_APP_CORE_API_BASE_URL;
 
   const target = useRef(null); // IntersectionObserver를 위한 ref 생성
+  const navigate = useNavigate();
 
+
+  const handleImageClick = (id) => {
+    setIdDetail(id);
+    updateIdDetail({id:id});
+    console.log(id);
+  }
   useEffect(() => {
   
     const fetchData = async () => {
@@ -56,17 +69,14 @@ function HomePaging() {
     };
   }, [loading, pageNo, totalPages]); 
 
-  // if ( articleData.length >= 1 ) {
-  //   const firstArticle = articleData[0]
-  //   console.log(`/imgFiles/${firstArticle.imgFilePath}/${firstArticle.imgFileName}`)
-  // }
 
+  // 클릭시 modal로 redirection 
   return (
     articleData.length !== 0
     ? <div className="container">
        {articleData.map((article) => (
         <div key={article.id} className="box">
-            <img src={`/imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="a" />
+            <img src={`/imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="a" onClick={() => handleImageClick(article.id)}  />
         </div>
       ))}
       <div ref={target}></div> 
