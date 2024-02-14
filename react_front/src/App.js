@@ -9,9 +9,7 @@ function App() {
 
   return (
     <AuthProvider>
-      <SearchTagProvider>
-        <Router/>
-      </SearchTagProvider>
+      <Router/>
     </AuthProvider>
   );
 }

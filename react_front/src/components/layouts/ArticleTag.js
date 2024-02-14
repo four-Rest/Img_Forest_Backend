@@ -6,7 +6,6 @@ function ArticleTag () {
 
     const {tagString}  = useParams();
 
-    console.log(tagString);
 
 
     const {searchTag}  = useContext(SearchTagContext);

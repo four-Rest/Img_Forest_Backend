@@ -7,19 +7,22 @@ import ArticleTag from "./ArticleTag";
 import CheckSocialLogin from "../../api/CheckSocialLogin";
 import HomePaging from "./HomePaging";
 import Detail from "./Detail";
+import {SearchTagProvider} from '../../api/SearchTagContext';
 
 function Router() {
   return (
     <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/" element={<HomePaging />} />
-        <Route path="/article" element={<Article />} />
-        <Route path="/article/:tagString" element={<ArticleTag />} />
-        <Route path="/detail/:id" element={<Detail />} />
-        <Route path="/check-social-login" element={<CheckSocialLogin />} />
-      </Routes>
-      <Footer />
+      <SearchTagProvider>
+        <Header />
+        <Routes>
+          <Route path="/" element={<HomePaging />} />
+          <Route path="/article" element={<Article />} />
+          <Route path="/article/:tagString" element={<ArticleTag />} />
+          <Route path="/detail/:id" element={<Detail />} />
+          <Route path="/check-social-login" element={<CheckSocialLogin />} />
+        </Routes>
+        <Footer />
+      </SearchTagProvider>
     </BrowserRouter>
   );
 }
