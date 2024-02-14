@@ -11,9 +11,10 @@ import { IdDetailProvider } from '../../api/IdDetailContext';
 
 function Router() {
   return (
+    <div class="flex flex-col min-h-screen">
     <BrowserRouter>
       <Header />
-      <Routes>
+      <Routes className="flex-grow">
         <Route path="/" element={<HomePaging />} />
         <Route path="/article" element={<Article />} />
         <Route path="/article/:tagString" element={<ArticleTag />} />
@@ -22,6 +23,7 @@ function Router() {
       </Routes>
       <Footer />
     </BrowserRouter>
+    </div>
   );
 }
 
