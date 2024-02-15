@@ -1,9 +1,6 @@
 package com.ll.demo.article.controller;
 
-import com.ll.demo.article.dto.ArticleDetailResponseDto;
-import com.ll.demo.article.dto.ArticleListResponseDto;
-import com.ll.demo.article.dto.ArticlePageResponseDto;
-import com.ll.demo.article.dto.ArticleRequestDto;
+import com.ll.demo.article.dto.*;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.service.ArticleService;
 import com.ll.demo.article.service.TagService;
@@ -111,6 +108,29 @@ public class ArticleController {
         else {
             articleService.modifyUnpaidArticle(article, articleRequestDto);
         }
+        return GlobalResponse.of("200", "수정되었습니다.");
+    }
+
+    //이미지 없는 수정
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/mode2/{id}")
+    public GlobalResponse updateArticle2(
+            @PathVariable("id") Long id,
+            Principal principal,
+            @RequestBody ArticleRequestDtoMode2 articleRequestDto
+    )  {
+        Article article = articleService.getArticleById(id);
+        Member member = memberService.findByUsername(principal.getName());
+
+        //권한 확인
+        if (member == null) {
+            return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
+        } else if (article.getMember().getId() != member.getId()) {
+            return GlobalResponse.of("403", "수정 권한이 없습니다.");
+        }
+
+        articleService.modifyArticle(article, articleRequestDto);
+
         return GlobalResponse.of("200", "수정되었습니다.");
     }
 
