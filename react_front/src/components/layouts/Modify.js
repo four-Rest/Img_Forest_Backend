@@ -54,7 +54,7 @@ function Modify() {
                   });
             }
 
-            if (response.resultCode == "200") {
+            if (response.resultCode === "200") {
                 toastNotice('수정되었습니다.');
                 navigate("/", { replace: true });
             } else {

@@ -31,7 +31,7 @@ function HomePaging() {
       setLoading(true);
       try {
         const res = await fetch(
-          `/api/article?pageNo=${pageNo}&pageSize=${pageSize}`
+          `${apiBaseUrl}/api/article?pageNo=${pageNo}&pageSize=${pageSize}`
         );
         const data = await res.json();
         console.log(data.data);
@@ -82,7 +82,7 @@ function HomePaging() {
       {articleData.map((article) => (
         <div key={article.id} className="box">
           <img
-            src={`/imgFiles/${article.imgFilePath}/${article.imgFileName}`}
+            src={`${apiBaseUrl}/gen/${article.imgFilePath}/${article.imgFileName}`}
             alt="a"
             onClick={() => handleImageClick(article.id)}
           />

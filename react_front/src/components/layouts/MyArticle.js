@@ -49,7 +49,7 @@ function MyArticle () {
             setLoading(true);
             try {
                 const res = await fetch(
-                    `/api/article?pageNo=${pageNo}&/nickName=${userNick}`
+                    `${apiBaseUrl}/api/article?pageNo=${pageNo}&/nickName=${userNick}`
                     );
                 const data = await res.json();
 

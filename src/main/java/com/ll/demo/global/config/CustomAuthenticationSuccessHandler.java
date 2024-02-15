@@ -29,7 +29,7 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException, IOException {
         //여기 localhost 바꾸시면 됩니다!!
-        String redirectUrlAfterSocialLogin = rq.getCookieValue("redirectUrlAfterSocialLogin", "http://localhost:3000/check-social-login");
+        String redirectUrlAfterSocialLogin = rq.getCookieValue("redirectUrlAfterSocialLogin", "https://img.for-rest.site/check-social-login");
         if (rq.isFrontUrl(redirectUrlAfterSocialLogin)) {
             String username = authentication.getName();
             Member member = memberRepository.findByUsername(username)
