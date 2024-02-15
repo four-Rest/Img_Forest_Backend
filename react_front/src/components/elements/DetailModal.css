@@ -141,4 +141,7 @@
     cursor: pointer;
   }
   
-  
+  .commentTime {
+    color: gray;
+    fontSize: 0.8em;
+  }
