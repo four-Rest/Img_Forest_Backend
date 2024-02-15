@@ -115,10 +115,10 @@ const LoginModal = ({ showModal, setShowModal }) => {
               </div>
             </form>
           </div>
-          <div
+          {/* <div
             className="modal-overlay"
             onClick={() => setShowModal(false)}
-          ></div>
+          ></div> */}
         </div>
       )}
     </>

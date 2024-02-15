@@ -11,7 +11,7 @@ import { IdDetailProvider } from '../../api/IdDetailContext';
 
 function Router() {
   return (
-    <div class="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen">
     <BrowserRouter>
       <Header />
       <Routes className="flex-grow">

@@ -173,10 +173,6 @@ const SignupModal = ({ showModal, setShowModal }) => {
               </div>
             </form>
           </div>
-          <div
-            className="modal-overlay"
-            onClick={() => setShowModal(false)}
-          ></div>
         </div>
       )}
     </>
