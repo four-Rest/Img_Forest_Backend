@@ -137,8 +137,23 @@ public class MemberController {
         }
     }
 
+
     @PreAuthorize("isAuthenticated()")
-    @PutMapping("/update")
+    @GetMapping
+    public GlobalResponse updateMemberInfo(Principal principal) {
+        String username = principal.getName();
+        Member member = memberService.findByUsername(username);
+        if(member != null) {
+            MemberInfoUpdateResponseDto dto = memberService.getMemberInfo(member);
+            return GlobalResponse.of("200","success",dto);
+        }else {
+            return GlobalResponse.of("403","확인되지 않은 유저입니다.");
+        }
+
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/update")
     public GlobalResponse updateMemberInfo(Principal principal, @RequestBody MemberInfoUpdateRequestDto requestDto) {
         String username = principal.getName();
         Member member = memberService.findByUsername(username);

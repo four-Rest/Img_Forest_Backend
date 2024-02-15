@@ -1,9 +1,17 @@
 package com.ll.demo.member.dto;
 
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class MemberInfoUpdateRequestDto {
-    private String nickname;
+
+    private String loginId;
     private String password;
     private String email;
+    private String nickname;
 
     public String getNickname() {
         return nickname;
@@ -27,5 +35,13 @@ public class MemberInfoUpdateRequestDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getLoginId() {
+        return loginId;
+    }
+
+    public void setLoginId(String loginId) {
+        this.loginId  = loginId;
     }
 }

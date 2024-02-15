@@ -2,10 +2,7 @@ package com.ll.demo.member.service;
 
 import com.ll.demo.global.config.JwtProperties;
 import com.ll.demo.global.response.GlobalResponse;
-import com.ll.demo.member.dto.MemberCreateRequestDto;
-import com.ll.demo.member.dto.MemberInfoUpdateRequestDto;
-import com.ll.demo.member.dto.MyPageRequestDto;
-import com.ll.demo.member.dto.kakkoMemberCreateRequestDto;
+import com.ll.demo.member.dto.*;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,8 +49,23 @@ public class MemberService {
     }
 
     @Transactional
+    public MemberInfoUpdateResponseDto getMemberInfo(Member member) {
+        MemberInfoUpdateResponseDto dto = new MemberInfoUpdateResponseDto();
+        dto.setLoginId(member.getUsername());
+        dto.setPassword(member.getPassword());
+        dto.setEmail(member.getEmail());
+        dto.setNickname(member.getNickname());
+
+        return dto;
+    }
+
+    @Transactional
     public GlobalResponse<Member> updateMemberInfo(Member member, MemberInfoUpdateRequestDto requestDto) {
         String msg = "";
+        if(requestDto.getLoginId()!=null && !requestDto.getLoginId().isEmpty()) {
+            member.setUsername(requestDto.getLoginId());
+        }
+
         if (requestDto.getNickname() != null && !requestDto.getNickname().isEmpty()) {
             member.setNickname(requestDto.getNickname());
             msg += "닉네임, ";
@@ -129,4 +141,6 @@ public class MemberService {
         dto.setNickname(nickname);
         return socialSignup(dto);
     }
+
+
 }
