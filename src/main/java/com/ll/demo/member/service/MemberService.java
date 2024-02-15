@@ -3,6 +3,7 @@ package com.ll.demo.member.service;
 import com.ll.demo.global.config.JwtProperties;
 import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.member.dto.MemberCreateRequestDto;
+import com.ll.demo.member.dto.MemberInfoUpdateRequestDto;
 import com.ll.demo.member.dto.MyPageRequestDto;
 import com.ll.demo.member.dto.kakkoMemberCreateRequestDto;
 import com.ll.demo.member.entity.Member;
@@ -48,6 +49,25 @@ public class MemberService {
 
         memberRepository.saveAndFlush(member);
         return GlobalResponse.of("200", "회원가입 완료", member);
+    }
+
+    @Transactional
+    public GlobalResponse<Member> updateMemberInfo(Member member, MemberInfoUpdateRequestDto requestDto) {
+        String msg = "";
+        if (requestDto.getNickname() != null && !requestDto.getNickname().isEmpty()) {
+            member.setNickname(requestDto.getNickname());
+            msg += "닉네임, ";
+        }
+        if (requestDto.getPassword() != null && !requestDto.getPassword().isEmpty()) {
+            member.setPassword(encoder.encode(requestDto.getPassword()));
+            msg += "비밀번호, ";
+        }
+        if (requestDto.getEmail() != null && !requestDto.getEmail().isEmpty()) {
+            member.setEmail(requestDto.getEmail());
+            msg += "이메일 ";
+        }
+        memberRepository.save(member);
+        return GlobalResponse.of("200", msg + "변경 완료", member);
     }
 
     public Optional<Member> validDuplicationUsername(String username) {

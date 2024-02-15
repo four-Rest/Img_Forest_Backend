@@ -3,6 +3,7 @@ package com.ll.demo.article.service;
 import com.ll.demo.article.dto.ArticlePageResponseDto;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.dto.ArticleListResponseDto;
+import com.ll.demo.article.dto.ArticleRequestDtoMode2;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
 import com.ll.demo.article.entity.LikeTable;
@@ -111,6 +112,15 @@ public class ArticleService {
             //이미지 교체
             imageService.modify(article.getImage(), articleRequestDto.getMultipartFile());
         }
+    }
+
+    @Transactional
+    public void modifyArticle(Article article, ArticleRequestDtoMode2 articleRequestDto) {
+        article.setContent(articleRequestDto.getContent());
+        if (articleRequestDto.getTagString() != null) {
+            articleTagService.update(article, articleRequestDto.getTagString());
+        }
+        articleRepository.save(article);
     }
 
     public LikeTable getLikeByArticleIdAndMemberId(Long articleId, Long memberId) {
