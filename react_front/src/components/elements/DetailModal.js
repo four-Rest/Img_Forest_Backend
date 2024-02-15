@@ -4,7 +4,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleDown,
   faHeart,
+  faHeartCrack,
   faComment,
+  faTag,
   comments,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -18,7 +20,14 @@ function DetailModal({ showModal, setShowModal, articleId }) {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `${apiUrl}/api/article/detail/${articleId}`
+          `${apiUrl}/api/article/detail/${articleId}`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -32,6 +41,54 @@ function DetailModal({ showModal, setShowModal, articleId }) {
 
     fetchData();
   }, [articleId, apiUrl]);
+
+  // 추천
+  const handleLike = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/api/article/like/${articleId}`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: articleId }),
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      setDetail((prevDetail) => ({
+        ...prevDetail,
+        likes: prevDetail.likes + 1, // 추천 수 증가
+        likeValue: true, // 추천 상태로 변경
+      }));
+    } catch (error) {
+      console.error("Error updating like status:", error);
+    }
+  };
+
+  //추천 취소
+  const handledisLike = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/api/article/like/${articleId}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: articleId }),
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      setDetail((prevDetail) => ({
+        ...prevDetail,
+        likes: prevDetail.likes - 1, // 추천 수 감소
+        likeValue: false, // 추천 취소 상태로 변경
+      }));
+    } catch (error) {
+      console.error("Error updating like status:", error);
+    }
+  };
 
   if (!showModal) return null;
 
@@ -52,6 +109,7 @@ function DetailModal({ showModal, setShowModal, articleId }) {
     listCommentResponses,
   } = detail;
 
+  //이미지 다운로드
   const downloadImage = (path, filename) => {
     const link = document.createElement("a");
     link.href = path;
@@ -84,6 +142,7 @@ function DetailModal({ showModal, setShowModal, articleId }) {
         </div>
         <div className="detailModalRight">
           <div className="tags-container">
+            <FontAwesomeIcon icon={faTag} />
             {tags.map((tag, index) => (
               <span key={index} className="tag">
                 {tag}
@@ -93,7 +152,6 @@ function DetailModal({ showModal, setShowModal, articleId }) {
           <h2 className="title mt-3">작성자 : {username}</h2>
           <h2 className="mb-3">{imgFilePath}</h2>
           <textarea className="disabledTextarea" disabled value={content} />
-
           <div style={{ display: "flex", alignItems: "center" }}>
             <p className="info" style={{ margin: 0 }}>
               {paid ? "유료" : "무료"}
@@ -107,11 +165,31 @@ function DetailModal({ showModal, setShowModal, articleId }) {
               저장
             </button>
           </div>
-          <p className="likes">
-            <FontAwesomeIcon icon={faHeart} />
-            {likes}
-          </p>
-
+          <div style={{ textAlign: "left" }}>
+            <p className="likes">
+              {likeValue ? (
+                <span
+                  className="heart"
+                  onClick={() => {
+                    handledisLike();
+                  }}
+                >
+                  <FontAwesomeIcon icon={faHeart} />
+                  {likes}
+                </span>
+              ) : (
+                <span
+                  className="canHeart"
+                  onClick={() => {
+                    handleLike();
+                  }}
+                >
+                  <FontAwesomeIcon icon={faHeart} />
+                  {likes}
+                </span>
+              )}
+            </p>
+          </div>
           <div className="comments">
             <FontAwesomeIcon icon={faComment} />
             댓글 {listCommentResponses.length}개

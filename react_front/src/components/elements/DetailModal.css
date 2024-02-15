@@ -114,3 +114,25 @@
   font-size: 1rem; / 글자 크기 /
   margin-bottom: 10px; / 아래쪽 여백 */
   }
+
+  .heart {
+    display: inline-block; /* 태그를 인라인 블록 요소로 만듦 */
+    padding: 5px 10px; /* 내부 여백 */
+    border-radius: 15px; /* 둥근 모서리 */
+    font-size: 0.875rem; /* 글자 크기 */
+    color: red; /* 글자색을 빨간색으로 변경 */
+    border: 1px solid red; /* 테두리 색상을 빨간색으로 설정 */
+    cursor: pointer;
+  }
+  
+  .canHeart {
+    display: inline-block; /* 동일한 스타일 적용 */
+    padding: 5px 10px; /* 동일한 내부 여백 */
+    border-radius: 15px; /* 동일한 둥근 모서리 */
+    font-size: 0.875rem; /* 동일한 글자 크기 */
+    color: grey; /* 글자색을 회색으로 변경 */
+    border: 1px solid grey; /* 테두리 색상을 회색으로 설정 */
+    cursor: pointer;
+  }
+  
+  
