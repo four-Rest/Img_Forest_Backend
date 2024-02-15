@@ -45,7 +45,7 @@ custom:
     backUrl: "http://${custom.dev.cookieDomain}:${server.port}"
   prod:
     cookieDomain: img.for-rest.site
-    frontUrl: "http://${custom.prod.cookieDomain}"
+    frontUrl: "https://${custom.prod.cookieDomain}"
     backUrl: "https://api.${custom.prod.cookieDomain}"
   site:
     cookieDomain: "${custom.prod.cookieDomain}"
