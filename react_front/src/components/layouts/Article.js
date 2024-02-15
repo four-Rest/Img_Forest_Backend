@@ -40,7 +40,7 @@ function Article() {
                 body: formData,
             });
 
-            if (response.resultCode === "200") {
+            if (response.ok) {
                 navigate("/", { replace: true });
                 toastNotice('이미지가 등록되었습니다.');
             } else {

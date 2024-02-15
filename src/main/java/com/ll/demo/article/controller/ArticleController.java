@@ -16,6 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Set;
@@ -73,7 +75,7 @@ public class ArticleController {
         Member member = memberService.findByUsername(principal.getName());
 
         if (member == null) {
-            return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
+            throw new UserPrincipalNotFoundException("로그인이 필요한 서비스입니다.");
         }
 
         articleService.create(articleRequestDto, member);
@@ -95,9 +97,9 @@ public class ArticleController {
 
         //권한 확인
         if (member == null) {
-            return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
+            throw new UserPrincipalNotFoundException("로그인이 필요한 서비스입니다.");
         } else if (article.getMember().getId() != member.getId()) {
-            return GlobalResponse.of("403", "수정 권한이 없습니다.");
+            throw new AccessDeniedException("수정 권한이 없습니다.");
         }
 
         //유료 아티클의 경우 이미지 수정이 불가능함
@@ -118,15 +120,15 @@ public class ArticleController {
             @PathVariable("id") Long id,
             Principal principal,
             @RequestBody ArticleRequestDtoMode2 articleRequestDto
-    )  {
+    ) throws Exception {
         Article article = articleService.getArticleById(id);
         Member member = memberService.findByUsername(principal.getName());
 
         //권한 확인
         if (member == null) {
-            return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
+            throw new UserPrincipalNotFoundException("로그인이 필요한 서비스입니다.");
         } else if (article.getMember().getId() != member.getId()) {
-            return GlobalResponse.of("403", "수정 권한이 없습니다.");
+            throw new AccessDeniedException("수정 권한이 없습니다.");
         }
 
         articleService.modifyArticle(article, articleRequestDto);
@@ -145,9 +147,9 @@ public class ArticleController {
 
         //권한 확인
         if (member == null) {
-            return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
+            throw new UserPrincipalNotFoundException("로그인이 필요한 서비스입니다.");
         } else if (article.getMember().getId() != member.getId()) {
-            return GlobalResponse.of("403", "삭제 권한이 없습니다.");
+            throw new AccessDeniedException("삭제 권한이 없습니다.");
         }
 
         articleService.delete(article);
