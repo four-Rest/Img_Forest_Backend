@@ -49,13 +49,13 @@ function MyArticle () {
             setLoading(true);
             try {
                 const res = await fetch(
-                    `${apiBaseUrl}/api/article?pageNo=${pageNo}&/nickName=${userNick}`
+                    `/api/article/page?pageNo=${pageNo}&userNick=${userNick}`
                     );
                 const data = await res.json();
 
-                console.log(data.data);
+                console.log(data.data.content);
                 setArticleData((prevData) => {
-                    const newData = data.data.filter(
+                    const newData = data.data.content.filter(
                       (newArticle) =>
                         !prevData.some((prevArticle) => prevArticle.id === newArticle.id)
                     );

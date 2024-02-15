@@ -20,7 +20,7 @@ function Router() {
         <Route path="/article" element={<Article />} />
         <Route path="/article/modify/:id" element={<Modify />} />
         <Route path="/article/:tagString" element={<ArticleTag />} />
-        <Route path="/my-article/:userNick" element={<MyArticle />} />
+        <Route path="/myarticle/:userNick" element={<MyArticle />} />
         <Route path="/detail/:id" element={<Detail />} />
         <Route path="/check-social-login" element={<CheckSocialLogin />} />
       </Routes>
