@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./DetailModal.css"; // DetailModal에 대한 스타일시트
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,15 +7,20 @@ import {
   faHeartCrack,
   faComment,
   faTag,
+  faPaperPlane,
   comments,
 } from "@fortawesome/free-solid-svg-icons";
-import { useAuth } from "./AuthContext";
+import { useNavigate } from 'react-router-dom';
+import { toastNotice } from "../ToastrConfig";
 
 function DetailModal({ showModal, setShowModal, articleId }) {
-  const { user } = useAuth();
   const [detail, setDetail] = useState(null);
   const [comment, setComment] = useState("");
+  const [isEditing, setIsEditing] = useState(false); // 수정 모드 상태
+  const [editingCommentId, setEditingCommentId] = useState(null); // 현재 수정 중인 댓글 ID
+  const [editingContent, setEditingContent] = useState(""); // 수정 중인 댓글 내용
   const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!articleId) return;
@@ -37,6 +42,7 @@ function DetailModal({ showModal, setShowModal, articleId }) {
         }
         const res = await response.json();
         setDetail(res.data);
+        console.log(res.data);
       } catch (error) {
         console.error("Error fetching article detail:", error);
       }
@@ -95,10 +101,123 @@ function DetailModal({ showModal, setShowModal, articleId }) {
 
   //댓글 작성
   const handleCommentSubmit = async () => {
-    // 서버로 댓글 전송 로직 구현
-    console.log(comment); // 입력된 댓글 확인
-    // 댓글 전송 후 입력 필드 초기화
-    setComment("");
+    try {
+      const name = localStorage.getItem("username");
+      const response = await fetch(`${apiUrl}/api/comment/`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          articleId: articleId,
+          username: name,
+          content: comment,
+        }),
+      });
+
+      if (response.ok) {
+        const newCommentData = await response.json(); // 새 댓글 데이터
+        const newComment = {
+          ...newCommentData.data,
+          username: name, // 새 댓글 객체에 username 추가
+          removedTime: null,
+        };
+
+        // 새 댓글을 목록에 추가
+        setDetail((prevDetail) => ({
+          ...prevDetail,
+          listCommentResponses: [
+            ...prevDetail.listCommentResponses,
+            newComment,
+          ],
+        }));
+        setComment(""); // 입력 필드 초기화
+      } else {
+        console.error("댓글 생성 실패");
+        // 실패 시 사용자에게 알림
+      }
+    } catch (error) {
+      console.error("에러 발생:", error);
+      // 네트워크 오류 처리
+    }
+  };
+
+  //댓글 삭제
+  const handleDeleteComment = async (commentId) => {
+    try {
+      const response = await fetch(`${apiUrl}/api/comment/${commentId}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          commentId: editingCommentId,
+          articleId: articleId,
+          username: localStorage.getItem("username"),
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const deletedComment = await response.json();
+      // 성공적으로 삭제된 후 UI에서 댓글 제거
+      setDetail((prevDetail) => ({
+        ...prevDetail,
+        listCommentResponses: prevDetail.listCommentResponses.filter(
+          (comment) => comment.id !== commentId
+        ),
+      }));
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
+
+  const handleEditComment = (commentId, content) => {
+    setIsEditing(true);
+    setEditingCommentId(commentId);
+    setEditingContent(content); // 현재 댓글 내용으로 초기화
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const response = await fetch(
+        `${apiUrl}/api/comment/${editingCommentId}`,
+        {
+          method: "PUT", // 또는 "PATCH", 서버 API에 따라 다름
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            commentId: editingCommentId,
+            articleId: articleId,
+            username: localStorage.getItem("username"),
+            content: editingContent, // 수정된 댓글 내용
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      // 성공적으로 수정된 후 UI 업데이트
+      const updatedComment = await response.json();
+      setDetail((prevDetail) => ({
+        ...prevDetail,
+        listCommentResponses: prevDetail.listCommentResponses.map((comment) =>
+          comment.id === editingCommentId
+            ? { ...comment, content: updatedComment.data.content }
+            : comment
+        ),
+      }));
+      // 수정 모드 종료
+      setIsEditing(false);
+      setEditingCommentId(null);
+      setEditingContent("");
+    } catch (error) {
+      console.error("Error updating comment:", error);
+    }
   };
 
   if (!showModal) return null;
@@ -120,6 +239,9 @@ function DetailModal({ showModal, setShowModal, articleId }) {
     listCommentResponses,
   } = detail;
 
+  const visibleCommentsCount = listCommentResponses.filter(
+    (comment) => comment.removedTime === null
+  ).length;
   //이미지 다운로드
   const downloadImage = (path, filename) => {
     const link = document.createElement("a");
@@ -133,6 +255,50 @@ function DetailModal({ showModal, setShowModal, articleId }) {
   const handleDownload = () => {
     const imagePath = `/imgFiles/${imgFilePath}/${imgFileName}`;
     downloadImage(imagePath, imgFileName);
+  };
+
+  //아티클 삭제
+  const handleDeleteArticle = async() => {
+      try {
+        const response = await fetch(`${apiUrl}/api/article/${articleId}`, {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: articleId }),
+        });
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        setShowModal(false);
+        navigate("/", { replace: true });
+        toastNotice('삭제되었습니다.');
+        
+      } catch (error) {
+        console.error("Error deleting article", error);
+      }
+  };
+
+  const calculateTimeAgo = (createdDate) => {
+    const date1 = new Date(createdDate);
+    const date2 = new Date();
+    const difference = date2 - date1;
+
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(difference / (1000 * 60 * 60));
+    const minutes = Math.floor(difference / (1000 * 60));
+    const seconds = Math.floor(difference / 1000);
+
+    if (days >= 1) {
+      return `${days}일`;
+    } else if (hours >= 1) {
+      return `${hours}시간`;
+    } else if (minutes >= 1) {
+      return `${minutes}분`;
+    } else {
+      return `${seconds}초`;
+    }
   };
 
   return (
@@ -175,6 +341,12 @@ function DetailModal({ showModal, setShowModal, articleId }) {
             <button onClick={handleDownload} className="downloadBtn">
               저장
             </button>
+            {localStorage.getItem("username") === username && (
+              <div className="articleAction flex align-se">
+                <a href={`/article/modify/${articleId}`} className="btn btn-outline mr-2">수정</a>
+                <button className="btn btn-outline" onClick={() => {handleDeleteArticle()}}>삭제</button>
+              </div>
+            )}
           </div>
           <div style={{ textAlign: "left" }}>
             <p className="likes">
@@ -203,7 +375,38 @@ function DetailModal({ showModal, setShowModal, articleId }) {
           </div>
           <div className="comments">
             <FontAwesomeIcon icon={faComment} />
-            댓글 {listCommentResponses.length}개
+            댓글 {visibleCommentsCount}개
+          </div>
+          <div>
+            <ul>
+              {listCommentResponses
+                .filter((comment) => comment.removedTime === null)
+                .map((comment, index) => (
+                  <li key={index} className="commentItem">
+                    <div className="commentContent">
+                      <strong>{comment.username}</strong>: {comment.content}
+                      <br />
+                      <span className="commentTime">
+                        {calculateTimeAgo(comment.createdDate)}
+                      </span>
+                    </div>
+                    {localStorage.getItem("username") === comment.username && (
+                      <div className="commentActions">
+                        <button onClick={() => handleDeleteComment(comment.id)}>
+                          삭제
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleEditComment(comment.id, comment.content)
+                          }
+                        >
+                          수정
+                        </button>
+                      </div>
+                    )}
+                  </li>
+                ))}
+            </ul>
           </div>
           <div
             className="comment-input-container"
@@ -212,27 +415,72 @@ function DetailModal({ showModal, setShowModal, articleId }) {
               background: "#f0f0f0",
               borderRadius: "5px",
               padding: "10px",
+              display: "flex",
+              alignItems: "center",
             }}
           >
             <input
               type="text"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="댓글을 입력하세요..."
+              value={isEditing ? editingContent : comment}
+              onChange={(e) =>
+                isEditing
+                  ? setEditingContent(e.target.value)
+                  : setComment(e.target.value)
+              }
+              placeholder={isEditing ? "댓글 수정..." : "댓글을 입력하세요..."}
               style={{
-                width: "100%",
+                flex: 1,
                 padding: "10px",
                 border: "none",
                 borderRadius: "5px",
                 background: "#e9ecef",
+                marginRight: "10px", // 버튼과의 간격 조정
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  handleCommentSubmit();
                   e.preventDefault(); // 엔터 키로 인한 폼 제출 동작을 방지
+                  isEditing ? handleSaveEdit() : handleCommentSubmit();
                 }
               }}
             />
+            {/* 수정 모드일 때 "저장" 버튼 표시 */}
+            {isEditing && (
+              <button
+                onClick={handleSaveEdit}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "10px",
+                  border: "none",
+                  borderRadius: "5px",
+                  background: "#007bff",
+                  color: "white",
+                  cursor: "pointer",
+                }}
+              >
+                <FontAwesomeIcon icon={faPaperPlane} />
+              </button>
+            )}
+            {/* 댓글 작성 모드일 때 "전송" 버튼 표시 */}
+            {!isEditing && comment && (
+              <button
+                onClick={handleCommentSubmit}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "10px",
+                  border: "none",
+                  borderRadius: "5px",
+                  background: "#007bff",
+                  color: "white",
+                  cursor: "pointer",
+                }}
+              >
+                <FontAwesomeIcon icon={faPaperPlane} />
+              </button>
+            )}
           </div>
         </div>
       </div>
