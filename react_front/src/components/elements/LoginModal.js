@@ -32,6 +32,7 @@ const LoginModal = ({ showModal, setShowModal }) => {
       
         login();
         setShowModal(false); // 로그인 성공 후 모달 닫기
+        console.log("로그인")
         toastNotice("로그인 완료.");
       } else {
         // 서버 에러 처리
@@ -115,10 +116,6 @@ const LoginModal = ({ showModal, setShowModal }) => {
               </div>
             </form>
           </div>
-          {/* <div
-            className="modal-overlay"
-            onClick={() => setShowModal(false)}
-          ></div> */}
         </div>
       )}
     </>

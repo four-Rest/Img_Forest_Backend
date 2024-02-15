@@ -39,8 +39,8 @@ const Header = () => {
   };
 
   const handleShowLoginModal = () => {
-    setShowLoginModal(true);
     setShowSignupModal(false); // 회원가입 모달이 열려있을 수 있으므로 닫는다
+    setShowLoginModal(true);
   };
 
   const handleShowSignupModal = () => {
@@ -143,11 +143,6 @@ const Header = () => {
               tabIndex={0}
               className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
             >
-              <li>
-                <Link to={`/article`}>
-                  <FontAwesomeIcon icon={faRectangleList} /> 글 목록
-                </Link>
-              </li>
               {isLogin ? (
                 <>
                   <li>
@@ -155,6 +150,11 @@ const Header = () => {
                       <FontAwesomeIcon icon={faAddressCard} /> 마이페이지
                     </Link>
                   </li>
+                  <li>
+                <Link to={`/article`}>
+                  <FontAwesomeIcon icon={faRectangleList} /> 글 쓰기
+                </Link>
+              </li>
                   <li>
                     <button className="nav-link" onClick={logoutProcess}>
                       <FontAwesomeIcon icon={faDoorClosed} />
@@ -167,7 +167,11 @@ const Header = () => {
                   <li>
                     <Link
                       className="nav-link"
-                      onClick={() => setShowLoginModal(true)}
+                      onClick={() => {
+                        setShowSignupModal(false);
+                        setShowLoginModal(true);
+                        }
+                      }
                     >
                       <FontAwesomeIcon icon={faDoorOpen} />
                       로그인
@@ -176,7 +180,11 @@ const Header = () => {
                   <li>
                     <Link
                       className="nav-link"
-                      onClick={() => setShowSignupModal(true)}
+                      onClick={() => {
+                        setShowLoginModal(false);
+                        setShowSignupModal(true);
+                        }
+                      }
                     >
                       <FontAwesomeIcon icon={faDoorOpen} />
                       회원가입
