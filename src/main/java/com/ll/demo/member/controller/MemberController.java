@@ -139,7 +139,7 @@ public class MemberController {
 
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping
+    @GetMapping("/update")
     public GlobalResponse updateMemberInfo(Principal principal) {
         String username = principal.getName();
         Member member = memberService.findByUsername(username);
