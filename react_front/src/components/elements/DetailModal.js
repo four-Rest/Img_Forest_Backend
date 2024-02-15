@@ -118,6 +118,7 @@ function DetailModal({ showModal, setShowModal, articleId }) {
         const newComment = {
           ...newCommentData.data,
           username: name, // 새 댓글 객체에 username 추가
+          removedTime: null,
         };
 
         // 새 댓글을 목록에 추가
@@ -235,6 +236,9 @@ function DetailModal({ showModal, setShowModal, articleId }) {
     listCommentResponses,
   } = detail;
 
+  const visibleCommentsCount = listCommentResponses.filter(
+    (comment) => comment.removedTime === null
+  ).length;
   //이미지 다운로드
   const downloadImage = (path, filename) => {
     const link = document.createElement("a");
@@ -339,7 +343,7 @@ function DetailModal({ showModal, setShowModal, articleId }) {
           </div>
           <div className="comments">
             <FontAwesomeIcon icon={faComment} />
-            댓글 {listCommentResponses.length}개
+            댓글 {visibleCommentsCount}개
           </div>
           <div>
             <ul>
