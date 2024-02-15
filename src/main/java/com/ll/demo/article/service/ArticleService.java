@@ -11,14 +11,17 @@ import com.ll.demo.article.repository.ArticleRepository;
 import com.ll.demo.article.repository.LikeTableRepository;
 import com.ll.demo.article.repository.TagRepository;
 import com.ll.demo.member.entity.Member;
+import com.ll.demo.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +40,7 @@ public class ArticleService {
     private final ArticleTagService articleTagService;
     private final LikeTableRepository likeTableRepository;
     private final TagRepository tagRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void create(ArticleRequestDto articleRequestDto, Member member) throws IOException {
@@ -161,5 +165,18 @@ public class ArticleService {
 
         return articleRepository.findByArticleTagsTag(tag, pageable).map(article -> new ArticleListResponseDto(article));
 
+    }
+
+    public Page<ArticleListResponseDto> searchAllPagingByUser(int pageNo, String userNick) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("likes"));
+        Pageable pageable = PageRequest.of(pageNo,10,Sort.by(sorts));
+        Member member = memberRepository.findByNickname(userNick);
+
+        if (member == null) {
+            throw new IllegalArgumentException("회원을 찾을 수 없습니다: " + userNick);
+        }
+
+        return articleRepository.findByMemberNickname(userNick,pageable).map(article -> new ArticleListResponseDto(article));
     }
 }

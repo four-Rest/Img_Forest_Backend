@@ -161,16 +161,21 @@ public class ArticleController {
     }
 
     // 게시물 페이징
-    // tag 페이징도 추가
+    // tag 페이징 return도 추가
     // GlobalResponse에  ArticlePageResponse 담아서 보내주기
     @GetMapping("/page")
     public GlobalResponse readAllPaging(
             @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
-            @RequestParam(value = "tagName", required = false) String tagName
+            @RequestParam(value = "tagName", required = false) String tagName,
+            @RequestParam(value = "userNick", required = false) String userNick
     ) {
         Page<ArticleListResponseDto> result;
+
         if(tagName != null) {
             result = articleService.searchAllPagingByTag(pageNo,tagName);
+        }
+        else if(userNick != null) {
+            result = articleService.searchAllPagingByUser(pageNo,userNick);
         }
         else {
             result = articleService.searchAllPaging(pageNo);
