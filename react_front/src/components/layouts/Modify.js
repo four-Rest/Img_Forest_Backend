@@ -54,11 +54,11 @@ function Modify() {
                   });
             }
 
-            if (response.ok) {
+            if (response.resultCode == "200") {
                 toastNotice('수정되었습니다.');
                 navigate("/", { replace: true });
             } else {
-                toastWarning('수정 실패.');
+                toastWarning('수정실패');
                 const errorData = await response.json();
                 console.log(errorData);
             }
