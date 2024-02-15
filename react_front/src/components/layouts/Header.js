@@ -2,10 +2,10 @@
 
 import "../../App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React,{ useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { toastNotice } from "../ToastrConfig";
 import { Link, useNavigate } from "react-router-dom";
-import { SearchTagContext}  from "../../api/SearchTagContext";
+import { SearchTagContext } from "../../api/SearchTagContext";
 import {
   faBars,
   faRectangleList,
@@ -14,26 +14,28 @@ import {
   faUserPlus,
   faDoorOpen,
   faMagnifyingGlass,
-  faPen
+  faPen,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../api/AuthContext";
 import LoginModal from "../elements/LoginModal";
 import SignupModal from "../elements/SignupModal";
+import ModifyModal from "../elements/ModifyModal";
 
 const Header = () => {
-  const [searchTag,setSearchTag] = useState('');
-  const {updateSearchTag}  = useContext(SearchTagContext);
+  const [searchTag, setSearchTag] = useState("");
+  const { updateSearchTag } = useContext(SearchTagContext);
 
-  const [userNick,setUserNick] = useState('');
+  const [userNick, setUserNick] = useState("");
   const [iconVisible, setIconVisible] = useState(true); // 돋보기 svg를 위한 변수
   const [searchVisible, setSearchVisible] = useState(false); // 검색창
-  const [showLoginModal, setShowLoginModal] = useState(false);//로그인을 위한 변수
-  const [showSignupModal, setShowSignupModal] = useState(false);//회원가입을 위한 변수
-  const { isLogin, logout , login} = useAuth(); // AuthContext
-  const searchRef = useRef(null);// 입력 필드에 대한 참조
+  const [showLoginModal, setShowLoginModal] = useState(false); //로그인을 위한 변수
+  const [showSignupModal, setShowSignupModal] = useState(false); //회원가입을 위한 변수
+  const [showModifyModal, setShowModifyModal] = useState(false); // 회원정보수정을 위한 변수
+  const { isLogin, logout, login } = useAuth(); // AuthContext
+  const searchRef = useRef(null); // 입력 필드에 대한 참조
   const navigate = useNavigate();
-  const storedNick = localStorage.getItem('nickname');
- // console.log(storedNick);
+  const storedNick = localStorage.getItem("nickname");
+  // console.log(storedNick);
   const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
   const frontUrl = process.env.REACT_APP_CORE_FRONT_BASE_URL;
 
@@ -62,12 +64,11 @@ const Header = () => {
   };
 
   const handleKeyDown = (e) => {
-    if(e.key === 'Enter') {
-      updateSearchTag({tag:searchTag});
+    if (e.key === "Enter") {
+      updateSearchTag({ tag: searchTag });
       navigate(`/article/${searchTag}`);
     }
   };
-
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -86,50 +87,52 @@ const Header = () => {
   }, [searchVisible]);
 
   useEffect(() => {
-    if(localStorage.getItem('isLogin')){
+    if (localStorage.getItem("isLogin")) {
       fetch(`${apiUrl}/api/member/checkAccessToken`, {
-        method: 'POST',
-        credentials: 'include',
+        method: "POST",
+        credentials: "include",
         headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data === true) {
-          console.log("유효!!!!");
-          login();
-        } else {
-            console.log('유효하지 않은 토큰입니다.');
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.resultCode === "200") {
+            console.log("유효!!!!");
+            login();
+          } else {
+            console.log("유효하지 않은 토큰입니다.");
             logout();
-        }
-    })
-    .catch(error => {
-        console.error('에러 발생 :', error);
-    });
-    }  
-    
-  }, []); 
+          }
+        })
+        .catch((error) => {
+          console.error("에러 발생 :", error);
+        });
+    }
+  }, []);
 
   useEffect(() => {
-    const storedNick = localStorage.getItem('nickname');
-    if(storedNick) {
+    const storedNick = localStorage.getItem("nickname");
+    if (storedNick) {
       setUserNick(storedNick);
     }
-  },[]);
+  }, []);
 
   return (
     <>
-      <div className="navbar bg-base-100" 
+      <div
+        className="navbar bg-base-100"
         style={{
-        display: 'flex', 
-        justifyContent: 'flex-end',
-        position: 'fixed',
-        left:0,
-        top:0,
-        height:'40px',
-        width: '100%',
-        zIndex: 9999 }}>
+          display: "flex",
+          justifyContent: "flex-end",
+          position: "fixed",
+          left: 0,
+          top: 0,
+          height: "40px",
+          width: "100%",
+          zIndex: 9999,
+        }}
+      >
         <div className="navbar-start">
           <div className="dropdown">
             <div
@@ -138,7 +141,7 @@ const Header = () => {
               className="btn btn-ghost btn-circle"
             >
               <svg
-                xmlns="http://www.w3.org/2000/svg" 
+                xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -158,18 +161,27 @@ const Header = () => {
               {isLogin ? (
                 <>
                   <li>
-                    <Link className="nav-link" to={`/mypage`}>
-                      <FontAwesomeIcon icon={faAddressCard} /> 내 정보 수정 
+                    <Link 
+                      className="nav-link"
+                      onClick={() => {
+                        setShowSignupModal(false);
+                        setShowLoginModal(false);
+                        setShowModifyModal(true);
+                        }
+                      }>
+                      <FontAwesomeIcon icon={faAddressCard} /> 내 정보 수정
                     </Link>
                   </li>
                   <li>
-                    <Link to={`/myarticle/${storedNick !== null ? storedNick : ''}`}>
-                    <FontAwesomeIcon icon={faRectangleList} /> 내 글 보기
+                    <Link
+                      to={`/myarticle/${storedNick !== null ? storedNick : ""}`}
+                    >
+                      <FontAwesomeIcon icon={faRectangleList} /> 내 글 보기
                     </Link>
                   </li>
                   <li>
                     <Link to={`/article`}>
-                    <FontAwesomeIcon icon={faPen} /> 글 쓰기
+                      <FontAwesomeIcon icon={faPen} /> 글 쓰기
                     </Link>
                   </li>
                   <li>
@@ -187,8 +199,7 @@ const Header = () => {
                       onClick={() => {
                         setShowSignupModal(false);
                         setShowLoginModal(true);
-                        }
-                      }
+                      }}
                     >
                       <FontAwesomeIcon icon={faDoorOpen} />
                       로그인
@@ -200,8 +211,7 @@ const Header = () => {
                       onClick={() => {
                         setShowLoginModal(false);
                         setShowSignupModal(true);
-                        }
-                      }
+                      }}
                     >
                       <FontAwesomeIcon icon={faDoorOpen} />
                       회원가입
@@ -219,36 +229,40 @@ const Header = () => {
         </div>
         <div className="navbar-end">
           {/* 검색버튼 있는곳  */}
-          
-            {!searchVisible && (
-              <button className="btn btn-ghost btn-circle" onClick={handleButtonClick}><svg
-              xmlns="http://www.w3.org/2000/svg"
-              className={`h-5 w-5`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+
+          {!searchVisible && (
+            <button
+              className="btn btn-ghost btn-circle"
+              onClick={handleButtonClick}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-5 w-5`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </button>
+          )}
+          {searchVisible && (
+            <div className="search-wrapper" ref={searchRef}>
+              <input
+                type="text"
+                placeholder="Type here"
+                className="input input-bordered w-170 max-w-xs"
+                value={searchTag}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
               />
-            </svg></button>
-              
-            )}
-            {searchVisible && (
-                <div className = "search-wrapper" ref={searchRef}> 
-                  <input 
-                  type="text" 
-                  placeholder ="Type here" 
-                  className="input input-bordered w-170 max-w-xs"
-                  value = {searchTag}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                  />
-                </div>
-            )}
+            </div>
+          )}
           <button className="btn btn-ghost btn-circle">
             <div className="indicator">
               <svg
@@ -275,9 +289,9 @@ const Header = () => {
         showModal={showSignupModal}
         setShowModal={setShowSignupModal}
       />
+      <ModifyModal showModal={showModifyModal} setShowModal={setShowModifyModal} />
     </>
   );
 };
-
 
 export default Header;

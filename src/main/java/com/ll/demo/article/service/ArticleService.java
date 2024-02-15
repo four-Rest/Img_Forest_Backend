@@ -176,17 +176,17 @@ public class ArticleService {
         return articleRepository.findByArticleTagsTag(tag, pageable).map(article -> new ArticleListResponseDto(article));
 
     }
-
-    public Page<ArticleListResponseDto> searchAllPagingByUser(int pageNo, String userNick) {
+    // 닉네임 게시물 페이징
+    public Page<ArticleListResponseDto> searchAllPagingByUser(int pageNo, String nick) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("likes"));
         Pageable pageable = PageRequest.of(pageNo,10,Sort.by(sorts));
-        Member member = memberRepository.findByNickname(userNick);
+        Member member = memberRepository.findByNickname(nick);
 
         if (member == null) {
-            throw new IllegalArgumentException("회원을 찾을 수 없습니다: " + userNick);
+            throw new IllegalArgumentException("회원을 찾을 수 없습니다: " + nick);
         }
 
-        return articleRepository.findByMemberNickname(userNick,pageable).map(article -> new ArticleListResponseDto(article));
+        return articleRepository.findByMemberNickname(nick,pageable).map(article -> new ArticleListResponseDto(article));
     }
 }

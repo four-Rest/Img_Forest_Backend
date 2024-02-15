@@ -27,7 +27,7 @@ function IdDetailProvider({children}) {
         [idDetail,updateIdDetail],
     );
     console.log("Id is : " , idDetail.id);
-    
+
     return (
         <IdDetailContext.Provider value = {IdDetailValue}>
             {children}

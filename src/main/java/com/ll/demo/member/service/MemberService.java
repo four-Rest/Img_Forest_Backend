@@ -2,10 +2,7 @@ package com.ll.demo.member.service;
 
 import com.ll.demo.global.config.JwtProperties;
 import com.ll.demo.global.response.GlobalResponse;
-import com.ll.demo.member.dto.MemberCreateRequestDto;
-import com.ll.demo.member.dto.MemberInfoUpdateRequestDto;
-import com.ll.demo.member.dto.MyPageRequestDto;
-import com.ll.demo.member.dto.kakkoMemberCreateRequestDto;
+import com.ll.demo.member.dto.*;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,14 +49,28 @@ public class MemberService {
     }
 
     @Transactional
+    public MemberInfoUpdateResponseDto getMemberInfo(Member member) {
+        MemberInfoUpdateResponseDto dto = new MemberInfoUpdateResponseDto();
+        dto.setLoginId(member.getUsername());
+        dto.setEmail(member.getEmail());
+        dto.setNickname(member.getNickname());
+
+        return dto;
+    }
+
+    @Transactional
     public GlobalResponse<Member> updateMemberInfo(Member member, MemberInfoUpdateRequestDto requestDto) {
         String msg = "";
+        if(requestDto.getUsername()!=null && !requestDto.getUsername().isEmpty()) {
+            member.setUsername(requestDto.getUsername());
+        }
+
         if (requestDto.getNickname() != null && !requestDto.getNickname().isEmpty()) {
             member.setNickname(requestDto.getNickname());
             msg += "닉네임, ";
         }
-        if (requestDto.getPassword() != null && !requestDto.getPassword().isEmpty()) {
-            member.setPassword(encoder.encode(requestDto.getPassword()));
+        if (requestDto.getPassword2() != null && !requestDto.getPassword2().isEmpty()) {
+            member.setPassword(encoder.encode(requestDto.getPassword2()));
             msg += "비밀번호, ";
         }
         if (requestDto.getEmail() != null && !requestDto.getEmail().isEmpty()) {
@@ -129,4 +140,6 @@ public class MemberService {
         dto.setNickname(nickname);
         return socialSignup(dto);
     }
+
+
 }
