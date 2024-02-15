@@ -23,6 +23,8 @@ import SignupModal from "../elements/SignupModal";
 const Header = () => {
   const [searchTag,setSearchTag] = useState('');
   const {updateSearchTag}  = useContext(SearchTagContext);
+
+  const [userNick,setUserNick] = useState('');
   const [iconVisible, setIconVisible] = useState(true); // 돋보기 svg를 위한 변수
   const [searchVisible, setSearchVisible] = useState(false); // 검색창
   const [showLoginModal, setShowLoginModal] = useState(false);//로그인을 위한 변수
@@ -65,6 +67,7 @@ const Header = () => {
     }
   };
 
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -106,6 +109,13 @@ const Header = () => {
     }  
     
   }, []); 
+
+  useEffect(() => {
+    const storedNick = localStorage.getItem('nickname');
+    if(storedNick) {
+      setUserNick(storedNick);
+    }
+  },[]);
 
   return (
     <>
@@ -152,7 +162,7 @@ const Header = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link to={`/detail/:usernick`}>
+                    <Link to={`/my-article/${userNick}`}>
                     <FontAwesomeIcon icon={faRectangleList} /> 내 글 보기
                     </Link>
                   </li>
