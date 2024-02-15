@@ -145,3 +145,19 @@
     color: gray;
     fontSize: 0.8em;
   }
+
+  .commentItem {
+    display: flex;
+    justify-content: space-between; /* 내용과 버튼 사이의 공간을 균등하게 배분 */
+    align-items: center; /* 세로 축 중앙 정렬 */
+    margin-bottom: 10px; /* 댓글 항목 사이의 간격 */
+  }
+  
+  .commentContent {
+    flex: 1; /* 내용이 가능한 많은 공간을 차지하도록 설정 */
+  }
+  
+  .commentActions {
+    display: flex;
+    gap: 10px; /* 버튼 사이의 간격 */
+  }

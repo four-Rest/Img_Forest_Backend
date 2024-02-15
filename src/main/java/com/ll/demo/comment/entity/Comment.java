@@ -22,7 +22,7 @@ public class Comment extends BaseEntity {
     private String content;
 
     @Column(name = "removeTime", columnDefinition = "DATETIME")
-    private LocalDateTime removeTime;
+    private LocalDateTime removedTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
