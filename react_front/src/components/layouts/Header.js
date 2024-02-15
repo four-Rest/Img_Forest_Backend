@@ -14,6 +14,7 @@ import {
   faUserPlus,
   faDoorOpen,
   faMagnifyingGlass,
+  faPen
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../api/AuthContext";
 import LoginModal from "../elements/LoginModal";
@@ -146,15 +147,20 @@ const Header = () => {
               {isLogin ? (
                 <>
                   <li>
-                    <Link className="nav-link" to={`/member/mypage`}>
-                      <FontAwesomeIcon icon={faAddressCard} /> 마이페이지
+                    <Link className="nav-link" to={`/mypage`}>
+                      <FontAwesomeIcon icon={faAddressCard} /> 내 정보 수정 
                     </Link>
                   </li>
                   <li>
-                <Link to={`/article`}>
-                  <FontAwesomeIcon icon={faRectangleList} /> 글 쓰기
-                </Link>
-              </li>
+                    <Link to={`/detail/:usernick`}>
+                    <FontAwesomeIcon icon={faRectangleList} /> 내 글 보기
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to={`/article`}>
+                    <FontAwesomeIcon icon={faPen} /> 글 쓰기
+                    </Link>
+                  </li>
                   <li>
                     <button className="nav-link" onClick={logoutProcess}>
                       <FontAwesomeIcon icon={faDoorClosed} />
