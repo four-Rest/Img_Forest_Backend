@@ -28,14 +28,14 @@ function DetailModal({ showModal, setShowModal, articleId }) {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `${apiUrl}/api/article/detail/${articleId}`,
-          {
-            method: "GET",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+            `${apiUrl}/api/article/detail/${articleId}`,
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -166,7 +166,7 @@ function DetailModal({ showModal, setShowModal, articleId }) {
       setDetail((prevDetail) => ({
         ...prevDetail,
         listCommentResponses: prevDetail.listCommentResponses.filter(
-          (comment) => comment.id !== commentId
+            (comment) => comment.id !== commentId
         ),
       }));
     } catch (error) {
@@ -183,20 +183,20 @@ function DetailModal({ showModal, setShowModal, articleId }) {
   const handleSaveEdit = async () => {
     try {
       const response = await fetch(
-        `${apiUrl}/api/comment/${editingCommentId}`,
-        {
-          method: "PUT", // 또는 "PATCH", 서버 API에 따라 다름
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            commentId: editingCommentId,
-            articleId: articleId,
-            username: localStorage.getItem("username"),
-            content: editingContent, // 수정된 댓글 내용
-          }),
-        }
+          `${apiUrl}/api/comment/${editingCommentId}`,
+          {
+            method: "PUT", // 또는 "PATCH", 서버 API에 따라 다름
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              commentId: editingCommentId,
+              articleId: articleId,
+              username: localStorage.getItem("username"),
+              content: editingContent, // 수정된 댓글 내용
+            }),
+          }
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -206,9 +206,9 @@ function DetailModal({ showModal, setShowModal, articleId }) {
       setDetail((prevDetail) => ({
         ...prevDetail,
         listCommentResponses: prevDetail.listCommentResponses.map((comment) =>
-          comment.id === editingCommentId
-            ? { ...comment, content: updatedComment.data.content }
-            : comment
+            comment.id === editingCommentId
+                ? { ...comment, content: updatedComment.data.content }
+                : comment
         ),
       }));
       // 수정 모드 종료
@@ -240,7 +240,7 @@ function DetailModal({ showModal, setShowModal, articleId }) {
   } = detail;
 
   const visibleCommentsCount = listCommentResponses.filter(
-    (comment) => comment.removedTime === null
+      (comment) => comment.removedTime === null
   ).length;
   //이미지 다운로드
   const downloadImage = (path, filename) => {
@@ -259,25 +259,25 @@ function DetailModal({ showModal, setShowModal, articleId }) {
 
   //아티클 삭제
   const handleDeleteArticle = async() => {
-      try {
-        const response = await fetch(`${apiUrl}/api/article/${articleId}`, {
-          method: "DELETE",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: articleId }),
-        });
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        setShowModal(false);
-        navigate("/", { replace: true });
-        toastNotice('삭제되었습니다.');
-        
-      } catch (error) {
-        console.error("Error deleting article", error);
+    try {
+      const response = await fetch(`${apiUrl}/api/article/${articleId}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: articleId }),
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
+      setShowModal(false);
+      navigate("/", { replace: true });
+      toastNotice('삭제되었습니다.');
+
+    } catch (error) {
+      console.error("Error deleting article", error);
+    }
   };
 
   const calculateTimeAgo = (createdDate) => {
@@ -302,189 +302,189 @@ function DetailModal({ showModal, setShowModal, articleId }) {
   };
 
   return (
-    <div
-      className="detailModalBackdrop"
-      style={{ display: showModal ? "flex" : "none" }}
-    >
-      <div className="detailModalContent">
-        <label
-          htmlFor="login-modal"
-          className="btn btn-sm btn-circle absolute right-2 top-2"
-          onClick={() => setShowModal(false)}
-        >
-          ✕
-        </label>
-        <div className="detailModalLeft">
-          <img src={`/imgFiles/${imgFilePath}/${imgFileName}`} alt="Article" />
-        </div>
-        <div className="detailModalRight">
-          <div className="tags-container">
-            <FontAwesomeIcon icon={faTag} />
-            {tags.map((tag, index) => (
-              <span key={index} className="tag">
+      <div
+          className="detailModalBackdrop"
+          style={{ display: showModal ? "flex" : "none" }}
+      >
+        <div className="detailModalContent">
+          <label
+              htmlFor="login-modal"
+              className="btn btn-sm btn-circle absolute right-2 top-2"
+              onClick={() => setShowModal(false)}
+          >
+            ✕
+          </label>
+          <div className="detailModalLeft">
+            <img src={`/imgFiles/${imgFilePath}/${imgFileName}`} alt="Article" />
+          </div>
+          <div className="detailModalRight">
+            <div className="tags-container">
+              <FontAwesomeIcon icon={faTag} />
+              {tags.map((tag, index) => (
+                  <span key={index} className="tag">
                 {tag}
               </span> // 스타일 클래스 적용
-            ))}
-          </div>
-          <h2 className="title mt-3">작성자 : {username}</h2>
-          <h2 className="mb-3">{imgFilePath}</h2>
-          <textarea className="disabledTextarea" disabled value={content} />
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <p className="info" style={{ margin: 0 }}>
-              {paid ? "유료" : "무료"}
-            </p>
-            {paid && (
-              <p className="price" style={{ margin: "0 10px" }}>
-                {price}원
+              ))}
+            </div>
+            <h2 className="title mt-3">작성자 : {username}</h2>
+            <h2 className="mb-3">{imgFilePath}</h2>
+            <textarea className="disabledTextarea" disabled value={content} />
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <p className="info" style={{ margin: 0 }}>
+                {paid ? "유료" : "무료"}
               </p>
-            )}
-            <button onClick={handleDownload} className="downloadBtn">
-              저장
-            </button>
-            {localStorage.getItem("username") === username && (
-              <div className="articleAction flex align-se">
-                <a href={`/article/modify/${articleId}`} className="btn btn-outline mr-2">수정</a>
-                <button className="btn btn-outline" onClick={() => {handleDeleteArticle()}}>삭제</button>
-              </div>
-            )}
-          </div>
-          <div style={{ textAlign: "left" }}>
-            <p className="likes">
-              {likeValue ? (
-                <span
-                  className="heart"
-                  onClick={() => {
-                    handledisLike();
-                  }}
-                >
-                  <FontAwesomeIcon icon={faHeart} />
-                  {likes}
-                </span>
-              ) : (
-                <span
-                  className="canHeart"
-                  onClick={() => {
-                    handleLike();
-                  }}
-                >
-                  <FontAwesomeIcon icon={faHeart} />
-                  {likes}
-                </span>
+              {paid && (
+                  <p className="price" style={{ margin: "0 10px" }}>
+                    {price}원
+                  </p>
               )}
-            </p>
-          </div>
-          <div className="comments">
-            <FontAwesomeIcon icon={faComment} />
-            댓글 {visibleCommentsCount}개
-          </div>
-          <div>
-            <ul>
-              {listCommentResponses
-                .filter((comment) => comment.removedTime === null)
-                .map((comment, index) => (
-                  <li key={index} className="commentItem">
-                    <div className="commentContent">
-                      <strong>{comment.username}</strong>: {comment.content}
-                      <br />
-                      <span className="commentTime">
+              <button onClick={handleDownload} className="downloadBtn">
+                저장
+              </button>
+              {localStorage.getItem("username") === username && (
+                  <div className="articleAction flex align-se">
+                    <a href={`/article/modify/${articleId}`} className="btn btn-outline mr-2">수정</a>
+                    <button className="btn btn-outline" onClick={() => {handleDeleteArticle()}}>삭제</button>
+                  </div>
+              )}
+            </div>
+            <div style={{ textAlign: "left" }}>
+              <p className="likes">
+                {likeValue ? (
+                    <span
+                        className="heart"
+                        onClick={() => {
+                          handledisLike();
+                        }}
+                    >
+                  <FontAwesomeIcon icon={faHeart} />
+                      {likes}
+                </span>
+                ) : (
+                    <span
+                        className="canHeart"
+                        onClick={() => {
+                          handleLike();
+                        }}
+                    >
+                  <FontAwesomeIcon icon={faHeart} />
+                      {likes}
+                </span>
+                )}
+              </p>
+            </div>
+            <div className="comments">
+              <FontAwesomeIcon icon={faComment} />
+              댓글 {visibleCommentsCount}개
+            </div>
+            <div>
+              <ul>
+                {listCommentResponses
+                    .filter((comment) => comment.removedTime === null)
+                    .map((comment, index) => (
+                        <li key={index} className="commentItem">
+                          <div className="commentContent">
+                            <strong>{comment.username}</strong>: {comment.content}
+                            <br />
+                            <span className="commentTime">
                         {calculateTimeAgo(comment.createdDate)}
                       </span>
-                    </div>
-                    {localStorage.getItem("username") === comment.username && (
-                      <div className="commentActions">
-                        <button onClick={() => handleDeleteComment(comment.id)}>
-                          삭제
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleEditComment(comment.id, comment.content)
-                          }
-                        >
-                          수정
-                        </button>
-                      </div>
-                    )}
-                  </li>
-                ))}
-            </ul>
-          </div>
-          <div
-            className="comment-input-container"
-            style={{
-              marginTop: "20px",
-              background: "#f0f0f0",
-              borderRadius: "5px",
-              padding: "10px",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <input
-              type="text"
-              value={isEditing ? editingContent : comment}
-              onChange={(e) =>
-                isEditing
-                  ? setEditingContent(e.target.value)
-                  : setComment(e.target.value)
-              }
-              placeholder={isEditing ? "댓글 수정..." : "댓글을 입력하세요..."}
-              style={{
-                flex: 1,
-                padding: "10px",
-                border: "none",
-                borderRadius: "5px",
-                background: "#e9ecef",
-                marginRight: "10px", // 버튼과의 간격 조정
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault(); // 엔터 키로 인한 폼 제출 동작을 방지
-                  isEditing ? handleSaveEdit() : handleCommentSubmit();
-                }
-              }}
-            />
-            {/* 수정 모드일 때 "저장" 버튼 표시 */}
-            {isEditing && (
-              <button
-                onClick={handleSaveEdit}
+                          </div>
+                          {localStorage.getItem("username") === comment.username && (
+                              <div className="commentActions">
+                                <button onClick={() => handleDeleteComment(comment.id)}>
+                                  삭제
+                                </button>
+                                <button
+                                    onClick={() =>
+                                        handleEditComment(comment.id, comment.content)
+                                    }
+                                >
+                                  수정
+                                </button>
+                              </div>
+                          )}
+                        </li>
+                    ))}
+              </ul>
+            </div>
+            <div
+                className="comment-input-container"
                 style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: "10px",
-                  border: "none",
+                  marginTop: "20px",
+                  background: "#f0f0f0",
                   borderRadius: "5px",
-                  background: "#007bff",
-                  color: "white",
-                  cursor: "pointer",
-                }}
-              >
-                <FontAwesomeIcon icon={faPaperPlane} />
-              </button>
-            )}
-            {/* 댓글 작성 모드일 때 "전송" 버튼 표시 */}
-            {!isEditing && comment && (
-              <button
-                onClick={handleCommentSubmit}
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
                   padding: "10px",
-                  border: "none",
-                  borderRadius: "5px",
-                  background: "#007bff",
-                  color: "white",
-                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
                 }}
-              >
-                <FontAwesomeIcon icon={faPaperPlane} />
-              </button>
-            )}
+            >
+              <input
+                  type="text"
+                  value={isEditing ? editingContent : comment}
+                  onChange={(e) =>
+                      isEditing
+                          ? setEditingContent(e.target.value)
+                          : setComment(e.target.value)
+                  }
+                  placeholder={isEditing ? "댓글 수정..." : "댓글을 입력하세요..."}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    border: "none",
+                    borderRadius: "5px",
+                    background: "#e9ecef",
+                    marginRight: "10px", // 버튼과의 간격 조정
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault(); // 엔터 키로 인한 폼 제출 동작을 방지
+                      isEditing ? handleSaveEdit() : handleCommentSubmit();
+                    }
+                  }}
+              />
+              {/* 수정 모드일 때 "저장" 버튼 표시 */}
+              {isEditing && (
+                  <button
+                      onClick={handleSaveEdit}
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        padding: "10px",
+                        border: "none",
+                        borderRadius: "5px",
+                        background: "#007bff",
+                        color: "white",
+                        cursor: "pointer",
+                      }}
+                  >
+                    <FontAwesomeIcon icon={faPaperPlane} />
+                  </button>
+              )}
+              {/* 댓글 작성 모드일 때 "전송" 버튼 표시 */}
+              {!isEditing && comment && (
+                  <button
+                      onClick={handleCommentSubmit}
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        padding: "10px",
+                        border: "none",
+                        borderRadius: "5px",
+                        background: "#007bff",
+                        color: "white",
+                        cursor: "pointer",
+                      }}
+                  >
+                    <FontAwesomeIcon icon={faPaperPlane} />
+                  </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
   );
 }
 

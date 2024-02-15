@@ -8,8 +8,9 @@ import lombok.Setter;
 @Setter
 public class MemberInfoUpdateRequestDto {
 
-    private String loginId;
-    private String password;
+    private String username;
+    private String password1;
+    private String password2;
     private String email;
     private String nickname;
 
@@ -22,11 +23,11 @@ public class MemberInfoUpdateRequestDto {
     }
 
     public String getPassword() {
-        return password;
+        return password1;
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password1 = password;
     }
 
     public String getEmail() {
@@ -37,11 +38,11 @@ public class MemberInfoUpdateRequestDto {
         this.email = email;
     }
 
-    public String getLoginId() {
-        return loginId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setLoginId(String loginId) {
-        this.loginId  = loginId;
+    public void setUsername(String username) {
+        this.username  = username;
     }
 }
