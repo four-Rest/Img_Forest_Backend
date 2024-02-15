@@ -18,7 +18,7 @@ function Router() {
       <Routes className="flex-grow">
         <Route path="/" element={<HomePaging />} />
         <Route path="/article" element={<Article />} />
-        <Route path="/article/modify/:id" element={<Modify />} />
+        <Route path="/modify/:id" element={<Modify />} />
         <Route path="/article/:tagString" element={<ArticleTag />} />
         <Route path="/myarticle/:userNick" element={<MyArticle />} />
         <Route path="/detail/:id" element={<Detail />} />

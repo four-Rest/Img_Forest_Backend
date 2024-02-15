@@ -343,7 +343,7 @@ function DetailModal({ showModal, setShowModal, articleId }) {
               </button>
               {localStorage.getItem("username") === username && (
                   <div className="articleAction flex align-se">
-                    <a href={`/article/modify/${articleId}`} className="btn btn-outline mr-2">수정</a>
+                    <a href={`/modify/${articleId}`} className="btn btn-outline mr-2">수정</a>
                     <button className="btn btn-outline" onClick={() => {handleDeleteArticle()}}>삭제</button>
                   </div>
               )}
