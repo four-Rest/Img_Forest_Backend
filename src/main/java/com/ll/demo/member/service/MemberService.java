@@ -61,16 +61,16 @@ public class MemberService {
     @Transactional
     public GlobalResponse<Member> updateMemberInfo(Member member, MemberInfoUpdateRequestDto requestDto) {
         String msg = "";
-        if(requestDto.getLoginId()!=null && !requestDto.getLoginId().isEmpty()) {
-            member.setUsername(requestDto.getLoginId());
+        if(requestDto.getUsername()!=null && !requestDto.getUsername().isEmpty()) {
+            member.setUsername(requestDto.getUsername());
         }
 
         if (requestDto.getNickname() != null && !requestDto.getNickname().isEmpty()) {
             member.setNickname(requestDto.getNickname());
             msg += "닉네임, ";
         }
-        if (requestDto.getPassword() != null && !requestDto.getPassword().isEmpty()) {
-            member.setPassword(encoder.encode(requestDto.getPassword()));
+        if (requestDto.getPassword2() != null && !requestDto.getPassword2().isEmpty()) {
+            member.setPassword(encoder.encode(requestDto.getPassword2()));
             msg += "비밀번호, ";
         }
         if (requestDto.getEmail() != null && !requestDto.getEmail().isEmpty()) {
