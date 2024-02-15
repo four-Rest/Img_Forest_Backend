@@ -52,7 +52,6 @@ public class MemberService {
     public MemberInfoUpdateResponseDto getMemberInfo(Member member) {
         MemberInfoUpdateResponseDto dto = new MemberInfoUpdateResponseDto();
         dto.setLoginId(member.getUsername());
-        dto.setPassword(member.getPassword());
         dto.setEmail(member.getEmail());
         dto.setNickname(member.getNickname());
 
