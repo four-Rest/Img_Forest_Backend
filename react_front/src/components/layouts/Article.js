@@ -1,48 +1,57 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import {toastNotice, toastWarning} from "../ToastrConfig";
-import { useNavigate, Navigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { toastNotice, toastWarning } from "../ToastrConfig";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../../api/AuthContext";
+
 function Article() {
     const [content, setContent] = useState('');
     const [tagString, setTagString] = useState('');
     const [imageFile, setImageFile] = useState(null);
     const navigate = useNavigate();
-    const apiBaseUrl = process.env.REACT_APP_CORE_API_BASE_URL;
+    const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
+    const { isLogin } = useAuth();
 
     async function createArticle() {
+
+        console.log("createArticle 함수 실행")
         try {
+            if (!isLogin) {
+                toastWarning('로그인을 먼저 해주세요.');
+                return;
+            }
+
             if (!imageFile) {
                 console.error('이미지를 선택해주세요.');
                 return;
             }
 
+            if (!content.trim()) {
+                toastWarning('게시글 제목을 작성해주세요.');
+                return;
+            }
+
             const formData = new FormData();
-            formData.append('image', imageFile);
+            formData.append('multipartFile', imageFile);
             formData.append('content', content);
             formData.append('tagString', tagString);
             console.log(formData);
-            const response = await fetch(`${apiBaseUrl}/api/article`, {
-                headers: {
-                    "Content-Type": "application/json",
-                  },
-                  method: "POST",
-                  credentials: "include",
-                  body: JSON.stringify(formData),
+            const response = await fetch(`${apiUrl}/api/article`, {
+                method: "POST",
+                credentials: "include",
+                body: formData,
             });
 
             if (response.ok) {
+                console.log("게시글이 작성되었습니다.")
                 toastNotice('게시글이 작성되었습니다.');
-                navigate("/article", { replace: true });
             } else {
+                console.log("게시글 작성에 실패했습니다.")
                 toastWarning('게시글 작성에 실패했습니다.');
                 const errorData = await response.json();
                 console.log(errorData);
-                navigate("/article", { replace: true });
-
             }
         } catch (error) {
             console.error('게시글 작성 중 에러 발생:', error);
-            navigate("/article", { replace: true });
         }
     }
 
@@ -63,7 +72,7 @@ function Article() {
                 <div className="card-body p-1">
                     <h1 className="card-title justify-center">이미지 등록</h1>
 
-                    <form className="p-5">
+                    <div className="p-5">
                         <div className="card-body p-1">
                             <label htmlFor="image" className="card-title">이미지 업로드</label>
                             <input type="file" accept="image/*" id="image" onChange={handleFileChange} className="file-input file-input-bordered file-input-sm w-full max-w-xs" />
@@ -79,8 +88,8 @@ function Article() {
                             <input type="text" value={tagString} onChange={(e) => setTagString(e.target.value)} id="tag" placeholder="태그를 입력하세요. 띄어쓰기로 구분됩니다." className="input-field textarea textarea-bordered" />
                         </div>
 
-                        <button onClick={createArticle} className="btn">작성</button>
-                    </form>
+                        <button type="button" onClick={createArticle} className="btn">작성</button>
+                    </div>
                 </div>
             </div>
         </section>
