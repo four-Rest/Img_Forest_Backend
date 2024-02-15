@@ -4,13 +4,16 @@ import React from 'react';
 import Router from "./components/layouts/Router";
 import { AuthProvider } from './api/AuthContext';
 import {SearchTagProvider} from './api/SearchTagContext';
+import {IdDetailProvider } from './api/IdDetailContext';
 
 function App() {
 
   return (
     <AuthProvider>
       <SearchTagProvider>
-          <Router> </Router>
+        <IdDetailProvider>
+          <Router/>
+        </IdDetailProvider>  
       </SearchTagProvider>
     </AuthProvider>
   );

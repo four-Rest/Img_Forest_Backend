@@ -6,7 +6,6 @@ function ArticleTag () {
 
     const {tagString}  = useParams();
 
-    console.log(tagString);
 
 
     const {searchTag}  = useContext(SearchTagContext);
@@ -29,18 +28,16 @@ function ArticleTag () {
     },[tagString]);
 
     
-    return ( 
-        <div className="container">
-        {articleData.map((article,index) => {
-          console.log(`imgFiles/${article.imgFilePath}/${article.imgFileName}`);
-          return (
-            <div key={index} className= "box">
-              <img src={`imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="" />
-            </div>
-          );
-        })}
+    return (
+      articleData.length !== 0
+      ? <div className="container pt-24">
+         {articleData.map((article) => (
+          <div key={article.id} className="box">
+            <img src={`/imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="a" />
+          </div>
+        ))}
       </div>
-       
+      : <></>
     );
 }
 

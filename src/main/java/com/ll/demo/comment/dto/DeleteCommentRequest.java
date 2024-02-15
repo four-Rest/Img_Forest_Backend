@@ -21,7 +21,7 @@ public class DeleteCommentRequest {
     private Long articleId;
 
     @NotNull(message = "어떤 멤버인지 확인이 필요합니다.")
-    private Long memberId;
+    private String username;
 
     @Setter
     @NotEmpty(message = "댓글 내용은 필수입니다.")

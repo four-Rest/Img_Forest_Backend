@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import { toastNotice, toastWarning } from "../ToastrConfig";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faComment
+} from "@fortawesome/free-solid-svg-icons";
 
 const SignupModal = ({ showModal, setShowModal }) => {
   const [username, setUsername] = useState("");
@@ -156,7 +160,7 @@ const SignupModal = ({ showModal, setShowModal }) => {
               <div className="modal-action flex justify-center w-full">
                 <button
                   type="submit"
-                  className="btn btn-primary w-full max-w-xs"
+                  className="btn btn-outline w-full max-w-xs"
                   onClick={handleSignup}
                 >
                   회원가입
@@ -165,18 +169,15 @@ const SignupModal = ({ showModal, setShowModal }) => {
               <div className="modal-action flex justify-center w-full">
                 <button
                   type="button"
-                  className="btn btn-primary w-full max-w-xs"
+                  className="btn btn-warning w-full max-w-xs"
                   onClick={handleKakaoLogin}
                 >
+                  <FontAwesomeIcon icon={faComment} />
                   카카오 로그인
                 </button>
               </div>
             </form>
           </div>
-          <div
-            className="modal-overlay"
-            onClick={() => setShowModal(false)}
-          ></div>
         </div>
       )}
     </>

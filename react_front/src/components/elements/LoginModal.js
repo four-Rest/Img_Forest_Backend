@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { toastNotice, toastWarning } from "../ToastrConfig";
 import { useAuth } from "../../api/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faComment
+} from "@fortawesome/free-solid-svg-icons";
 
 const LoginModal = ({ showModal, setShowModal }) => {
   const [username, setUsername] = useState("");
@@ -32,6 +36,7 @@ const LoginModal = ({ showModal, setShowModal }) => {
       
         login();
         setShowModal(false); // 로그인 성공 후 모달 닫기
+        console.log("로그인")
         toastNotice("로그인 완료.");
       } else {
         // 서버 에러 처리
@@ -98,7 +103,7 @@ const LoginModal = ({ showModal, setShowModal }) => {
               <div className="modal-action flex justify-center w-full">
                 <button
                   type="submit"
-                  className="btn btn-primary w-full max-w-xs"
+                  className="btn btn-outline w-full max-w-xs"
                   onClick={handleLogin}
                 >
                   로그인
@@ -107,18 +112,15 @@ const LoginModal = ({ showModal, setShowModal }) => {
               <div className="modal-action flex justify-center w-full">
                 <button
                   type="button"
-                  className="btn btn-primary w-full max-w-xs"
+                  className="btn btn-warning w-full max-w-xs"
                   onClick={handleKakaoLogin}
                 >
+                  <FontAwesomeIcon icon={faComment} />
                   카카오 로그인
                 </button>
               </div>
             </form>
           </div>
-          <div
-            className="modal-overlay"
-            onClick={() => setShowModal(false)}
-          ></div>
         </div>
       )}
     </>
