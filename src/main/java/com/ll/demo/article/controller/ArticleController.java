@@ -78,7 +78,7 @@ public class ArticleController {
 
         articleService.create(articleRequestDto, member);
 
-        return GlobalResponse.of("201", "Article created");
+        return GlobalResponse.of("200", "Article created");
     }
 
 
