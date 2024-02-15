@@ -12,6 +12,7 @@ import {
 
 function DetailModal({ showModal, setShowModal, articleId }) {
   const [detail, setDetail] = useState(null);
+  const [comment, setComment] = useState("");
   const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
 
   useEffect(() => {
@@ -88,6 +89,14 @@ function DetailModal({ showModal, setShowModal, articleId }) {
     } catch (error) {
       console.error("Error updating like status:", error);
     }
+  };
+
+  //댓글 작성
+  const handleCommentSubmit = async () => {
+    // 서버로 댓글 전송 로직 구현
+    console.log(comment); // 입력된 댓글 확인
+    // 댓글 전송 후 입력 필드 초기화
+    setComment("");
   };
 
   if (!showModal) return null;
@@ -193,6 +202,35 @@ function DetailModal({ showModal, setShowModal, articleId }) {
           <div className="comments">
             <FontAwesomeIcon icon={faComment} />
             댓글 {listCommentResponses.length}개
+          </div>
+          <div
+            className="comment-input-container"
+            style={{
+              marginTop: "20px",
+              background: "#f0f0f0",
+              borderRadius: "5px",
+              padding: "10px",
+            }}
+          >
+            <input
+              type="text"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="댓글을 입력하세요..."
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "none",
+                borderRadius: "5px",
+                background: "#e9ecef",
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleCommentSubmit();
+                  e.preventDefault(); // 엔터 키로 인한 폼 제출 동작을 방지
+                }
+              }}
+            />
           </div>
         </div>
       </div>
