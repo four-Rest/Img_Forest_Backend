@@ -35,7 +35,7 @@ function ArticleTag () {
       ? <div className="container pt-24">
          {articleData.map((article) => (
           <div key={article.id} className="box">
-            <img src={`${apiUrl}/gen/imgFiles/${article.imgFilePath}/${article.imgFileName}`} alt="a" />
+            <img src={`${apiUrl}/gen/${article.imgFilePath}/${article.imgFileName}`} alt="a" />
           </div>
         ))}
       </div>
