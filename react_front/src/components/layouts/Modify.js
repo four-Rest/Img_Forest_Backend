@@ -105,10 +105,7 @@ function Modify() {
                     <h1 className="card-title justify-center">이미지 등록</h1>
 
                     <div className="p-5">
-                        <div className="card-body p-1">
-                            <label htmlFor="image" className="card-title">이미지 업로드</label>
-                            <input type="file" accept="image/*" id="image" onChange={handleFileChange} className="file-input file-input-bordered file-input-sm w-full max-w-xs" />
-                        </div>
+                        
 
                         <div className="card-body p-1">
                             <label htmlFor="content" className="card-title">이미지 설명</label>
@@ -119,6 +116,18 @@ function Modify() {
                             <label htmlFor="tag" className="card-title">태그</label>
                             <input type="text" value={newTagString} onChange={(e) => setNewTagString(e.target.value)} id="tag" placeholder="태그를 입력하세요. 띄어쓰기로 구분됩니다." className="input-field textarea textarea-bordered" />
                         </div>
+                        <div className="card-body p-1">
+                        <div class="collapse bg-base-200">
+  <input type="checkbox" /> 
+  <div className="collapse-title text-xl font-medium tex-bold">
+    이미지 파일 바꾸기
+  </div>
+  <div className="collapse-content"> 
+                            <label htmlFor="image" className="card-title">이미지 업로드</label>
+                            <input type="file" accept="image/*" id="image" onChange={handleFileChange} className="file-input file-input-bordered file-input-sm w-full max-w-xs" />
+                        </div>
+                        </div>
+</div>
 
                         <button type="button" onClick={modifyArticle} className="btn">수정</button>
                     </div>
