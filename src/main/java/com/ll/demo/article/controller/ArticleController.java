@@ -187,15 +187,17 @@ public class ArticleController {
     public GlobalResponse readAllPaging(
             @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
             @RequestParam(value = "tagName", required = false) String tagName,
-            @RequestParam(value = "userNick", required = false) String userNick
+            @RequestParam(value = "userNick", required = false) String nick
     ) {
         Page<ArticleListResponseDto> result;
+
+        System.out.println("nick is" + nick);
 
         if(tagName != null) {
             result = articleService.searchAllPagingByTag(pageNo,tagName);
         }
-        else if(userNick != null) {
-            result = articleService.searchAllPagingByUser(pageNo,userNick);
+        else if(nick != null) {
+            result = articleService.searchAllPagingByUser(pageNo,nick);
         }
         else {
             result = articleService.searchAllPaging(pageNo);
