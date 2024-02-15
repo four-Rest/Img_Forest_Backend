@@ -138,11 +138,11 @@ public class MemberController {
     }
 
     @PostMapping("/checkAccessToken")
-    public boolean checkAccessToken(HttpServletRequest request) {
+    public GlobalResponse<LoginResponseDto> checkAccessToken(HttpServletRequest request) {
         try {
             Cookie cookie = WebUtils.getCookie(request, "accessToken");
             if (cookie == null) {
-                return false;
+                return GlobalResponse.of("401", "없는 토큰");
             }
             String token = cookie.getValue();
             Claims claims = JwtUtil.decode(token, jwtProperties.getSecretKey());
@@ -150,14 +150,16 @@ public class MemberController {
             Date expiration = claims.getExpiration();
             if (expiration.before(new Date())) {
                 System.err.println("Token expired");
-                return false;
+                return GlobalResponse.of("401", "토큰 만료");
             }
-
-            return true;
+            Map<String, Object> data = (Map<String, Object>) claims.get("data");
+            String username = (String) data.get("username");
+            Member member = memberService.findByUsername(username);
+            return GlobalResponse.of("200", "로그인 성공.", new LoginResponseDto(member));
         } catch (Exception e) {
             // 다른 예외들 (토큰 만료, 지원하지 않는 JWT 등)
             System.err.println("Token validation error: " + e.getMessage());
-            return false;
+            return GlobalResponse.of("401", "지원하지 않는 토큰");
         }
     }
 
