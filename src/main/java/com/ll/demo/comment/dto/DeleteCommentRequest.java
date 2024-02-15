@@ -23,14 +23,9 @@ public class DeleteCommentRequest {
     @NotNull(message = "어떤 멤버인지 확인이 필요합니다.")
     private String username;
 
-    @Setter
-    @NotEmpty(message = "댓글 내용은 필수입니다.")
-    private String content;
-
     public static Comment toEntity(DeleteCommentRequest request, Member member, Article article) {
         return Comment.builder()
                 .id(request.getCommentId())
-                .content(request.getContent())
                 .member(member)
                 .article(article)
                 .build();
