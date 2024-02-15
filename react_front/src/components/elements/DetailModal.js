@@ -253,7 +253,7 @@ function DetailModal({ showModal, setShowModal, articleId }) {
   };
 
   const handleDownload = () => {
-    const imagePath = `/imgFiles/${imgFilePath}/${imgFileName}`;
+    const imagePath = `${apiUrl}/gen/${imgFilePath}/${imgFileName}`;
     downloadImage(imagePath, imgFileName);
   };
 
@@ -315,7 +315,7 @@ function DetailModal({ showModal, setShowModal, articleId }) {
             ✕
           </label>
           <div className="detailModalLeft">
-            <img src={`/imgFiles/${imgFilePath}/${imgFileName}`} alt="Article" />
+            <img src={`${apiUrl}/gen/${imgFilePath}/${imgFileName}`} alt="Article" />
           </div>
           <div className="detailModalRight">
             <div className="tags-container">
