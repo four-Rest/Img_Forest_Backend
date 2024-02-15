@@ -19,6 +19,7 @@ import {
 import { useAuth } from "../../api/AuthContext";
 import LoginModal from "../elements/LoginModal";
 import SignupModal from "../elements/SignupModal";
+import ModifyModal from "../elements/ModifyModal";
 
 const Header = () => {
   const [searchTag, setSearchTag] = useState("");
@@ -29,6 +30,7 @@ const Header = () => {
   const [searchVisible, setSearchVisible] = useState(false); // 검색창
   const [showLoginModal, setShowLoginModal] = useState(false); //로그인을 위한 변수
   const [showSignupModal, setShowSignupModal] = useState(false); //회원가입을 위한 변수
+  const [showModifyModal, setShowModifyModal] = useState(false); // 회원정보수정을 위한 변수
   const { isLogin, logout, login } = useAuth(); // AuthContext
   const searchRef = useRef(null); // 입력 필드에 대한 참조
   const navigate = useNavigate();
@@ -159,7 +161,14 @@ const Header = () => {
               {isLogin ? (
                 <>
                   <li>
-                    <Link className="nav-link" to={`/mypage`}>
+                    <Link 
+                      className="nav-link"
+                      onClick={() => {
+                        setShowSignupModal(false);
+                        setShowLoginModal(false);
+                        setShowModifyModal(true);
+                        }
+                      }>
                       <FontAwesomeIcon icon={faAddressCard} /> 내 정보 수정
                     </Link>
                   </li>
@@ -280,6 +289,7 @@ const Header = () => {
         showModal={showSignupModal}
         setShowModal={setShowSignupModal}
       />
+      <ModifyModal showModal={showModifyModal} setShowModal={setShowModifyModal} />
     </>
   );
 };
