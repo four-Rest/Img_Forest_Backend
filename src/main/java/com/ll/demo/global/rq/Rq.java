@@ -66,7 +66,7 @@ public class Rq {
         String cookieDomain = AppConfig.getSiteCookieDomain();
 
         if (!cookieDomain.equals("localhost")) {
-            return cookieDomain = "." + cookieDomain;
+            return "." + cookieDomain;
         }
 
         return null;

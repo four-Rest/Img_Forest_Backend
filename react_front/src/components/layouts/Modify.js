@@ -70,7 +70,12 @@ function Modify() {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const response = await fetch(`${apiUrl}/api/article/detail/${id}`);
+            const response = await fetch(`${apiUrl}/api/article/detail/${id}`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                }});
             if (!response.ok) {
               throw new Error("Network response was not ok");
             }

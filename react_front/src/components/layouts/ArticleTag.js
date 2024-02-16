@@ -16,7 +16,12 @@ function ArticleTag () {
         const fetchData = async() => {
 
             try{
-                const res = await fetch(`${apiUrl}/api/article/${tagString}`);
+                const res = await fetch(`${apiUrl}/api/article/${tagString}`,{
+                    method: "GET",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }});
                 const data = await res.json();
                 const dataArray = Array.from (data.data);
                 console.log(dataArray);
