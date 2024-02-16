@@ -31,8 +31,8 @@ function HomePaging() {
   };
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    if (searchParams.has("check-social-login")) {
+    // const searchParams = new URLSearchParams(location.search);
+    // if (searchParams.has("check-social-login")) {
       // 서버에 accessToken 검증 요청
       fetch(`${apiUrl}/api/member/checkAccessToken`, {
         method: "POST",
@@ -61,7 +61,7 @@ function HomePaging() {
             console.error("에러 발생:", error);
             logout(); // 네트워크 오류 등의 이유로 로그아웃 처리
           });
-    }
+    // }
   }, [location.search]);
 
   useEffect(() => {
