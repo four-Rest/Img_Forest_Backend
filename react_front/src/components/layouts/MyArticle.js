@@ -50,12 +50,7 @@ function MyArticle () {
             try {
                 const res = await fetch(
                     `${apiBaseUrl}/api/article/page?pageNo=${pageNo}&userNick=${userNick}`
-                    , {
-                        method: "GET",
-                        credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json"
-                        }});
+                    );
                 const data = await res.json();
 
                 console.log(data.data.content);
