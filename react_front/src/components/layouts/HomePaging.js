@@ -3,6 +3,7 @@ import "./styles.css";
 import { useNavigate } from "react-router-dom";
 import { IdDetailContext } from "../../api/IdDetailContext";
 import DetailModal from "../elements/DetailModal";
+import {useAuth} from "../../api/AuthContext";
 //import DetailModal
 
 function HomePaging() {
@@ -16,6 +17,7 @@ function HomePaging() {
   const [totalPages, setTotalPages] = useState(0);
   const apiBaseUrl = process.env.REACT_APP_CORE_API_BASE_URL;
   const [showDetailModal, setShowDetailModal] = useState(false); // 상세보기를 위한 변수
+  const { login, logout } = useAuth();
 
   const target = useRef(null); // IntersectionObserver를 위한 ref 생성
   const navigate = useNavigate();
@@ -29,7 +31,7 @@ function HomePaging() {
 
   useEffect(() => {
     // 서버에 accessToken 검증 요청
-    fetch(`${apiUrl}/api/member/checkAccessToken`, {
+    fetch(`${apiBaseUrl}/api/member/checkAccessToken`, {
       method: "POST",
       credentials: "include",
       headers: {
