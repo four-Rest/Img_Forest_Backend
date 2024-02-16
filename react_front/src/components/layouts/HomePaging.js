@@ -22,6 +22,7 @@ function HomePaging() {
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_CORE_API_BASE_URL;
   const { login, logout } = useAuth();
+  const [isLoginChecked, setIsLoginChecked] = useState(false);
 
   const handleImageClick = (id) => {
     setIdDetail(id);
@@ -32,7 +33,7 @@ function HomePaging() {
 
   useEffect(() => {
     // const searchParams = new URLSearchParams(location.search);
-    // if (searchParams.has("check-social-login")) {
+    if (!isLoginChecked) {
       // 서버에 accessToken 검증 요청
       fetch(`${apiUrl}/api/member/checkAccessToken`, {
         method: "POST",
@@ -47,6 +48,7 @@ function HomePaging() {
             if (data.resultCode === "200") {
               // 로그인 성공 처리
               login();
+              setIsLoginChecked(true);
               console.log("로그인 성공");
               localStorage.setItem("username", data.data.username); // 응답에서 username 추출
               localStorage.setItem("isLogin", "true");
@@ -61,7 +63,7 @@ function HomePaging() {
             console.error("에러 발생:", error);
             logout(); // 네트워크 오류 등의 이유로 로그아웃 처리
           });
-    // }
+    }
   }, [location.search]);
 
   useEffect(() => {
