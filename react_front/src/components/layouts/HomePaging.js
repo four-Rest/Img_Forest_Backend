@@ -57,11 +57,13 @@ function HomePaging() {
               // 로그인 실패 처리 (유효하지 않은 토큰, 토큰 만료 등)
               console.log(data.message); // 서버에서 보낸 오류 메시지 출력
               logout(); // 로그아웃 처리
+              setIsLoginChecked(true);
             }
           })
           .catch((error) => {
             console.error("에러 발생:", error);
             logout(); // 네트워크 오류 등의 이유로 로그아웃 처리
+            setIsLoginChecked(true);
           });
     }
   }, [location.search]);
