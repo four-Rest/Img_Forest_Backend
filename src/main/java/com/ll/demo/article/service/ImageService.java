@@ -110,7 +110,7 @@ public class ImageService {
         file.transferTo(saveFile);
 
         //Image객체의 fileName을 새 이미지파일로 변경
-        image.setFileName(newFileName);
+        image.modifyFileName(newFileName);
 
     }
 
