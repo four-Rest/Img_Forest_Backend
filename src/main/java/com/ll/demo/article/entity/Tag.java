@@ -10,7 +10,6 @@ import java.util.Set;
 @Entity
 @RequiredArgsConstructor
 @Getter
-@Setter
 public class Tag {
 
     @Id
@@ -22,4 +21,8 @@ public class Tag {
 
     @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL)
     private Set<ArticleTag> articleTags;
+
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
+    }
 }
