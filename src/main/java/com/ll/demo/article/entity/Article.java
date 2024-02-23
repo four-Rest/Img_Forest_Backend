@@ -15,11 +15,10 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Getter
-@Setter
 @SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class Article extends BaseEntity {
 
     @Id
@@ -46,6 +45,19 @@ public class Article extends BaseEntity {
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE)
     private List<Comment> commentList;
+
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public void modifyContent(String content) {
+        this.content = content;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
 
 
 }
