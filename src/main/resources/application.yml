@@ -24,7 +24,7 @@ spring:
             scope: profile_nickname, profile_image
             client-name: Kakao
             authorization-grant-type: authorization_code
-            redirect-uri: '${custom.dev.backUrl}/{action}/oauth2/code/{registrationId}'
+            redirect-uri: '${custom.prod.backUrl}/{action}/oauth2/code/{registrationId}'
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
@@ -44,11 +44,11 @@ custom:
     frontUrl: "http://${custom.dev.cookieDomain}:3000"
     backUrl: "http://${custom.dev.cookieDomain}:${server.port}"
   prod:
-    cookieDomain: //img_Forest
+    cookieDomain: img.for-rest.site
     frontUrl: "https://${custom.prod.cookieDomain}"
     backUrl: "https://api.${custom.prod.cookieDomain}"
   site:
-    cookieDomain: "${custom.dev.cookieDomain}"
-    frontUrl: "${custom.dev.frontUrl}"
-    backUrl: "${custom.dev.backUrl}"
+    cookieDomain: "${custom.prod.cookieDomain}"
+    frontUrl: "${custom.prod.frontUrl}"
+    backUrl: "${custom.prod.backUrl}"
     name: img_Forest

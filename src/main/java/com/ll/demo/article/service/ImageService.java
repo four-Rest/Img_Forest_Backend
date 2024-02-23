@@ -126,4 +126,8 @@ public class ImageService {
         }
 
     }
+
+    public Image getImageByFileName(String imageName) {
+        return imageRepository.getImageByFileName(imageName);
+    }
 }

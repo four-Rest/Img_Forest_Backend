@@ -66,15 +66,15 @@ public class Rq {
         String cookieDomain = AppConfig.getSiteCookieDomain();
 
         if (!cookieDomain.equals("localhost")) {
-            return cookieDomain = "." + cookieDomain;
+            return "." + cookieDomain;
         }
 
         return null;
     }
 
     public boolean isFrontUrl(String url) {
-        //return url.startsWith(AppConfig.getSiteFrontUrl()); //prod
-        return url.startsWith(AppConfig.getDevFrontUrl()); //dev
+        return url.startsWith(AppConfig.getSiteFrontUrl()); //prod
+//        return url.startsWith(AppConfig.getDevFrontUrl()); //dev
     }
 
     public void destroySession() {

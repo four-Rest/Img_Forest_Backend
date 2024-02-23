@@ -9,7 +9,12 @@ const Detail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${apiUrl}/api/article/detail/${id}`);
+        const response = await fetch(`${apiUrl}/api/article/detail/${id}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          }});
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -49,7 +54,7 @@ const Detail = () => {
   };
 
   const handleDownload = () => {
-    const imagePath = `/imgFiles/${imgFilePath}/${imgFileName}`;
+    const imagePath = `${apiUrl}/gen/${imgFilePath}/${imgFileName}`;
     downloadImage(imagePath, imgFileName);
   };
 
@@ -57,7 +62,7 @@ const Detail = () => {
     <div>
       <div>
         <div className="box">
-          <img src={`/imgFiles/${imgFilePath}/${imgFileName}`} alt="dd" />
+          <img src={`${apiUrl}/gen/${imgFilePath}/${imgFileName}`} alt="dd" />
           <button onClick={handleDownload}>Download Image</button>
         </div>
         <h2>content == {content}</h2>

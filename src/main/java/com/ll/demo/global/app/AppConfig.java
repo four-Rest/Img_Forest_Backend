@@ -13,6 +13,13 @@ import org.springframework.core.io.ClassPathResource;
 public class AppConfig {
     private static String activeProfile;
 
+    public static String getGenFileDirPath() {
+        if (isProd()) {
+            return "/app/react_front/public/imgFiles";
+        }
+        return "C:\\Users\\KDD\\Desktop\\projects\\Img_Forest_2\\react_front\\public\\imgFiles";
+    }
+
     @Value("${spring.profiles.active}")
     public void setActiveProfile(String activeProfile) {
         this.activeProfile = activeProfile;

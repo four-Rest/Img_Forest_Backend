@@ -13,20 +13,19 @@ function Article() {
 
     async function createArticle() {
 
-        console.log("createArticle 함수 실행")
         try {
             if (!isLogin) {
-                toastWarning('로그인을 먼저 해주세요.');
+                toastWarning('로그인이 필요한 서비스입니다.');
                 return;
             }
 
             if (!imageFile) {
-                console.error('이미지를 선택해주세요.');
+                toastWarning('이미지를 선택해주세요.');
                 return;
             }
 
             if (!content.trim()) {
-                toastWarning('게시글 제목을 작성해주세요.');
+                toastWarning('내용을 입력주세요.');
                 return;
             }
 
@@ -42,16 +41,15 @@ function Article() {
             });
 
             if (response.ok) {
-                console.log("게시글이 작성되었습니다.")
-                toastNotice('게시글이 작성되었습니다.');
+                navigate("/", { replace: true });
+                toastNotice('이미지가 등록되었습니다.');
             } else {
-                console.log("게시글 작성에 실패했습니다.")
-                toastWarning('게시글 작성에 실패했습니다.');
+                toastWarning('이미지 등록에 실패했습니다.');
                 const errorData = await response.json();
                 console.log(errorData);
             }
         } catch (error) {
-            console.error('게시글 작성 중 에러 발생:', error);
+            console.error('error:', error);
         }
     }
 

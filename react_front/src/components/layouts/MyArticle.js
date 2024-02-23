@@ -49,7 +49,7 @@ function MyArticle () {
             setLoading(true);
             try {
                 const res = await fetch(
-                    `/api/article/page?pageNo=${pageNo}&userNick=${userNick}`
+                    `${apiBaseUrl}/api/article/page?pageNo=${pageNo}&userNick=${userNick}`
                     );
                 const data = await res.json();
 
@@ -97,7 +97,7 @@ function MyArticle () {
             {articleData.map((article) => (
                 <div key={article.id} className="box">
                     <img
-                        src={`/imgFiles/${article.imgFilePath}/${article.imgFileName}`}
+                        src={`${apiBaseUrl}/gen/${article.imgFilePath}/${article.imgFileName}`}
                         alt="a"
                         onClick={() => handleImageClick(article.id)}
                     />
