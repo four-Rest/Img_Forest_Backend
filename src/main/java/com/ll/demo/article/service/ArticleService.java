@@ -126,6 +126,7 @@ public class ArticleService {
 
         if (getLikeByArticleIdAndMemberId(article.getId(), member.getId()) == null) {
             LikeTable likeTable = new LikeTable(article, member);
+
             likeTableRepository.save(likeTable);
             article.setLikes(article.getLikes() + 1);
         }
