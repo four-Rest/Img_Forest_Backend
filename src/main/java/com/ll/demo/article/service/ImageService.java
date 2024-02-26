@@ -30,7 +30,7 @@ public class ImageService {
 
         //현재 날짜를 폴더 이름으로 지정
         LocalDateTime createdTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String formattedDateTime = createdTime.format(formatter);
 
         //저장 디렉토리 결정
@@ -110,7 +110,7 @@ public class ImageService {
         file.transferTo(saveFile);
 
         //Image객체의 fileName을 새 이미지파일로 변경
-        image.setFileName(newFileName);
+        image.modifyFileName(newFileName);
 
     }
 

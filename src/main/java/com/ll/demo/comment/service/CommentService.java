@@ -23,7 +23,7 @@ public class CommentService {
 
     @Transactional
     public CreateCommentResponse create(CreateCommentRequest request) {
-        Member member = this.verifyMember(request.getMemberId());
+        Member member = this.verifyMember(request.getUsername());
         Article article = this.verifyArticle(request.getArticleId());
 
         // TODO: JWT를 parse해서 해당 정보로 member를 가져올지에 대한 논의 필요.
@@ -34,7 +34,7 @@ public class CommentService {
 
     @Transactional
     public UpdateCommentResponse update(UpdateCommentRequest request) {
-        Member member = this.verifyMember(request.getMemberId());
+        Member member = this.verifyMember(request.getUsername());
         Article article = this.verifyArticle(request.getArticleId());
 
         Comment saveComment = this.verifyComment(request.getCommentId());
@@ -50,7 +50,7 @@ public class CommentService {
      */
     @Transactional
     public DeleteCommentResponse delete(DeleteCommentRequest request) {
-        this.verifyMember(request.getMemberId());
+        this.verifyMember(request.getUsername());
         this.verifyArticle(request.getArticleId());
 
         Comment saveComment = this.verifyComment(request.getCommentId());
@@ -59,8 +59,8 @@ public class CommentService {
         return DeleteCommentResponse.of(this.commentRepository.save(saveComment));
     }
 
-    private Member verifyMember(Long id) {
-        return this.memberRepository.findById(id).orElseThrow(() ->
+    private Member verifyMember(String username) {
+        return this.memberRepository.findByUsername(username).orElseThrow(() ->
                 new IllegalArgumentException("멤버가 존재하지 않습니다.")
         );
     }

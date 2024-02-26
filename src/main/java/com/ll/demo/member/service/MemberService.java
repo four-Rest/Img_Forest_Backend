@@ -2,9 +2,7 @@ package com.ll.demo.member.service;
 
 import com.ll.demo.global.config.JwtProperties;
 import com.ll.demo.global.response.GlobalResponse;
-import com.ll.demo.member.dto.MemberCreateRequestDto;
-import com.ll.demo.member.dto.MyPageRequestDto;
-import com.ll.demo.member.dto.kakkoMemberCreateRequestDto;
+import com.ll.demo.member.dto.*;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +19,7 @@ public class MemberService {
     private final PasswordEncoder encoder;
     private final JwtProperties jwtProperties;
 
-
+    @Transactional
     public GlobalResponse<Member> signup(MemberCreateRequestDto dto) {
         if (validDuplicationUsername(dto.getUsername()).isPresent()) {
             return GlobalResponse.of("409", "중복된 이름입니다.");
@@ -48,6 +46,39 @@ public class MemberService {
 
         memberRepository.saveAndFlush(member);
         return GlobalResponse.of("200", "회원가입 완료", member);
+    }
+
+    @Transactional
+    public MemberInfoUpdateResponseDto getMemberInfo(Member member) {
+        MemberInfoUpdateResponseDto dto = new MemberInfoUpdateResponseDto();
+        dto.setLoginId(member.getUsername());
+        dto.setEmail(member.getEmail());
+        dto.setNickname(member.getNickname());
+
+        return dto;
+    }
+
+    @Transactional
+    public GlobalResponse<Member> updateMemberInfo(Member member, MemberInfoUpdateRequestDto requestDto) {
+        String msg = "";
+        if(requestDto.getUsername()!=null && !requestDto.getUsername().isEmpty()) {
+            member.setUsername(requestDto.getUsername());
+        }
+
+        if (requestDto.getNickname() != null && !requestDto.getNickname().isEmpty()) {
+            member.setNickname(requestDto.getNickname());
+            msg += "닉네임, ";
+        }
+        if (requestDto.getPassword2() != null && !requestDto.getPassword2().isEmpty()) {
+            member.setPassword(encoder.encode(requestDto.getPassword2()));
+            msg += "비밀번호, ";
+        }
+        if (requestDto.getEmail() != null && !requestDto.getEmail().isEmpty()) {
+            member.setEmail(requestDto.getEmail());
+            msg += "이메일 ";
+        }
+        memberRepository.save(member);
+        return GlobalResponse.of("200", msg + "변경 완료", member);
     }
 
     public Optional<Member> validDuplicationUsername(String username) {
@@ -109,4 +140,6 @@ public class MemberService {
         dto.setNickname(nickname);
         return socialSignup(dto);
     }
+
+
 }

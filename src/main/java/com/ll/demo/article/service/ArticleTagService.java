@@ -22,7 +22,10 @@ public class ArticleTagService {
     public void update(Article article, String tagString) {
         Set<Tag> tags = tagService.parseTagStringIntoSet(tagString);
         for (Tag tag : tags) {
-            ArticleTag articleTag = new ArticleTag(article, tag);
+            ArticleTag articleTag = ArticleTag.builder()
+                                .article(article)
+                                .tag(tag)
+                                .build();
             articleTagRepository.save(articleTag);
         }
     }
