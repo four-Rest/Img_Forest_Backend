@@ -42,5 +42,5 @@ db_dev.mv.db
 db_dev.trace.db
 demo_dev.mv.db
 demo_dev.trace.db
-/src/main/resources/static/2024/*
+/src/main/resources/static/imgFiles/2024/*
 .DS_Store
