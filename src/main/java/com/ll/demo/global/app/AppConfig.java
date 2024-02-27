@@ -13,6 +13,10 @@ import org.springframework.core.io.ClassPathResource;
 public class AppConfig {
     private static String activeProfile;
 
+    public static String getGenFileDirPath() {
+        return "/src/main/resources/static/imgFiles";
+    }
+
     @Value("${spring.profiles.active}")
     public void setActiveProfile(String activeProfile) {
         this.activeProfile = activeProfile;
