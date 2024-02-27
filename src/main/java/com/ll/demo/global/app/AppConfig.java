@@ -13,6 +13,18 @@ import org.springframework.core.io.ClassPathResource;
 public class AppConfig {
     private static String activeProfile;
 
+    public static String getGenFileDirPath() {
+        if (isProd()) {
+            return "/src/main/resources/static/imgFiles";
+        }
+        String path = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\imgFiles";
+        String os = System.getProperty("os.name").toLowerCase();
+        if (!os.contains("win")) {
+            path = System.getProperty("user.dir") + "/src/main/resources/static/imgFiles";
+        }
+        return path;
+    }
+
     @Value("${spring.profiles.active}")
     public void setActiveProfile(String activeProfile) {
         this.activeProfile = activeProfile;

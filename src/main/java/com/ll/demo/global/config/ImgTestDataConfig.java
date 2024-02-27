@@ -50,10 +50,10 @@ public class ImgTestDataConfig {
             for (int i = 0; i < 45; i++) {
 
                 //테스트이미지 파일을 테스트용 multipartFile로 불러옴
-                String imgSourcePath = System.getProperty("user.dir") + "\\react_front\\public\\imgFiles\\%s.jpeg".formatted(fileNames[i % 15]);
+                String imgSourcePath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\imgFiles\\testImg\\%s.jpeg".formatted(fileNames[i % 15]);
                 String os = System.getProperty("os.name").toLowerCase();
                 if (!os.contains("win")) {
-                    imgSourcePath = System.getProperty("user.dir") + "/react_front/public/imgFiles/%s.jpeg".formatted(fileNames[i % 15]);
+                    imgSourcePath = System.getProperty("user.dir") + "/src/main/resources/static/imgFiles/testImg/%s.jpeg".formatted(fileNames[i % 15]);
                 }
 
                 Path path = Paths.get(imgSourcePath);
