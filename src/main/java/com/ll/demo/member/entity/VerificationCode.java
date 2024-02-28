@@ -20,12 +20,12 @@ import java.time.LocalDateTime;
 public class VerificationCode extends BaseEntity {
 
     @Column(nullable = false)
-    private Long memberId; // 회원 번호
+    private String email;// 회원 번호
 
     @Column(nullable = false, length = 64)
     private String code; // 인증 코드
 
     @Column(nullable = false)
-    private LocalDateTime expiresAt; // 만료 시간
+    private LocalDateTime expiresTime; // 만료 시간
 
 }
