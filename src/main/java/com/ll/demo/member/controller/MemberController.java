@@ -6,6 +6,7 @@ import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.member.dto.*;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,15 +14,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.WebUtils;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/member")
+@RequestMapping("/api/member")
 public class MemberController {
 
     private final MemberService memberService;
@@ -131,6 +134,59 @@ public class MemberController {
             return memberService.updateUserData(member, dto);
         } else{
             return GlobalResponse.of("403", "확인되지 않은 유저입니다.");
+        }
+    }
+
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/update")
+    public GlobalResponse updateMemberInfo(Principal principal) {
+        String username = principal.getName();
+        Member member = memberService.findByUsername(username);
+        if(member != null) {
+            MemberInfoUpdateResponseDto dto = memberService.getMemberInfo(member);
+            return GlobalResponse.of("200","success",dto);
+        }else {
+            return GlobalResponse.of("403","확인되지 않은 유저입니다.");
+        }
+
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/update")
+    public GlobalResponse updateMemberInfo(Principal principal, @RequestBody MemberInfoUpdateRequestDto requestDto) {
+        String username = principal.getName();
+        Member member = memberService.findByUsername(username);
+        if (member != null) {
+            return memberService.updateMemberInfo(member, requestDto);
+        } else {
+            return GlobalResponse.of("403", "확인되지 않은 유저입니다.");
+        }
+    }
+
+    @PostMapping("/checkAccessToken")
+    public GlobalResponse<LoginResponseDto> checkAccessToken(HttpServletRequest request) {
+        try {
+            Cookie cookie = WebUtils.getCookie(request, "accessToken");
+            if (cookie == null) {
+                return GlobalResponse.of("401", "없는 토큰");
+            }
+            String token = cookie.getValue();
+            Claims claims = JwtUtil.decode(token, jwtProperties.getSecretKey());
+
+            Date expiration = claims.getExpiration();
+            if (expiration.before(new Date())) {
+                System.err.println("Token expired");
+                return GlobalResponse.of("401", "토큰 만료");
+            }
+            Map<String, Object> data = (Map<String, Object>) claims.get("data");
+            String username = (String) data.get("username");
+            Member member = memberService.findByUsername(username);
+            return GlobalResponse.of("200", "로그인 성공.", new LoginResponseDto(member));
+        } catch (Exception e) {
+            // 다른 예외들 (토큰 만료, 지원하지 않는 JWT 등)
+            System.err.println("Token validation error: " + e.getMessage());
+            return GlobalResponse.of("401", "지원하지 않는 토큰");
         }
     }
 

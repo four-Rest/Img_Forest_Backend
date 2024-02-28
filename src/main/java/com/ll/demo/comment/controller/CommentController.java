@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/comment")
+@RequestMapping("/api/comment")
 public class CommentController {
     private final CommentService commentService;
 
-    @PostMapping
+    @PostMapping("/")
     public GlobalResponse<CreateCommentResponse> create(@Valid @RequestBody CreateCommentRequest createCommentRequest) {
         return GlobalResponse.of("201", "success", this.commentService.create(createCommentRequest));
     }

@@ -1,8 +1,6 @@
 package com.ll.demo.article.controller;
 
-import com.ll.demo.article.dto.ArticleDetailResponseDto;
-import com.ll.demo.article.dto.ArticleListResponseDto;
-import com.ll.demo.article.dto.ArticleRequestDto;
+import com.ll.demo.article.dto.*;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.service.ArticleService;
 import com.ll.demo.article.service.TagService;
@@ -12,6 +10,7 @@ import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/article")
+@RequestMapping("/api/article")
 public class ArticleController {
 
     private final ArticleService articleService;
@@ -78,7 +77,7 @@ public class ArticleController {
 
         articleService.create(articleRequestDto, member);
 
-        return GlobalResponse.of("201", "Article created");
+        return GlobalResponse.of("200", "Article created");
     }
 
 
@@ -108,6 +107,29 @@ public class ArticleController {
         else {
             articleService.modifyUnpaidArticle(article, articleRequestDto);
         }
+        return GlobalResponse.of("200", "수정되었습니다.");
+    }
+
+    //이미지 없는 수정
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/mode2/{id}")
+    public GlobalResponse updateArticle2(
+            @PathVariable("id") Long id,
+            Principal principal,
+            @RequestBody ArticleRequestDtoMode2 articleRequestDto
+    )  {
+        Article article = articleService.getArticleById(id);
+        Member member = memberService.findByUsername(principal.getName());
+
+        //권한 확인
+        if (member == null) {
+            return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
+        } else if (article.getMember().getId() != member.getId()) {
+            return GlobalResponse.of("403", "수정 권한이 없습니다.");
+        }
+
+        articleService.modifyArticle(article, articleRequestDto);
+
         return GlobalResponse.of("200", "수정되었습니다.");
     }
 
@@ -156,4 +178,30 @@ public class ArticleController {
 
         return GlobalResponse.of("200", "추천취소되었습니다.");
     }
+
+    // 게시물 페이징
+    // tag 페이징 return도 추가
+    // GlobalResponse에  ArticlePageResponse 담아서 보내주기
+    @GetMapping("/page")
+    public GlobalResponse readAllPaging(
+            @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(value = "tagName", required = false) String tagName,
+            @RequestParam(value = "userNick", required = false) String nick
+    ) {
+        Page<ArticleListResponseDto> result;
+
+        System.out.println("nick is" + nick);
+
+        if(tagName != null) {
+            result = articleService.searchAllPagingByTag(pageNo,tagName);
+        }
+        else if(nick != null) {
+            result = articleService.searchAllPagingByUser(pageNo,nick);
+        }
+        else {
+            result = articleService.searchAllPaging(pageNo);
+        }
+        return GlobalResponse.of("200","success", result);
+    }
+
 }

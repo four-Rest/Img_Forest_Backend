@@ -30,14 +30,14 @@ public class ImageService {
 
         //현재 날짜를 폴더 이름으로 지정
         LocalDateTime createdTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String formattedDateTime = createdTime.format(formatter);
 
         //저장 디렉토리 결정
-        String projectPath = System.getProperty("user.dir") + "\\react_front\\src\\imgFiles\\%s".formatted(formattedDateTime);
+        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\imgFiles\\%s".formatted(formattedDateTime);
         String os = System.getProperty("os.name").toLowerCase();
         if (!os.contains("win")) {
-            projectPath = System.getProperty("user.dir") + "/react_front/src/imgFiles/%s".formatted(formattedDateTime);
+            projectPath = System.getProperty("user.dir") + "/src/main/resources/static/imgFiles/%s".formatted(formattedDateTime);
         }
 
         //해당 날짜의 디렉토리가 존재하지 않으면 생성
@@ -110,7 +110,7 @@ public class ImageService {
         file.transferTo(saveFile);
 
         //Image객체의 fileName을 새 이미지파일로 변경
-        image.setFileName(newFileName);
+        image.modifyFileName(newFileName);
 
     }
 
