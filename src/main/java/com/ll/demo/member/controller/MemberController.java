@@ -6,6 +6,7 @@ import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.member.dto.*;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
+import com.ll.demo.member.service.EmailService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ public class MemberController {
     private final HttpServletResponse response;
     private final HttpServletRequest request;
     private final JwtProperties jwtProperties;
+    private final EmailService emailService;
 
     @PostMapping("/signup")
     public GlobalResponse signup(@RequestBody MemberCreateRequestDto userCreateRequestDto) {
@@ -228,5 +230,15 @@ public class MemberController {
         response.addHeader("Set-Cookie", cookie2.toString());
     }
 
+    //이메일 인증
+    @PostMapping("/verifyEmail")
+    public GlobalResponse<MemberEmailVerifyResponseDto> verifyEmail(@RequestBody MemberEmailVerifyRequestDto requestDto) {
+        boolean isVerified = emailService.verifyCode(requestDto.getEmail(), requestDto.getVerificationCode());
 
+        MemberEmailVerifyResponseDto responseDto = new MemberEmailVerifyResponseDto();
+        responseDto.setVerified(isVerified);
+        responseDto.setMessage(isVerified ? "Email verified successfully." : "Invalid or expired verification code.");
+        if(isVerified) return GlobalResponse.of("200", "인증 완료", responseDto);
+        else return GlobalResponse.of("200", "인증 실패", responseDto);
+    }
 }
