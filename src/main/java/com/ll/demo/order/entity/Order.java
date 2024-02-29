@@ -1,14 +1,19 @@
 package com.ll.demo.order.entity;
 
+import com.ll.demo.article.entity.Article;
 import com.ll.demo.member.entity.Member;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.sql.Timestamp;
 
+
+@Entity
 @Getter
-@Builder
+@SuperBuilder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class Order {
 
     @Id
@@ -26,5 +31,8 @@ public class Order {
 
     @ManyToOne
     private Member member;
+
+    @ManyToOne
+    private Article article;
 
 }
