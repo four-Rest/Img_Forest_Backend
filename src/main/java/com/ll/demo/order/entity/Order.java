@@ -23,8 +23,6 @@ public class Order {
     @Column(unique = true)
     private String orderNumber;
 
-    private String orderStatus;
-
     private String paymentMethod;
 
     private Timestamp orderDate;
