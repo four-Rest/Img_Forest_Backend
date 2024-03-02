@@ -25,7 +25,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @Slf4j
-public class PaymentController {
+public class PaymentApiController {
 
     private final MemberService memberService;
     private final PaymentService paymentService;
@@ -54,8 +54,8 @@ public class PaymentController {
         try {
             String username = principal.getName();
             Member member = memberService.findByUsername(username);
-            Long userId = member.getId();
-            paymentService.saveOrder(userId,orderRequestDto);
+
+            paymentService.saveOrder(member,orderRequestDto);
             log.info("결제 성공: 주문번호 {}",orderNumber);
             return GlobalResponse.of("200","결제 성공");
         }
