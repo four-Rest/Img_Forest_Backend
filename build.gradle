@@ -63,6 +63,9 @@ dependencies {
 
     //Java Mail
     implementation 'com.sun.mail:javax.mail:1.6.2'
+
+    // spring mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail:3.0.5'
 }
 
 tasks.named('test') {
