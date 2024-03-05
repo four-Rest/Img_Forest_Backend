@@ -48,7 +48,7 @@ public class PaymentApiController {
     // 결제 성공
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/payment")
-    public GlobalResponse paymentComplete(Principal principal, @RequestBody OrderRequestDto orderRequestDto) {
+    public GlobalResponse paymentComplete(Principal principal, @RequestBody OrderRequestDto orderRequestDto) throws IOException {
         String orderNumber = String.valueOf(orderRequestDto.getOrderNumber());
 
         try {
