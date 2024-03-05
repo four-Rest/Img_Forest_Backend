@@ -21,4 +21,5 @@ public class ArticleRequestDto {
     private String content;
     private String tagString;
     private MultipartFile multipartFile;
+    private Long price;
 }
