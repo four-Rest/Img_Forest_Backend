@@ -48,6 +48,7 @@ public class ArticleService {
                 .content(articleRequestDto.getContent())
                 .member(member)
                 .price(articleRequestDto.getPrice())
+                .paid(articleRequestDto.isPaid())
                 .likes(0)
                 .build();
         String tagString = articleRequestDto.getTagString();

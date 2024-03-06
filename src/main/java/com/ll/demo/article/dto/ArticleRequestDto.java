@@ -22,4 +22,5 @@ public class ArticleRequestDto {
     private String tagString;
     private MultipartFile multipartFile;
     private Long price;
+    private boolean isPaid;
 }
