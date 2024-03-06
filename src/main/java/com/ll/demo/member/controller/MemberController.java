@@ -6,12 +6,16 @@ import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.member.dto.*;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
+import com.ll.demo.member.service.EmailService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.WebUtils;
@@ -31,6 +35,7 @@ public class MemberController {
     private final HttpServletResponse response;
     private final HttpServletRequest request;
     private final JwtProperties jwtProperties;
+    private final EmailService emailService;
 
     @PostMapping("/signup")
     public GlobalResponse signup(@RequestBody MemberCreateRequestDto userCreateRequestDto) {
@@ -228,5 +233,22 @@ public class MemberController {
         response.addHeader("Set-Cookie", cookie2.toString());
     }
 
+    //인증 번호 전송
+    @PostMapping("/sendEmail")
+    public GlobalResponse<MemberEmailRequestDto> sendEmail(@RequestBody MemberEmailRequestDto requestDto) {
+        memberService.sendCodeToEmail(requestDto.getEmail());
+        System.out.println("이메일 전송 완료");
+        return GlobalResponse.of("200", "이메일 전송 성공");
+    }
 
+    //이메일 인증
+    @PostMapping("/verifyEmail")
+    public GlobalResponse<MemberEmailVerifyResponseDto> verifyEmail(@RequestBody MemberEmailVerifyRequestDto requestDto) {
+        boolean isVerified = memberService.verifyCode(requestDto.getEmail(), requestDto.getVerificationCode());
+        MemberEmailVerifyResponseDto responseDto = new MemberEmailVerifyResponseDto();
+        responseDto.setVerified(isVerified);
+        responseDto.setMessage(isVerified ? "Email verified successfully." : "Invalid or expired verification code.");
+        if(isVerified) return GlobalResponse.of("200", "인증 완료", responseDto);
+        else return GlobalResponse.of("200", "인증 실패", responseDto);
+    }
 }

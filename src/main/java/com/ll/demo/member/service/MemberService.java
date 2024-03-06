@@ -4,13 +4,20 @@ import com.ll.demo.global.config.JwtProperties;
 import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.member.dto.*;
 import com.ll.demo.member.entity.Member;
+import com.ll.demo.member.entity.VerificationCode;
+import com.ll.demo.member.repository.EmailRepository;
 import com.ll.demo.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +25,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder encoder;
     private final JwtProperties jwtProperties;
+    private final EmailRepository emailRepository;
+    private final EmailService emailService;
 
     @Transactional
     public GlobalResponse<Member> signup(MemberCreateRequestDto dto) {
@@ -141,5 +150,54 @@ public class MemberService {
         return socialSignup(dto);
     }
 
+    public void sendCodeToEmail(String email) {
+        VerificationCode createdCode = createVerificationCode(email);
+        String title = "Img Forest 이메일 인증 번호";
+        try {
+            emailService.sendEmail(email, title, createdCode.getCode());
+        } catch (RuntimeException e) {
+            e.printStackTrace(); // 또는 로거를 사용하여 상세한 예외 정보 로깅
+            throw new RuntimeException("Unable to send email in sendCodeToEmail", e); // 원인 예외를 포함시키기
+        }
+    }
+
+    // 인증 코드 생성 및 저장
+    public VerificationCode createVerificationCode(String email) {
+        String randomCode = generateRandomCode(6);
+        VerificationCode code = VerificationCode.builder()
+                .email(email)
+                .code(randomCode) // 랜덤 코드 생성
+                .expiresTime(LocalDateTime.now().plusDays(1)) // 1일 후 만료
+                .build();
+
+        return emailRepository.save(code);
+    }
+
+    public String generateRandomCode(int length) {
+        // 숫자 + 대문자 + 소문자
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            sb.append(characters.charAt(index));
+        }
+
+        return sb.toString();
+    }
+
+    // 인증 코드 유효성 검사
+    public boolean verifyCode(String email, String code) {
+        return emailRepository.findByEmailAndCode(email, code)
+                .map(vc -> vc.getExpiresTime().isAfter(LocalDateTime.now()))
+                .orElse(false);
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 12 * * ?") // 매일 정오에 해당 만료 코드 삭제
+    public void deleteExpiredVerificationCodes() {
+        emailRepository.deleteByExpiresTimeBefore(LocalDateTime.now());
+    }
 
 }
