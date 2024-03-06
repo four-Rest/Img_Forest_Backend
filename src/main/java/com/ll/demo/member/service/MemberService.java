@@ -9,6 +9,7 @@ import com.ll.demo.member.repository.EmailRepository;
 import com.ll.demo.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -193,7 +194,8 @@ public class MemberService {
                 .orElse(false);
     }
 
-    // 만료된 인증 코드 삭제 (스케줄링 작업 필요)
+    @Transactional
+    @Scheduled(cron = "0 0 12 * * ?") // 매일 정오에 해당 만료 코드 삭제
     public void deleteExpiredVerificationCodes() {
         emailRepository.deleteByExpiresTimeBefore(LocalDateTime.now());
     }
