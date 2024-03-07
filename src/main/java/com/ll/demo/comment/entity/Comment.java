@@ -29,10 +29,10 @@ public class Comment extends BaseEntity {
     private Article article;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Comment parentComment; // 부모 댓글 필드 추가
+    private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment")
-    private List<Comment> childComments; // 자식 댓글 필드 추가
+    private List<Comment> childComments;
 
     public void changeComment(Comment comment) {
         this.content = comment.getContent();

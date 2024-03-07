@@ -4,15 +4,16 @@ import com.ll.demo.comment.entity.Comment;
 import lombok.*;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class CreateCommentResponse {
+public class CreateReplyCommentResponse {
     private Long id;
     private String content;
 
-    public static CreateCommentResponse of(Comment comment) {
-        return CreateCommentResponse.builder()
+    public static CreateReplyCommentResponse of(Comment comment) {
+        return CreateReplyCommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
                 .build();

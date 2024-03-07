@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Service
 @Transactional(readOnly = true)
@@ -54,18 +55,50 @@ public class CommentService {
     }
 
     @Transactional
-    public CreateCommentResponse createReply(Long parentCommentId, CreateCommentRequest request) {
+    public CreateCommentResponse createReply(Long parentCommentId, CreateReplyCommentRequest request) {
         Member member = this.verifyMember(request.getUsername());
         Article article = this.verifyArticle(request.getArticleId());
 
         Comment parentComment = this.verifyComment(parentCommentId);
-        Comment reply = CreateCommentRequest.toEntity(request, member, article);
+        if (parentComment.getChildComments() == null) {
+            parentComment.setChildComments(new ArrayList<>());
+        }
+
+        Comment reply = CreateReplyCommentRequest.toEntity(request, member, article);
         reply.setParentComment(parentComment);
+        parentComment.getChildComments().add(reply);
 
         Comment savedReply = this.commentRepository.save(reply);
 
+        parentComment.setChildComments(parentComment.getChildComments()); // 부모 댓글의 자식 댓글 목록을 초기화
+
         return CreateCommentResponse.of(savedReply);
     }
+
+    @Transactional
+    public UpdateCommentResponse updateReply(UpdateReplyCommentRequest request) {
+        Member member = this.verifyMember(request.getUsername());
+
+        Comment savedReply = this.verifyComment(request.getReplyId());
+        savedReply.changeComment(UpdateReplyCommentRequest.toEntity(request, member, null)); // 게시글 정보를 요구하지 않으므로 null 전달
+
+        return UpdateCommentResponse.of(this.commentRepository.save(savedReply));
+    }
+
+    @Transactional
+    public DeleteCommentResponse deleteReply(Long replyId) {
+        Comment reply = this.verifyComment(replyId);
+
+        Comment parentComment = reply.getParentComment();
+        if (parentComment != null) {
+            parentComment.getChildComments().remove(reply);
+        }
+
+        reply.setRemovedTime(LocalDateTime.now());
+
+        return DeleteCommentResponse.of(reply);
+    }
+
 
     private Member verifyMember(String username) {
         return this.memberRepository.findByUsername(username).orElseThrow(() ->

@@ -5,21 +5,24 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 public class ListCommentResponse {
     private Long id;
-    private Long parentId; // 대댓글의 부모 댓글 ID
+    private Long parentCommentId;
     private String content;
     private String username;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private LocalDateTime removedTime;
+    private List<ListCommentResponse> childComments = new ArrayList<>();
 
-    public ListCommentResponse(Comment comment){
+    public ListCommentResponse(Comment comment) {
         this.id = comment.getId();
-        this.parentId = comment.getParentComment() != null ? comment.getParentComment().getId() : null; // 부모 댓글 ID 설정
+        this.parentCommentId = comment.getParentComment() != null ? comment.getParentComment().getId() : null;
         this.content = comment.getContent();
         this.username = comment.getMember().getUsername();
         this.createdDate = comment.getCreatedTime();

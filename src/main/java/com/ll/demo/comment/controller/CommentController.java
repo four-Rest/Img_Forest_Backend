@@ -36,13 +36,27 @@ public class CommentController {
         return GlobalResponse.of("200", "success", this.commentService.delete(deleteCommentRequest));
     }
 
-    // 대댓글 생성 기능 추가
-    @PostMapping("/{parentCommentId}/replies")
+    @PostMapping("/reply/{parentId}")
     public GlobalResponse<CreateCommentResponse> createReply(
-            @PathVariable("parentCommentId") Long parentCommentId,
-            @Valid @RequestBody CreateCommentRequest createCommentRequest
+            @PathVariable("parentId") Long parentCommentId,
+            @Valid @RequestBody CreateReplyCommentRequest createReplyCommentRequest
     ) {
-        return GlobalResponse.of("201", "success", this.commentService.createReply(parentCommentId, createCommentRequest));
+        return GlobalResponse.of("201", "success", this.commentService.createReply(parentCommentId, createReplyCommentRequest));
     }
 
+    @PutMapping("/reply/{replyId}")
+    public GlobalResponse<UpdateCommentResponse> updateReply(
+            @PathVariable("replyId") Long replyId,
+            @Valid @RequestBody UpdateReplyCommentRequest updateReplyCommentRequest
+    ) {
+        updateReplyCommentRequest.setReplyId(replyId);
+        return GlobalResponse.of("200", "success", this.commentService.updateReply(updateReplyCommentRequest));
+    }
+
+    @DeleteMapping("/reply/{replyId}")
+    public GlobalResponse<DeleteCommentResponse> deleteReply(
+            @PathVariable("replyId") Long replyId
+    ) {
+        return GlobalResponse.of("200", "success", this.commentService.deleteReply(replyId));
+    }
 }
