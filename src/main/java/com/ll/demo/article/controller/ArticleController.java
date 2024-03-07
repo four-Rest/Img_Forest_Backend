@@ -75,6 +75,8 @@ public class ArticleController {
             return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
         }
 
+        System.out.println("게시글 유료화 여부:"+ articleRequestDto.isPaid());
+
         articleService.create(articleRequestDto, member);
 
         return GlobalResponse.of("200", "Article created");
