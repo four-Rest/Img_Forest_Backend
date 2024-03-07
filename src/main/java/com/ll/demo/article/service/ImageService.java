@@ -1,5 +1,11 @@
 package com.ll.demo.article.service;
 
+import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
 import com.ll.demo.article.repository.ArticleRepository;
@@ -16,6 +22,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -24,6 +33,31 @@ import java.util.UUID;
 public class ImageService {
 
     private final ImageRepository imageRepository;
+    private final AmazonS3 s3;
+
+    public List<String> getList() {
+
+        String bucketName = "img-forest-image";
+        List<String> fileList = new ArrayList<>();
+        try {
+            ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
+                    .withBucketName(bucketName)
+                    .withDelimiter("/")
+                    .withMaxKeys(300);
+
+            ObjectListing objectListing = s3.listObjects(listObjectsRequest);
+
+            for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
+                fileList.add(objectSummary.getKey());
+            }
+        } catch (AmazonS3Exception e) {
+            e.printStackTrace();
+        } catch(SdkClientException e) {
+            e.printStackTrace();
+        }
+
+        return fileList;
+    }
 
     @Transactional
     public String setImagePath() {

@@ -36,7 +36,6 @@ spring:
       accessKey: ON_SECRET
       secretKey: ON_SECRET
       regionName: kr-standard
-      endpoint: https://kr.object.ncloudstorage.com
 
 logging:
   level:
