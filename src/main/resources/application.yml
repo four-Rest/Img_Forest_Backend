@@ -33,9 +33,8 @@ spring:
             user-name-attribute: id
   cloud:
     asw:
-      credentials:
-        access-key: ON_SECRET
-        secret-key: ON_SECRET
+      accessKey: ON_SECRET
+      secretKey: ON_SECRET
       regionName: kr-standard
       endpoint: https://kr.object.ncloudstorage.com
 
