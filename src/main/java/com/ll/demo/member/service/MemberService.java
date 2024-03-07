@@ -7,6 +7,7 @@ import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.entity.VerificationCode;
 import com.ll.demo.member.repository.EmailRepository;
 import com.ll.demo.member.repository.MemberRepository;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -153,9 +154,20 @@ public class MemberService {
     public void sendCodeToEmail(String email) {
         VerificationCode createdCode = createVerificationCode(email);
         String title = "Img Forest 이메일 인증 번호";
+
+        String content = "<html>"
+                + "<body>"
+                + "<h1>ImgForest 인증 코드: " + createdCode.getCode() + "</h1>"
+                + "<p>해당 코드를 홈페이지에 입력하세요.</p>"
+                // 푸터 추가
+                + "<footer style='color: grey; font-size: small;'>"
+                + "<p>※본 메일은 자동응답 메일이므로 본 메일에 회신하지 마시기 바랍니다.</p>"
+                + "</footer>"
+                + "</body>"
+                + "</html>";
         try {
-            emailService.sendEmail(email, title, createdCode.getCode());
-        } catch (RuntimeException e) {
+            emailService.sendEmail(email, title, content);
+        } catch (RuntimeException | MessagingException e) {
             e.printStackTrace(); // 또는 로거를 사용하여 상세한 예외 정보 로깅
             throw new RuntimeException("Unable to send email in sendCodeToEmail", e); // 원인 예외를 포함시키기
         }
