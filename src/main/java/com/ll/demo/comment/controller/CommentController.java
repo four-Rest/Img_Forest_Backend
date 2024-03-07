@@ -35,4 +35,14 @@ public class CommentController {
         deleteCommentRequest.setCommentId(id);
         return GlobalResponse.of("200", "success", this.commentService.delete(deleteCommentRequest));
     }
+
+    // 대댓글 생성 기능 추가
+    @PostMapping("/{parentCommentId}/replies")
+    public GlobalResponse<CreateCommentResponse> createReply(
+            @PathVariable("parentCommentId") Long parentCommentId,
+            @Valid @RequestBody CreateCommentRequest createCommentRequest
+    ) {
+        return GlobalResponse.of("201", "success", this.commentService.createReply(parentCommentId, createCommentRequest));
+    }
+
 }

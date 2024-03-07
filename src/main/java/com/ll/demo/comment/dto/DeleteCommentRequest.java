@@ -3,7 +3,6 @@ package com.ll.demo.comment.dto;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.comment.entity.Comment;
 import com.ll.demo.member.entity.Member;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
@@ -23,11 +22,23 @@ public class DeleteCommentRequest {
     @NotNull(message = "어떤 멤버인지 확인이 필요합니다.")
     private String username;
 
+    private Long parentCommentId; // 대댓글의 부모 댓글 ID
+
     public static Comment toEntity(DeleteCommentRequest request, Member member, Article article) {
-        return Comment.builder()
+        Comment comment = Comment.builder()
                 .id(request.getCommentId())
                 .member(member)
                 .article(article)
                 .build();
+
+        // 부모 댓글의 ID를 설정
+        if (request.getParentCommentId() != null) {
+            Comment parentComment = Comment.builder()
+                    .id(request.getParentCommentId())
+                    .build();
+            comment.setParentComment(parentComment);
+        }
+
+        return comment;
     }
 }

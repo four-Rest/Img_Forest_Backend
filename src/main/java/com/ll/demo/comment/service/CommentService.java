@@ -26,7 +26,6 @@ public class CommentService {
         Member member = this.verifyMember(request.getUsername());
         Article article = this.verifyArticle(request.getArticleId());
 
-        // TODO: JWT를 parse해서 해당 정보로 member를 가져올지에 대한 논의 필요.
         Comment saved = this.commentRepository.save(CreateCommentRequest.toEntity(request, member, article));
 
         return CreateCommentResponse.of(saved);
@@ -43,11 +42,6 @@ public class CommentService {
         return UpdateCommentResponse.of(this.commentRepository.save(saveComment));
     }
 
-    /**
-     * TODO: 논리적 삭제 구현에 대해서 상의 필요
-     * @param request
-     * @return
-     */
     @Transactional
     public DeleteCommentResponse delete(DeleteCommentRequest request) {
         this.verifyMember(request.getUsername());
@@ -57,6 +51,20 @@ public class CommentService {
         saveComment.setRemovedTime(LocalDateTime.now());
 
         return DeleteCommentResponse.of(this.commentRepository.save(saveComment));
+    }
+
+    @Transactional
+    public CreateCommentResponse createReply(Long parentCommentId, CreateCommentRequest request) {
+        Member member = this.verifyMember(request.getUsername());
+        Article article = this.verifyArticle(request.getArticleId());
+
+        Comment parentComment = this.verifyComment(parentCommentId);
+        Comment reply = CreateCommentRequest.toEntity(request, member, article);
+        reply.setParentComment(parentComment);
+
+        Comment savedReply = this.commentRepository.save(reply);
+
+        return CreateCommentResponse.of(savedReply);
     }
 
     private Member verifyMember(String username) {
