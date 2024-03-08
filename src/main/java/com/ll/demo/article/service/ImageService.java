@@ -213,7 +213,18 @@ public class ImageService {
 
     @Transactional
     public void delete2(Image image) {
+        String path = image.getPath();
+        String fileName = image.getFileName();
 
+        try {
+            s3.deleteObject(bucketName, path + "/" + fileName);
+        } catch (AmazonS3Exception e) {
+            e.printStackTrace();
+        } catch(SdkClientException e) {
+            e.printStackTrace();
+        }
+
+        imageRepository.delete(image);
     }
 
     @Transactional
