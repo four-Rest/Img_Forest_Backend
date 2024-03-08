@@ -2,10 +2,7 @@ package com.ll.demo.article.service;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.*;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
 import com.ll.demo.article.repository.ArticleRepository;
@@ -15,17 +12,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +30,12 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
     private final AmazonS3 s3;
+    private final String bucketName = "img-forest-image";
 
+    //S3 파일 목록 조회 테스트
     public List<String> getList() {
 
-        String bucketName = "img-forest-image";
+
         List<String> fileList = new ArrayList<>();
         try {
             ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
@@ -49,6 +47,9 @@ public class ImageService {
 
             for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
                 fileList.add(objectSummary.getKey());
+            }
+            for (String commonPrefixes : objectListing.getCommonPrefixes()) {
+                fileList.add(commonPrefixes);
             }
         } catch (AmazonS3Exception e) {
             e.printStackTrace();
@@ -110,6 +111,94 @@ public class ImageService {
     }
 
     @Transactional
+    public Image create2(Article article, MultipartFile multipartFile) throws IOException {
+
+        //저장 경로, 파일 이름 설정
+        String imgPath = setImagePath2();
+
+        UUID uuid = UUID.randomUUID();
+
+        String fileName = uuid + "_" + multipartFile.getOriginalFilename();
+
+        //멀티파트 파일을 일반 파일로 전환
+        File file = convertMultipartFileToFile(multipartFile);
+
+
+        //Object storage에 업로드
+        try {
+            s3.putObject(new PutObjectRequest(bucketName,imgPath + "/" + fileName, file));
+        } catch (AmazonS3Exception e) {
+            e.printStackTrace();
+        } catch(SdkClientException e) {
+            e.printStackTrace();
+        }
+
+        //이미지 객체 생성
+        Image image = Image.builder()
+                .article(article)
+                .fileName(fileName)
+                .path(imgPath)
+                .build();
+
+        //저장
+        imageRepository.save(image);
+
+        //로컬에 생성된 파일 삭제
+        file.delete();
+
+        return image;
+
+    }
+
+    @Transactional
+    public File convertMultipartFileToFile(MultipartFile file) throws IOException {
+        File convertedFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+        FileOutputStream fos = new FileOutputStream(convertedFile);
+        fos.write(file.getBytes());
+        fos.close();
+        return convertedFile;
+    }
+
+
+    @Transactional
+    public String setImagePath2() {
+
+        //현재 날짜를 폴더 이름으로 지정
+        LocalDateTime createdTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String path = createdTime.format(formatter);
+
+        //path폴더가 있는지 확인
+        String folderPath = path + "/";
+
+        ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
+                .withBucketName(bucketName)
+                .withPrefix(folderPath)
+                .withDelimiter("/");
+
+        ObjectListing objects = s3.listObjects(listObjectsRequest);
+
+        List<String> commonPrefixes = objects.getCommonPrefixes();
+
+        if (commonPrefixes.isEmpty()) {
+            //path폴더가 없으면 생성
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentLength(0L);
+            objectMetadata.setContentType("application/x-directory");
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, path, new ByteArrayInputStream(new byte[0]), objectMetadata);
+
+            try {
+                s3.putObject(putObjectRequest);
+            } catch (AmazonS3Exception e) {
+                e.printStackTrace();
+            } catch (SdkClientException e) {
+                e.printStackTrace();
+            }
+        }
+        return path;
+    }
+
+    @Transactional
     public void delete(Image image) throws IOException {
 
         String projectPath = image.getPath();
@@ -120,6 +209,11 @@ public class ImageService {
         deleteFile(filePath);
 
         imageRepository.delete(image);
+    }
+
+    @Transactional
+    public void delete2(Image image) {
+
     }
 
     @Transactional

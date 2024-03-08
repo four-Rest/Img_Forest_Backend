@@ -53,7 +53,7 @@ public class ArticleService {
         if (tagString != null) {
             articleTagService.update(article, tagString);
         }
-        Image image = imageService.create(article, articleRequestDto.getMultipartFile());
+        Image image = imageService.create2(article, articleRequestDto.getMultipartFile());
         article.setImage(image);
         articleRepository.save(article);
     }
