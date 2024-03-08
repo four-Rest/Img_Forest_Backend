@@ -34,11 +34,11 @@ public class SecurityConfig {
                                     .requestMatchers("/resource/**")
                                     .permitAll()
                                     .requestMatchers("/h2-console/**")
-                                    .permitAll();
+                                    .permitAll()
+                                            .requestMatchers("/swagger-ui/**")
+                                                    .permitAll();
 
-                             authorizeRequests
-                                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
-                                    .hasRole("ADMIN");
+
 
                             authorizeRequests
                                     .anyRequest()

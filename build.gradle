@@ -70,6 +70,9 @@ dependencies {
 
     // iamport
     implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
+
+    // Swagger 의존성 추가
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 }
 
 tasks.named('test') {
