@@ -231,10 +231,4 @@ public class ArticleController {
         return GlobalResponse.of("200","success", result);
     }
 
-    //이미지 리스트 조회 테스트
-    @GetMapping("/listup")
-    public List<String> listup() {
-        return imageService.getList();
-    }
-
 }

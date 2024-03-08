@@ -16,9 +16,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -32,89 +29,13 @@ public class ImageService {
     private final AmazonS3 s3;
     private final S3Util s3Util;
 
-    //S3 파일 목록 조회 테스트
-    public List<String> getList() {
 
-
-        List<String> fileList = new ArrayList<>();
-        try {
-            ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
-                    .withBucketName(s3Util.getBucketName())
-                    .withDelimiter("/")
-                    .withMaxKeys(300);
-
-            ObjectListing objectListing = s3.listObjects(listObjectsRequest);
-
-            for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
-                fileList.add(objectSummary.getKey());
-            }
-            for (String commonPrefixes : objectListing.getCommonPrefixes()) {
-                fileList.add(commonPrefixes);
-            }
-        } catch (AmazonS3Exception e) {
-            e.printStackTrace();
-        } catch(SdkClientException e) {
-            e.printStackTrace();
-        }
-
-        return fileList;
-    }
 
     @Transactional
-    public String setImagePath() {
-
-        //현재 날짜를 폴더 이름으로 지정
-        LocalDateTime createdTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        String formattedDateTime = createdTime.format(formatter);
-
-        //저장 디렉토리 결정
-        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\imgFiles\\%s".formatted(formattedDateTime);
-        String os = System.getProperty("os.name").toLowerCase();
-        if (!os.contains("win")) {
-            projectPath = System.getProperty("user.dir") + "/src/main/resources/static/imgFiles/%s".formatted(formattedDateTime);
-        }
-
-        //해당 날짜의 디렉토리가 존재하지 않으면 생성
-        Path path = Paths.get(projectPath);
-        if (!Files.exists(path)) {
-            try {
-                Files.createDirectories(path);
-            } catch (Exception e) {
-                //폴더 생성 실패
-            }
-        }
-        return projectPath;
-    }
-
-    @Transactional
-    public Image create(Article article, MultipartFile file) throws IOException {
-
-        String projectPath = setImagePath();
-
-        UUID uuid = UUID.randomUUID();
-
-        String fileName = uuid + "_" + file.getOriginalFilename();
-
-        File saveFile = new File(projectPath, fileName);
-
-        file.transferTo(saveFile);
-
-        Image image = Image.builder()
-                .article(article)
-                .fileName(fileName)
-                .path(projectPath)
-                .build();
-
-        imageRepository.save(image);
-        return image;
-    }
-
-    @Transactional
-    public Image create2(Article article, MultipartFile multipartFile) throws IOException {
+    public Image create(Article article, MultipartFile multipartFile) throws IOException {
 
         //저장 경로, 파일 이름 설정
-        String imgPath = setImagePath2();
+        String imgPath = setImagePath();
 
         UUID uuid = UUID.randomUUID();
 
@@ -161,7 +82,7 @@ public class ImageService {
 
 
     @Transactional
-    public String setImagePath2() {
+    public String setImagePath() {
 
         //현재 날짜를 폴더 이름으로 지정
         LocalDateTime createdTime = LocalDateTime.now();
@@ -199,7 +120,7 @@ public class ImageService {
     }
 
     @Transactional
-    public void delete2(Image image) {
+    public void delete(Image image) {
         String path = image.getPath();
         String fileName = image.getFileName();
 
@@ -217,7 +138,7 @@ public class ImageService {
     @Transactional
     public void modify(Image image, MultipartFile multipartFile) throws IOException {
 
-        String newFilePath = setImagePath2();
+        String newFilePath = setImagePath();
 
         //기존 이미지 파일 삭제
         String oldFileName = image.getFileName();

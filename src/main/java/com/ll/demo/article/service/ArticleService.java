@@ -55,7 +55,7 @@ public class ArticleService {
         if (tagString != null) {
             articleTagService.update(article, tagString);
         }
-        Image image = imageService.create2(article, articleRequestDto.getMultipartFile());
+        Image image = imageService.create(article, articleRequestDto.getMultipartFile());
         article.setImage(image);
         articleRepository.save(article);
     }
@@ -79,7 +79,7 @@ public class ArticleService {
     @Transactional
     public void delete(Article article) throws IOException {
         Image image = article.getImage();
-        imageService.delete2(image);
+        imageService.delete(image);
         articleRepository.delete(article);
     }
 
