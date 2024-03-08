@@ -8,12 +8,12 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 public class UpdateReplyCommentResponse {
-    private Long id;
+    private Long replyId;
     private String content;
 
     public static UpdateReplyCommentResponse of(Comment comment) {
         return UpdateReplyCommentResponse.builder()
-                .id(comment.getId())
+                .replyId(comment.getId())
                 .content(comment.getContent())
                 .build();
     }

@@ -9,12 +9,12 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class CreateReplyCommentResponse {
-    private Long id;
+    private Long replyId;
     private String content;
 
     public static CreateReplyCommentResponse of(Comment comment) {
         return CreateReplyCommentResponse.builder()
-                .id(comment.getId())
+                .replyId(comment.getId())
                 .content(comment.getContent())
                 .build();
     }

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @Service
 @Transactional(readOnly = true)
@@ -55,50 +54,41 @@ public class CommentService {
     }
 
     @Transactional
-    public CreateCommentResponse createReply(Long parentCommentId, CreateReplyCommentRequest request) {
-        Member member = this.verifyMember(request.getUsername());
-        Article article = this.verifyArticle(request.getArticleId());
+    public CreateCommentResponse createReply(Long parentId, CreateReplyCommentRequest request) {
+        Member member = verifyMember(request.getUsername());
+        Comment saved = this.commentRepository.save(CreateReplyCommentRequest.toEntity(request, member));
+        // 부모 댓글의 ID를 설정합니다.
+        Comment parentComment = verifyComment(parentId);
+        saved.setParentComment(parentComment);
 
-        Comment parentComment = this.verifyComment(parentCommentId);
-        if (parentComment.getChildComments() == null) {
-            parentComment.setChildComments(new ArrayList<>());
-        }
-
-        Comment reply = CreateReplyCommentRequest.toEntity(request, member, article);
-        reply.setParentComment(parentComment);
-        parentComment.getChildComments().add(reply);
-
-        Comment savedReply = this.commentRepository.save(reply);
-
-        parentComment.setChildComments(parentComment.getChildComments()); // 부모 댓글의 자식 댓글 목록을 초기화
-
-        return CreateCommentResponse.of(savedReply);
+        return CreateCommentResponse.of(saved);
     }
 
-    @Transactional
-    public UpdateCommentResponse updateReply(UpdateReplyCommentRequest request) {
-        Member member = this.verifyMember(request.getUsername());
 
-        Comment savedReply = this.verifyComment(request.getReplyId());
-        savedReply.changeComment(UpdateReplyCommentRequest.toEntity(request, member, null)); // 게시글 정보를 요구하지 않으므로 null 전달
-
-        return UpdateCommentResponse.of(this.commentRepository.save(savedReply));
-    }
-
-    @Transactional
-    public DeleteCommentResponse deleteReply(Long replyId) {
-        Comment reply = this.verifyComment(replyId);
-
-        Comment parentComment = reply.getParentComment();
-        if (parentComment != null) {
-            parentComment.getChildComments().remove(reply);
-        }
-
-        reply.setRemovedTime(LocalDateTime.now());
-
-        return DeleteCommentResponse.of(reply);
-    }
-
+//    @Transactional
+//    public UpdateReplyCommentResponse updateReply(UpdateReplyCommentRequest request) {
+//        Comment replyComment = this.verifyReplyComment(request.getReplyId());
+//        replyComment.setContent(request.getContent());
+//        Comment updatedComment = this.commentRepository.save(replyComment);
+//
+//        return UpdateReplyCommentResponse.of(updatedComment);
+//    }
+//
+//
+//    @Transactional
+//    public void deleteReply(Long parentId, Long replyId) {
+//        Comment replyComment = verifyReplyComment(replyId);
+//        Comment parentComment = verifyComment(parentId);
+//        parentComment.getChildComments().remove(replyComment);
+//        replyComment.setRemovedTime(LocalDateTime.now());
+//
+//        commentRepository.save(replyComment);
+//    }
+//    @Transactional(readOnly = true)
+//    public Comment getDeletedReply(Long replyId) {
+//        return commentRepository.findById(replyId).orElseThrow(() ->
+//                new IllegalArgumentException("삭제된 대댓글을 찾을 수 없습니다. ID: " + replyId));
+//    }
 
     private Member verifyMember(String username) {
         return this.memberRepository.findByUsername(username).orElseThrow(() ->

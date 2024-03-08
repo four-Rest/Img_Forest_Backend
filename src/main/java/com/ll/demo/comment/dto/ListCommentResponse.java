@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 public class ListCommentResponse {
     private Long id;
-    private Long parentCommentId;
+    private Long commentId;
     private String content;
     private String username;
     private LocalDateTime createdDate;
@@ -22,7 +22,7 @@ public class ListCommentResponse {
 
     public ListCommentResponse(Comment comment) {
         this.id = comment.getId();
-        this.parentCommentId = comment.getParentComment() != null ? comment.getParentComment().getId() : null;
+        this.commentId = comment.getParentComment() != null ? comment.getParentComment().getId() : null;
         this.content = comment.getContent();
         this.username = comment.getMember().getUsername();
         this.createdDate = comment.getCreatedTime();

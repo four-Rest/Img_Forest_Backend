@@ -36,27 +36,35 @@ public class CommentController {
         return GlobalResponse.of("200", "success", this.commentService.delete(deleteCommentRequest));
     }
 
-    @PostMapping("/reply/{parentId}")
+    @PostMapping("/{parentId}/reply")
     public GlobalResponse<CreateCommentResponse> createReply(
-            @PathVariable("parentId") Long parentCommentId,
+            @PathVariable("parentId") Long parentId,
             @Valid @RequestBody CreateReplyCommentRequest createReplyCommentRequest
     ) {
-        return GlobalResponse.of("201", "success", this.commentService.createReply(parentCommentId, createReplyCommentRequest));
+        CreateCommentResponse response = this.commentService.createReply(parentId, createReplyCommentRequest);
+        return GlobalResponse.of("201", "success", response);
     }
 
-    @PutMapping("/reply/{replyId}")
-    public GlobalResponse<UpdateCommentResponse> updateReply(
-            @PathVariable("replyId") Long replyId,
-            @Valid @RequestBody UpdateReplyCommentRequest updateReplyCommentRequest
-    ) {
-        updateReplyCommentRequest.setReplyId(replyId);
-        return GlobalResponse.of("200", "success", this.commentService.updateReply(updateReplyCommentRequest));
-    }
 
-    @DeleteMapping("/reply/{replyId}")
-    public GlobalResponse<DeleteCommentResponse> deleteReply(
-            @PathVariable("replyId") Long replyId
-    ) {
-        return GlobalResponse.of("200", "success", this.commentService.deleteReply(replyId));
-    }
+//
+//    @PutMapping("/{parentId}/reply/{replyId}")
+//    public GlobalResponse<UpdateReplyCommentResponse> updateReply(
+//            @PathVariable("parentId") Long parentId,
+//            @PathVariable("replyId") Long replyId,
+//            @Valid @RequestBody UpdateReplyCommentRequest updateReplyCommentRequest
+//    ) {
+//        UpdateReplyCommentResponse response = this.commentService.updateReply(updateReplyCommentRequest);
+//        return GlobalResponse.of("200", "success", response);
+//    }
+//
+//    @DeleteMapping("/{parentId}/reply/{replyId}")
+//    public GlobalResponse<DeleteReplyCommentResponse> deleteReply(
+//            @PathVariable("parentId") Long parentId,
+//            @PathVariable("replyId") Long replyId
+//    ) {
+//        commentService.deleteReply(parentId, replyId);
+//        Comment deletedReply = commentService.getDeletedReply(replyId);
+//
+//        return GlobalResponse.of("200", "success", DeleteReplyCommentResponse.of(deletedReply));
+//    }
 }
