@@ -77,7 +77,7 @@ public class ArticleService {
     @Transactional
     public void delete(Article article) throws IOException {
         Image image = article.getImage();
-        imageService.delete(image);
+        imageService.delete2(image);
         articleRepository.delete(article);
     }
 

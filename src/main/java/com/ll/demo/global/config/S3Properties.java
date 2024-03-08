@@ -9,20 +9,20 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
 @Component
 @ConfigurationProperties(prefix = "spring.cloud.aws")
-public class NcpProperties {
+public class S3Properties {
 
     private String accessKey;
     private String secretKey;
     private String regionName;
-    private String endpoint = "https://kr.object.ncloudstorage.com";
+    private String endpoint;
+    private String bucketName;
+
 
     @Bean
     public AmazonS3 s3() {
@@ -34,4 +34,5 @@ public class NcpProperties {
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .build();
     }
+
 }

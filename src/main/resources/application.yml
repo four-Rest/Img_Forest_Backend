@@ -32,10 +32,12 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
   cloud:
-    asw:
+    aws:
       accessKey: ON_SECRET
       secretKey: ON_SECRET
       regionName: kr-standard
+      endpoint: https://kr.object.ncloudstorage.com
+      bucketName: img-forest-image
 
 logging:
   level:

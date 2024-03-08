@@ -5,8 +5,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
-import com.ll.demo.article.repository.ArticleRepository;
 import com.ll.demo.article.repository.ImageRepository;
+import com.ll.demo.global.config.S3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +30,7 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
     private final AmazonS3 s3;
-    private final String bucketName = "img-forest-image";
+    private final S3Util s3Util;
 
     //S3 파일 목록 조회 테스트
     public List<String> getList() {
@@ -39,7 +39,7 @@ public class ImageService {
         List<String> fileList = new ArrayList<>();
         try {
             ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
-                    .withBucketName(bucketName)
+                    .withBucketName(s3Util.getBucketName())
                     .withDelimiter("/")
                     .withMaxKeys(300);
 
@@ -126,7 +126,7 @@ public class ImageService {
 
         //Object storage에 업로드
         try {
-            s3.putObject(new PutObjectRequest(bucketName,imgPath + "/" + fileName, file));
+            s3.putObject(new PutObjectRequest(s3Util.getBucketName(), imgPath + "/" + fileName, file));
         } catch (AmazonS3Exception e) {
             e.printStackTrace();
         } catch(SdkClientException e) {
@@ -172,7 +172,7 @@ public class ImageService {
         String folderPath = path + "/";
 
         ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
-                .withBucketName(bucketName)
+                .withBucketName(s3Util.getBucketName())
                 .withPrefix(folderPath)
                 .withDelimiter("/");
 
@@ -185,7 +185,7 @@ public class ImageService {
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(0L);
             objectMetadata.setContentType("application/x-directory");
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, path, new ByteArrayInputStream(new byte[0]), objectMetadata);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(s3Util.getBucketName(), path, new ByteArrayInputStream(new byte[0]), objectMetadata);
 
             try {
                 s3.putObject(putObjectRequest);
@@ -199,25 +199,12 @@ public class ImageService {
     }
 
     @Transactional
-    public void delete(Image image) throws IOException {
-
-        String projectPath = image.getPath();
-
-        String fileName = image.getFileName();
-        Path filePath = Paths.get(projectPath, fileName);
-
-        deleteFile(filePath);
-
-        imageRepository.delete(image);
-    }
-
-    @Transactional
     public void delete2(Image image) {
         String path = image.getPath();
         String fileName = image.getFileName();
 
         try {
-            s3.deleteObject(bucketName, path + "/" + fileName);
+            s3.deleteObject(s3Util.getBucketName(), path + "/" + fileName);
         } catch (AmazonS3Exception e) {
             e.printStackTrace();
         } catch(SdkClientException e) {
@@ -228,41 +215,47 @@ public class ImageService {
     }
 
     @Transactional
-    public void modify(Image image, MultipartFile file) throws IOException {
+    public void modify(Image image, MultipartFile multipartFile) throws IOException {
 
-        String projectPath = setImagePath();
+        String newFilePath = setImagePath2();
 
         //기존 이미지 파일 삭제
         String oldFileName = image.getFileName();
 
-        Path oldFilePath = Paths.get(image.getPath(), oldFileName);
+        String oldFilePath = image.getPath();
 
-        deleteFile(oldFilePath);
+        try {
+            s3.deleteObject(s3Util.getBucketName(), oldFilePath + "/" + oldFileName);
+        } catch (AmazonS3Exception e) {
+            e.printStackTrace();
+        } catch(SdkClientException e) {
+            e.printStackTrace();
+        }
 
         //새 이미지 파일 저장
         UUID uuid = UUID.randomUUID();
 
-        String newFileName = uuid + "_" + file.getOriginalFilename();
+        String newFileName = uuid + "_" + multipartFile.getOriginalFilename();
 
-        File saveFile = new File(projectPath, newFileName);
+        //멀티파트 파일을 일반 파일로 전환
+        File file = convertMultipartFileToFile(multipartFile);
 
-        file.transferTo(saveFile);
 
-        //Image객체의 fileName을 새 이미지파일로 변경
-        image.modifyFileName(newFileName);
-
-    }
-
-    @Transactional
-    public void deleteFile(Path filePath) throws IOException {
-
-        if (Files.exists(filePath)) {
-            try {
-                Files.delete(filePath);
-            } catch (IOException e) {
-
-            }
+        //Object storage에 업로드
+        try {
+            s3.putObject(new PutObjectRequest(s3Util.getBucketName(), newFilePath + "/" + newFileName, file));
+        } catch (AmazonS3Exception e) {
+            e.printStackTrace();
+        } catch(SdkClientException e) {
+            e.printStackTrace();
         }
 
+        //Image객체의 fileName, path를 새 이미지파일로 변경
+        image.modifyFileName(newFileName);
+        image.modifyPath(newFilePath);
+
+        //로컬에 생성된 파일 삭제
+        file.delete();
     }
+
 }

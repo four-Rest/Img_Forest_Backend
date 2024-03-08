@@ -25,6 +25,7 @@ public class AppConfig {
         return path;
     }
 
+
     @Value("${spring.profiles.active}")
     public void setActiveProfile(String activeProfile) {
         this.activeProfile = activeProfile;
