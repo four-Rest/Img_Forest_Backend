@@ -47,7 +47,8 @@ public class ImageService {
 
         //Object storage에 업로드
         try {
-            s3.putObject(new PutObjectRequest(s3Util.getBucketName(), imgPath + "/" + fileName, file));
+            s3.putObject(new PutObjectRequest(s3Util.getBucketName(), imgPath + "/" + fileName, file)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (AmazonS3Exception e) {
             e.printStackTrace();
         } catch(SdkClientException e) {
@@ -164,7 +165,8 @@ public class ImageService {
 
         //Object storage에 업로드
         try {
-            s3.putObject(new PutObjectRequest(s3Util.getBucketName(), newFilePath + "/" + newFileName, file));
+            s3.putObject(new PutObjectRequest(s3Util.getBucketName(), newFilePath + "/" + newFileName, file)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (AmazonS3Exception e) {
             e.printStackTrace();
         } catch(SdkClientException e) {
