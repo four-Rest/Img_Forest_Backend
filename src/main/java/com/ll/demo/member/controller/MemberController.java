@@ -7,6 +7,11 @@ import com.ll.demo.member.dto.*;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
 import io.jsonwebtoken.Claims;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,6 +30,14 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
+@Tag(name = "Member", description = "Member API")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다.", content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "400", description = "요청에 실패했습니다.", content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "401", description = "인증이 필요합니다.", content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "403", description = "요청이 거부되었습니다.", content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "404", description = "리소스를 서버에서 찾을 수 없습니다.", content = @Content(mediaType = "application/json"))
+})
 public class MemberController {
 
     private final MemberService memberService;
@@ -33,6 +46,7 @@ public class MemberController {
     private final JwtProperties jwtProperties;
 
     @PostMapping("/signup")
+    @Operation(summary = "회원가입", description = "회원가입 시 사용하는 API")
     public GlobalResponse signup(@RequestBody MemberCreateRequestDto userCreateRequestDto) {
         if (!userCreateRequestDto.getPassword1().equals(userCreateRequestDto.getPassword2())) {
             return GlobalResponse.of("409", "비밀번호가 일치하지 않습니다");
@@ -41,6 +55,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "로그인", description = "로그인 시 사용하는 API")
     public GlobalResponse<LoginResponseDto> login(@RequestBody LoginRequestDto dto) {
         GlobalResponse<Member> checkedResp = memberService.checkMembernameAndPassword(dto.getUsername(), dto.getPassword());
         Member member = checkedResp.getData();
@@ -74,6 +89,7 @@ public class MemberController {
     }
 
     @PostMapping("/login/refresh")
+    @Operation(summary = "리프레쉬토큰 발급", description = "리프레쉬 토큰 발급 시 사용하는 API")
     public GlobalResponse refreshAccessToken() {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
@@ -109,6 +125,7 @@ public class MemberController {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "로그아웃 시 사용하는 API")
     public GlobalResponse logout() {
 
         removeCrossDomainCookie();
@@ -117,6 +134,7 @@ public class MemberController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/mypage")
+    @Operation(summary = "마이페이지", description = "마이페이지 시 사용하는 API")
     public GlobalResponse<MyPageResponseDto> mypage(Principal principal) {
 
         String username = principal.getName();
@@ -126,6 +144,7 @@ public class MemberController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/mypage")
+    @Operation(summary = "내정보수정", description = "내정보수정 시 사용하는 API")
     public GlobalResponse mypage(Principal principal, @RequestBody MyPageRequestDto dto){
 
 
@@ -140,6 +159,7 @@ public class MemberController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/update")
+    @Operation(summary = "마이페이지", description = "마이페이지 시 사용하는 API")
     public GlobalResponse updateMemberInfo(Principal principal) {
         String username = principal.getName();
         Member member = memberService.findByUsername(username);
@@ -154,6 +174,7 @@ public class MemberController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
+    @Operation(summary = "내정보수정", description = "내정보수정 시 사용하는 API")
     public GlobalResponse updateMemberInfo(Principal principal, @RequestBody MemberInfoUpdateRequestDto requestDto) {
         String username = principal.getName();
         Member member = memberService.findByUsername(username);
@@ -165,6 +186,7 @@ public class MemberController {
     }
 
     @PostMapping("/checkAccessToken")
+    @Operation(summary = "토큰 검증", description = "JWT 검증 시 사용하는 API")
     public GlobalResponse<LoginResponseDto> checkAccessToken(HttpServletRequest request) {
         try {
             Cookie cookie = WebUtils.getCookie(request, "accessToken");
