@@ -68,6 +68,9 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3', 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
+    // S3
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.671'
+
     // iamport
     implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
 

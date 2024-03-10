@@ -31,6 +31,14 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
+  cloud:
+    aws:
+      accessKey: ON_SECRET
+      secretKey: ON_SECRET
+      regionName: kr-standard
+      endpoint: https://kr.object.ncloudstorage.com
+      bucketName: img-forest-image
+
   mail:
     host: smtp.gmail.com  # Gmail의 SMTP 서버 호스트
     port: 587 # Gmail SMTP 서버는 587번 포트를 사용
@@ -88,3 +96,4 @@ springdoc:
   model-and-view-allowed: true
   paths-to-match:
     - /api/**
+
