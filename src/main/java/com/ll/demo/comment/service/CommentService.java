@@ -54,16 +54,16 @@ public class CommentService {
     }
 
     @Transactional
-    public CreateCommentResponse createReply(Long parentId, CreateReplyCommentRequest request) {
-        Member member = verifyMember(request.getUsername());
+    public CreateCommentResponse createReply(Long commentId, CreateReplyCommentRequest request) {
+        Member member = this.verifyMember(request.getUsername());
+
         Comment saved = this.commentRepository.save(CreateReplyCommentRequest.toEntity(request, member));
-        // 부모 댓글의 ID를 설정합니다.
-        Comment parentComment = verifyComment(parentId);
+
+        Comment parentComment = verifyComment(commentId);
         saved.setParentComment(parentComment);
 
         return CreateCommentResponse.of(saved);
     }
-
 
 //    @Transactional
 //    public UpdateReplyCommentResponse updateReply(UpdateReplyCommentRequest request) {
@@ -76,9 +76,9 @@ public class CommentService {
 //
 //
 //    @Transactional
-//    public void deleteReply(Long parentId, Long replyId) {
+//    public void deleteReply(Long commentId, Long replyId) {
 //        Comment replyComment = verifyReplyComment(replyId);
-//        Comment parentComment = verifyComment(parentId);
+//        Comment parentComment = verifyComment(commentId);
 //        parentComment.getChildComments().remove(replyComment);
 //        replyComment.setRemovedTime(LocalDateTime.now());
 //

@@ -52,20 +52,20 @@ public class CommentController {
         return GlobalResponse.of("200", "success", this.commentService.delete(deleteCommentRequest));
     }
 
-    @PostMapping("/{parentId}/reply")
+    @PostMapping("/{commentId}/reply")
     public GlobalResponse<CreateCommentResponse> createReply(
-            @PathVariable("parentId") Long parentId,
+            @PathVariable("commentId") Long commentId,
             @Valid @RequestBody CreateReplyCommentRequest createReplyCommentRequest
     ) {
-        CreateCommentResponse response = this.commentService.createReply(parentId, createReplyCommentRequest);
+        CreateCommentResponse response = this.commentService.createReply(commentId, createReplyCommentRequest);
         return GlobalResponse.of("201", "success", response);
     }
 
 
 //
-//    @PutMapping("/{parentId}/reply/{replyId}")
+//    @PutMapping("/{commentId}/reply/{replyId}")
 //    public GlobalResponse<UpdateReplyCommentResponse> updateReply(
-//            @PathVariable("parentId") Long parentId,
+//            @PathVariable("commentId") Long commentId,
 //            @PathVariable("replyId") Long replyId,
 //            @Valid @RequestBody UpdateReplyCommentRequest updateReplyCommentRequest
 //    ) {
@@ -73,12 +73,12 @@ public class CommentController {
 //        return GlobalResponse.of("200", "success", response);
 //    }
 //
-//    @DeleteMapping("/{parentId}/reply/{replyId}")
+//    @DeleteMapping("/{commentId}/reply/{replyId}")
 //    public GlobalResponse<DeleteReplyCommentResponse> deleteReply(
-//            @PathVariable("parentId") Long parentId,
+//            @PathVariable("commentId") Long commentId,
 //            @PathVariable("replyId") Long replyId
 //    ) {
-//        commentService.deleteReply(parentId, replyId);
+//        commentService.deleteReply(commentId, replyId);
 //        Comment deletedReply = commentService.getDeletedReply(replyId);
 //
 //        return GlobalResponse.of("200", "success", DeleteReplyCommentResponse.of(deletedReply));
