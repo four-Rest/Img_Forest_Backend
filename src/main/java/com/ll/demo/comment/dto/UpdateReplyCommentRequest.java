@@ -11,4 +11,8 @@ import lombok.*;
 public class UpdateReplyCommentRequest {
     @NotBlank(message = "댓글 내용은 필수입니다.")
     private String content;
+
+    private Long replyId;
+
+    private String username;
 }

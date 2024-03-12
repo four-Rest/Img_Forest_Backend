@@ -66,31 +66,38 @@ public class CommentService {
         return CreateCommentResponse.of(saved);
     }
 
+    @Transactional
+    public UpdateReplyCommentResponse updateReply(Long replyId, UpdateReplyCommentRequest request, Principal principal) {
+        Member member = verifyMember(principal.getName());
 
-//    @Transactional
-//    public UpdateReplyCommentResponse updateReply(UpdateReplyCommentRequest request) {
-//        Comment replyComment = this.verifyReplyComment(request.getReplyId());
-//        replyComment.setContent(request.getContent());
-//        Comment updatedComment = this.commentRepository.save(replyComment);
-//
-//        return UpdateReplyCommentResponse.of(updatedComment);
-//    }
-//
-//
-//    @Transactional
-//    public void deleteReply(Long commentId, Long replyId) {
-//        Comment replyComment = verifyReplyComment(replyId);
-//        Comment parentComment = verifyComment(commentId);
-//        parentComment.getChildComments().remove(replyComment);
-//        replyComment.setRemovedTime(LocalDateTime.now());
-//
-//        commentRepository.save(replyComment);
-//    }
-//    @Transactional(readOnly = true)
-//    public Comment getDeletedReply(Long replyId) {
-//        return commentRepository.findById(replyId).orElseThrow(() ->
-//                new IllegalArgumentException("삭제된 대댓글을 찾을 수 없습니다. ID: " + replyId));
-//    }
+        Comment replyComment = verifyReplyComment(replyId);
+        if (!replyComment.getMember().equals(member)) {
+            throw new IllegalArgumentException("해당 대댓글을 수정할 권한이 없습니다.");
+        }
+        replyComment.setContent(request.getContent());
+        Comment updatedComment = commentRepository.save(replyComment);
+
+        return UpdateReplyCommentResponse.of(updatedComment);
+    }
+
+    @Transactional
+    public DeleteReplyCommentResponse deleteReply(Long commentId, Long replyId, Principal principal) {
+        Member member = verifyMember(principal.getName());
+
+        Comment replyComment = verifyReplyComment(replyId);
+        if (!replyComment.getMember().equals(member)) {
+            throw new IllegalArgumentException("해당 대댓글을 삭제할 권한이 없습니다.");
+        }
+
+        Comment parentComment = verifyComment(commentId);
+        parentComment.getChildComments().remove(replyComment);
+        replyComment.setRemovedTime(LocalDateTime.now());
+
+        commentRepository.save(replyComment);
+
+        return DeleteReplyCommentResponse.of(replyComment);
+    }
+
 
     private Member verifyMember(String username) {
         return this.memberRepository.findByUsername(username).orElseThrow(() ->
@@ -107,6 +114,12 @@ public class CommentService {
     private Comment verifyComment(Long id) {
         return this.commentRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("댓글이 존재하지 않습니다.")
+        );
+    }
+
+    private Comment verifyReplyComment(Long replyId) {
+        return this.commentRepository.findById(replyId).orElseThrow(() ->
+                new IllegalArgumentException("대댓글이 존재하지 않습니다.")
         );
     }
 }

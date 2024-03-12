@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.security.Principal;
 
 @RestController
@@ -65,7 +64,7 @@ public class CommentController {
             @PathVariable("commentId") Long commentId,
             @Valid @RequestBody CreateReplyCommentRequest createReplyCommentRequest,
             Principal principal
-    ) throws IOException {
+    ) {
         Member member = memberService.findByUsername(principal.getName());
         if (member == null) {
             return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
@@ -74,26 +73,34 @@ public class CommentController {
         return GlobalResponse.of("201", "success", response);
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/{commentId}/reply/{replyId}")
+    public GlobalResponse<UpdateReplyCommentResponse> updateReply(
+            @PathVariable("commentId") Long commentId,
+            @PathVariable("replyId") Long replyId,
+            @Valid @RequestBody UpdateReplyCommentRequest updateReplyCommentRequest,
+            Principal principal
+    ) {
+        Member member = memberService.findByUsername(principal.getName());
+        if (member == null) {
+            return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
+        }
+        UpdateReplyCommentResponse response = commentService.updateReply(replyId, updateReplyCommentRequest, principal);
+        return GlobalResponse.of("200", "success", response);
+    }
 
-//
-//    @PutMapping("/{commentId}/reply/{replyId}")
-//    public GlobalResponse<UpdateReplyCommentResponse> updateReply(
-//            @PathVariable("commentId") Long commentId,
-//            @PathVariable("replyId") Long replyId,
-//            @Valid @RequestBody UpdateReplyCommentRequest updateReplyCommentRequest
-//    ) {
-//        UpdateReplyCommentResponse response = this.commentService.updateReply(updateReplyCommentRequest);
-//        return GlobalResponse.of("200", "success", response);
-//    }
-//
-//    @DeleteMapping("/{commentId}/reply/{replyId}")
-//    public GlobalResponse<DeleteReplyCommentResponse> deleteReply(
-//            @PathVariable("commentId") Long commentId,
-//            @PathVariable("replyId") Long replyId
-//    ) {
-//        commentService.deleteReply(commentId, replyId);
-//        Comment deletedReply = commentService.getDeletedReply(replyId);
-//
-//        return GlobalResponse.of("200", "success", DeleteReplyCommentResponse.of(deletedReply));
-//    }
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/{commentId}/reply/{replyId}")
+    public GlobalResponse<DeleteReplyCommentResponse> deleteReply(
+            @PathVariable("commentId") Long commentId,
+            @PathVariable("replyId") Long replyId,
+            Principal principal
+    ) {
+        Member member = memberService.findByUsername(principal.getName());
+        if (member == null) {
+            return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
+        }
+        DeleteReplyCommentResponse response = commentService.deleteReply(commentId, replyId, principal);
+        return GlobalResponse.of("200", "success", response);
+    }
 }

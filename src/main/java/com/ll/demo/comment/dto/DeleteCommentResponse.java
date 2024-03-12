@@ -10,13 +10,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 public class DeleteCommentResponse {
-    private Long id;
-    private String content;
+    private Long replyId;
     private LocalDateTime removedTime;
     public static DeleteCommentResponse of(Comment comment) {
         return DeleteCommentResponse.builder()
-                .id(comment.getId())
-                .content(comment.getContent())
+                .replyId(comment.getId())
                 .removedTime(comment.getRemovedTime())
                 .build();
     }
