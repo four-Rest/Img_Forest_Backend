@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 
 @Service
@@ -54,8 +55,8 @@ public class CommentService {
     }
 
     @Transactional
-    public CreateCommentResponse createReply(Long commentId, CreateReplyCommentRequest request) {
-        Member member = this.verifyMember(request.getUsername());
+    public CreateCommentResponse createReply(Long commentId, CreateReplyCommentRequest request, Principal principal) {
+        Member member = this.verifyMember(principal.getName());
 
         Comment saved = this.commentRepository.save(CreateReplyCommentRequest.toEntity(request, member));
 
@@ -64,6 +65,7 @@ public class CommentService {
 
         return CreateCommentResponse.of(saved);
     }
+
 
 //    @Transactional
 //    public UpdateReplyCommentResponse updateReply(UpdateReplyCommentRequest request) {

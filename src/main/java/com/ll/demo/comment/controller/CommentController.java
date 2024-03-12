@@ -3,6 +3,8 @@ package com.ll.demo.comment.controller;
 import com.ll.demo.comment.dto.*;
 import com.ll.demo.comment.service.CommentService;
 import com.ll.demo.global.response.GlobalResponse;
+import com.ll.demo.member.entity.Member;
+import com.ll.demo.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,7 +12,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 })
 public class CommentController {
     private final CommentService commentService;
+    private final MemberService memberService;
 
     @PostMapping("/")
     @Operation(summary = "댓글 생성", description = "댓글 생성 시 사용하는 API")
@@ -52,12 +59,18 @@ public class CommentController {
         return GlobalResponse.of("200", "success", this.commentService.delete(deleteCommentRequest));
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/{commentId}/reply")
     public GlobalResponse<CreateCommentResponse> createReply(
             @PathVariable("commentId") Long commentId,
-            @Valid @RequestBody CreateReplyCommentRequest createReplyCommentRequest
-    ) {
-        CreateCommentResponse response = this.commentService.createReply(commentId, createReplyCommentRequest);
+            @Valid @RequestBody CreateReplyCommentRequest createReplyCommentRequest,
+            Principal principal
+    ) throws IOException {
+        Member member = memberService.findByUsername(principal.getName());
+        if (member == null) {
+            return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
+        }
+        CreateCommentResponse response = this.commentService.createReply(commentId, createReplyCommentRequest, principal);
         return GlobalResponse.of("201", "success", response);
     }
 
