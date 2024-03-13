@@ -9,11 +9,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class PaymentReq {
+public class PaymentDto {
 
-    private Long memberId;
+
+    // paymentCallbackRequest + RequestPayDto
+
+    private String username;
     private Long ArticleId;
     private Long amount;   // 결제 금액
     private Long orderUid;
-    private String merchantUid;
+    private String impUid;  // 결제 고유 번호
 }
