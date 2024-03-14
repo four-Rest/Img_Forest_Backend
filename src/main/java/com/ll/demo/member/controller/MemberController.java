@@ -7,6 +7,7 @@ import com.ll.demo.member.dto.*;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
 import com.ll.demo.member.service.EmailService;
+import com.ll.demo.member.service.TokenCacheService;
 import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.WebUtils;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
@@ -53,15 +55,22 @@ public class MemberController {
     @PostMapping("/signup")
     @Operation(summary = "회원가입", description = "회원가입 시 사용하는 API")
     public GlobalResponse signup(@RequestBody MemberCreateRequestDto userCreateRequestDto) {
+        long startTime = Instant.now().toEpochMilli(); // 시작 시간 측정
         if (!userCreateRequestDto.getPassword1().equals(userCreateRequestDto.getPassword2())) {
             return GlobalResponse.of("409", "비밀번호가 일치하지 않습니다");
         }
-        return memberService.signup(userCreateRequestDto);
+        GlobalResponse response = memberService.signup(userCreateRequestDto);
+        long endTime = Instant.now().toEpochMilli(); // 종료 시간 측정
+        long executionTime = endTime - startTime; // 실행 시간 계산
+        System.out.println("Signup API 호출 시간: " + executionTime + "ms");
+        return response;
     }
 
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "로그인 시 사용하는 API")
     public GlobalResponse<LoginResponseDto> login(@RequestBody LoginRequestDto dto) {
+
+        long startTime = Instant.now().toEpochMilli(); // 시작 시간 측정
         GlobalResponse<Member> checkedResp = memberService.checkMembernameAndPassword(dto.getUsername(), dto.getPassword());
         Member member = checkedResp.getData();
         // accessToken 생성
@@ -89,6 +98,10 @@ public class MemberController {
 
         // accessToken, refreshToken
         addCrossDomainCookie(accessToken, refreshToken);
+
+        long endTime = Instant.now().toEpochMilli(); // 종료 시간 측정
+        long executionTime = endTime - startTime; // 실행 시간 계산
+        System.out.println("Login API 호출 시간: " + executionTime + "ms");
 
         return GlobalResponse.of("200", "로그인 성공.", new LoginResponseDto(member));
     }
@@ -192,20 +205,25 @@ public class MemberController {
 
     @PostMapping("/checkAccessToken")
     @Operation(summary = "토큰 검증", description = "JWT 검증 시 사용하는 API")
-    public GlobalResponse<LoginResponseDto> checkAccessToken(HttpServletRequest request) {
+    public GlobalResponse<LoginResponseDto> checkAccessToken(HttpServletRequest request, TokenCacheService tokenCacheService) {
         try {
             Cookie cookie = WebUtils.getCookie(request, "accessToken");
             if (cookie == null) {
                 return GlobalResponse.of("401", "없는 토큰");
             }
             String token = cookie.getValue();
-            Claims claims = JwtUtil.decode(token, jwtProperties.getSecretKey());
 
-            Date expiration = claims.getExpiration();
-            if (expiration.before(new Date())) {
-                System.err.println("Token expired");
-                return GlobalResponse.of("401", "토큰 만료");
+            // 토큰 캐시에 있는 경우 디코딩하지 않고 바로 유효성 확인
+            if (tokenCacheService.isTokenCached(token)) {
+                return GlobalResponse.of("200", "로그인 성공.");
             }
+
+            // 토큰 캐시에 없는 경우 디코딩하여 유효성 확인 후 캐시에 추가
+            Claims claims = JwtUtil.decode(token, jwtProperties.getSecretKey());
+            // 유효하지 않은 토큰인 경우 예외 발생하므로 여기까지 도달하지 않음
+            tokenCacheService.cacheToken(token);
+
+            // 유효한 토큰인 경우 해당 유저의 정보를 반환
             Map<String, Object> data = (Map<String, Object>) claims.get("data");
             String username = (String) data.get("username");
             Member member = memberService.findByUsername(username);
