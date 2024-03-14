@@ -15,8 +15,8 @@ public class ArticleListResponseDto {
 
     public ArticleListResponseDto(Article article) {
         this.imgFilePath = article.getImage().getPath();
-        this.paid = article.isPaid();
         this.imgFileName = article.getImage().getFileName();
+        this.paid = article.isPaid();
         this.id = article.getId();
         this.likes = article.getLikes();
     }

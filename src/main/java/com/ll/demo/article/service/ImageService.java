@@ -1,22 +1,24 @@
 package com.ll.demo.article.service;
 
+import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.*;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.entity.Image;
-import com.ll.demo.article.repository.ArticleRepository;
 import com.ll.demo.article.repository.ImageRepository;
+import com.ll.demo.global.config.S3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -24,106 +26,159 @@ import java.util.UUID;
 public class ImageService {
 
     private final ImageRepository imageRepository;
+    private final AmazonS3 s3;
+    private final S3Util s3Util;
+
+
+
+    @Transactional
+    public Image create(Article article, MultipartFile multipartFile) throws IOException {
+
+        //저장 경로, 파일 이름 설정
+        String imgPath = setImagePath();
+
+        UUID uuid = UUID.randomUUID();
+
+        String fileName = uuid + "_" + multipartFile.getOriginalFilename();
+
+        //멀티파트 파일을 일반 파일로 전환
+        File file = convertMultipartFileToFile(multipartFile);
+
+
+        //Object storage에 업로드
+        try {
+            s3.putObject(new PutObjectRequest(s3Util.getBucketName(), imgPath + "/" + fileName, file)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (AmazonS3Exception e) {
+            e.printStackTrace();
+        } catch(SdkClientException e) {
+            e.printStackTrace();
+        }
+
+        //이미지 객체 생성
+        Image image = Image.builder()
+                .article(article)
+                .fileName(fileName)
+                .path(imgPath)
+                .build();
+
+        //저장
+        imageRepository.save(image);
+
+        //로컬에 생성된 파일 삭제
+        file.delete();
+
+        return image;
+
+    }
+
+    @Transactional
+    public File convertMultipartFileToFile(MultipartFile file) throws IOException {
+        File convertedFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+        FileOutputStream fos = new FileOutputStream(convertedFile);
+        fos.write(file.getBytes());
+        fos.close();
+        return convertedFile;
+    }
+
 
     @Transactional
     public String setImagePath() {
 
         //현재 날짜를 폴더 이름으로 지정
         LocalDateTime createdTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String formattedDateTime = createdTime.format(formatter);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String path = createdTime.format(formatter);
 
-        //저장 디렉토리 결정
-        String projectPath = System.getProperty("user.dir") + "\\react_front\\src\\imgFiles\\%s".formatted(formattedDateTime);
-        String os = System.getProperty("os.name").toLowerCase();
-        if (!os.contains("win")) {
-            projectPath = System.getProperty("user.dir") + "/react_front/src/imgFiles/%s".formatted(formattedDateTime);
-        }
+        //path폴더가 있는지 확인
+        String folderPath = path + "/";
 
-        //해당 날짜의 디렉토리가 존재하지 않으면 생성
-        Path path = Paths.get(projectPath);
-        if (!Files.exists(path)) {
+        ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
+                .withBucketName(s3Util.getBucketName())
+                .withPrefix(folderPath)
+                .withDelimiter("/");
+
+        ObjectListing objects = s3.listObjects(listObjectsRequest);
+
+        List<String> commonPrefixes = objects.getCommonPrefixes();
+
+        if (commonPrefixes.isEmpty()) {
+            //path폴더가 없으면 생성
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentLength(0L);
+            objectMetadata.setContentType("application/x-directory");
+            PutObjectRequest putObjectRequest = new PutObjectRequest(s3Util.getBucketName(), path, new ByteArrayInputStream(new byte[0]), objectMetadata);
+
             try {
-                Files.createDirectories(path);
-            } catch (Exception e) {
-                //폴더 생성 실패
+                s3.putObject(putObjectRequest);
+            } catch (AmazonS3Exception e) {
+                e.printStackTrace();
+            } catch (SdkClientException e) {
+                e.printStackTrace();
             }
         }
-        return projectPath;
+        return path;
     }
 
     @Transactional
-    public Image create(Article article, MultipartFile file) throws IOException {
-
-        String projectPath = setImagePath();
-
-        UUID uuid = UUID.randomUUID();
-
-        String fileName = uuid + "_" + file.getOriginalFilename();
-
-        File saveFile = new File(projectPath, fileName);
-
-        file.transferTo(saveFile);
-
-        Image image = Image.builder()
-                .article(article)
-                .fileName(fileName)
-                .path(projectPath)
-                .build();
-
-        imageRepository.save(image);
-        return image;
-    }
-
-    @Transactional
-    public void delete(Image image) throws IOException {
-
-        String projectPath = image.getPath();
-
+    public void delete(Image image) {
+        String path = image.getPath();
         String fileName = image.getFileName();
-        Path filePath = Paths.get(projectPath, fileName);
 
-        deleteFile(filePath);
+        try {
+            s3.deleteObject(s3Util.getBucketName(), path + "/" + fileName);
+        } catch (AmazonS3Exception e) {
+            e.printStackTrace();
+        } catch(SdkClientException e) {
+            e.printStackTrace();
+        }
 
         imageRepository.delete(image);
     }
 
     @Transactional
-    public void modify(Image image, MultipartFile file) throws IOException {
+    public void modify(Image image, MultipartFile multipartFile) throws IOException {
 
-        String projectPath = setImagePath();
+        String newFilePath = setImagePath();
 
         //기존 이미지 파일 삭제
         String oldFileName = image.getFileName();
 
-        Path oldFilePath = Paths.get(image.getPath(), oldFileName);
+        String oldFilePath = image.getPath();
 
-        deleteFile(oldFilePath);
+        try {
+            s3.deleteObject(s3Util.getBucketName(), oldFilePath + "/" + oldFileName);
+        } catch (AmazonS3Exception e) {
+            e.printStackTrace();
+        } catch(SdkClientException e) {
+            e.printStackTrace();
+        }
 
         //새 이미지 파일 저장
         UUID uuid = UUID.randomUUID();
 
-        String newFileName = uuid + "_" + file.getOriginalFilename();
+        String newFileName = uuid + "_" + multipartFile.getOriginalFilename();
 
-        File saveFile = new File(projectPath, newFileName);
+        //멀티파트 파일을 일반 파일로 전환
+        File file = convertMultipartFileToFile(multipartFile);
 
-        file.transferTo(saveFile);
 
-        //Image객체의 fileName을 새 이미지파일로 변경
-        image.setFileName(newFileName);
-
-    }
-
-    @Transactional
-    public void deleteFile(Path filePath) throws IOException {
-
-        if (Files.exists(filePath)) {
-            try {
-                Files.delete(filePath);
-            } catch (IOException e) {
-
-            }
+        //Object storage에 업로드
+        try {
+            s3.putObject(new PutObjectRequest(s3Util.getBucketName(), newFilePath + "/" + newFileName, file)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (AmazonS3Exception e) {
+            e.printStackTrace();
+        } catch(SdkClientException e) {
+            e.printStackTrace();
         }
 
+        //Image객체의 fileName, path를 새 이미지파일로 변경
+        image.modifyFileName(newFileName);
+        image.modifyPath(newFilePath);
+
+        //로컬에 생성된 파일 삭제
+        file.delete();
     }
+
 }

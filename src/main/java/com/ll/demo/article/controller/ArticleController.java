@@ -1,17 +1,22 @@
 package com.ll.demo.article.controller;
 
-import com.ll.demo.article.dto.ArticleDetailResponseDto;
-import com.ll.demo.article.dto.ArticleListResponseDto;
-import com.ll.demo.article.dto.ArticleRequestDto;
+import com.ll.demo.article.dto.*;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.service.ArticleService;
+import com.ll.demo.article.service.ImageService;
 import com.ll.demo.article.service.TagService;
 import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.global.rq.Rq;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,16 +28,26 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/article")
+@RequestMapping("/api/article")
+@Tag(name = "Article", description = "Article API")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다.", content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "400", description = "요청에 실패했습니다.", content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "401", description = "인증이 필요합니다.", content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "403", description = "요청이 거부되었습니다.", content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "404", description = "리소스를 서버에서 찾을 수 없습니다.", content = @Content(mediaType = "application/json"))
+})
 public class ArticleController {
 
     private final ArticleService articleService;
     private final MemberService memberService;
     private final TagService tagService;
+    private final ImageService imageService;
     private final Rq rq;
 
     //전체 글 조회
     @GetMapping("")
+    @Operation(summary = "전체 글 조회", description = "전체 글 조회 시 사용하는 API")
     public GlobalResponse findAllArticles() {
         List<ArticleListResponseDto> articleListResponseDtoList = articleService.findAllOrderByLikesDesc();
         return GlobalResponse.of("200", "success", articleListResponseDtoList);
@@ -40,6 +55,7 @@ public class ArticleController {
 
     //단일 글 조회
     @GetMapping("/detail/{id}")
+    @Operation(summary = "단일 글 조회", description = "단일 글 조회 시 사용하는 API")
     public GlobalResponse showArticle(@PathVariable("id") Long id) {
 
         Article article = articleService.getArticleById(id);
@@ -55,6 +71,7 @@ public class ArticleController {
 
     //tag값으로 글 검색
     @GetMapping("/{tagName}")
+    @Operation(summary = "Tag값으로 글 검색", description = "Tag값으로 글 검색 시 사용하는 API")
     public GlobalResponse searchArticlesByTag(@PathVariable("tagName") String tagName) {
         Set<ArticleListResponseDto> articleListResponseDtoSet = tagService.getArticlesByTagName(tagName)
                 .stream()
@@ -66,6 +83,7 @@ public class ArticleController {
     // 글 생성
     @PreAuthorize("isAuthenticated()")
     @PostMapping("")
+    @Operation(summary = "글 생성", description = "글 생성 시 사용하는 API")
     public GlobalResponse createArticle(
             @Valid ArticleRequestDto articleRequestDto,
             Principal principal) throws IOException {
@@ -76,15 +94,18 @@ public class ArticleController {
             return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
         }
 
+        System.out.println("게시글 유료화 여부:"+ articleRequestDto.isPaid());
+
         articleService.create(articleRequestDto, member);
 
-        return GlobalResponse.of("201", "Article created");
+        return GlobalResponse.of("200", "Article created");
     }
 
 
     //글 수정
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
+    @Operation(summary = "글 수정", description = "글 수정 시 사용하는 API")
     public GlobalResponse updateArticle(
             @PathVariable("id") Long id,
             Principal principal,
@@ -111,10 +132,35 @@ public class ArticleController {
         return GlobalResponse.of("200", "수정되었습니다.");
     }
 
+    //이미지 없는 수정
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/mode2/{id}")
+    @Operation(summary = "이미지 없는 글 수정", description = "이미지 없이 글 수정 시 사용하는 API")
+    public GlobalResponse updateArticle2(
+            @PathVariable("id") Long id,
+            Principal principal,
+            @RequestBody ArticleRequestDtoMode2 articleRequestDto
+    )  {
+        Article article = articleService.getArticleById(id);
+        Member member = memberService.findByUsername(principal.getName());
+
+        //권한 확인
+        if (member == null) {
+            return GlobalResponse.of("401", "로그인이 필요한 서비스입니다.");
+        } else if (article.getMember().getId() != member.getId()) {
+            return GlobalResponse.of("403", "수정 권한이 없습니다.");
+        }
+
+        articleService.modifyArticle(article, articleRequestDto);
+
+        return GlobalResponse.of("200", "수정되었습니다.");
+    }
+
 
     //글 삭제
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
+    @Operation(summary = "글 삭제", description = "글 삭제 시 사용하는 API")
     public GlobalResponse deleteArticle(@PathVariable("id") Long id, Principal principal) throws IOException {
 
         Article article = articleService.getArticleById(id);
@@ -134,6 +180,7 @@ public class ArticleController {
     //글 추천
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/like/{id}")
+    @Operation(summary = "like를 이용한 글 추천 ", description = "글 추천 시 사용하는 API")
     public GlobalResponse likeArticle(@PathVariable("id") Long id, Principal principal) {
 
         Article article = articleService.getArticleById(id);
@@ -147,6 +194,7 @@ public class ArticleController {
     //추천 취소
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/like/{id}")
+    @Operation(summary = "like를 이용한 글 추천취소", description = "글 추천취소 시 사용하는 API")
     public GlobalResponse unlikeArticle(@PathVariable("id") Long id, Principal principal) {
 
         Article article = articleService.getArticleById(id);
@@ -156,4 +204,31 @@ public class ArticleController {
 
         return GlobalResponse.of("200", "추천취소되었습니다.");
     }
+
+    // 게시물 페이징
+    // tag 페이징 return도 추가
+    // GlobalResponse에  ArticlePageResponse 담아서 보내주기
+    @GetMapping("/page")
+    @Operation(summary = "게시물 페이징", description = "게시물 페이징 시 사용하는 API")
+    public GlobalResponse readAllPaging(
+            @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(value = "tagName", required = false) String tagName,
+            @RequestParam(value = "userNick", required = false) String nick
+    ) {
+        Page<ArticleListResponseDto> result;
+
+        System.out.println("nick is" + nick);
+
+        if(tagName != null) {
+            result = articleService.searchAllPagingByTag(pageNo,tagName);
+        }
+        else if(nick != null) {
+            result = articleService.searchAllPagingByUser(pageNo,nick);
+        }
+        else {
+            result = articleService.searchAllPaging(pageNo);
+        }
+        return GlobalResponse.of("200","success", result);
+    }
+
 }

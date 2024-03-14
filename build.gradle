@@ -4,6 +4,13 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
+allprojects {
+    repositories {
+
+        maven { url 'https://jitpack.io' }
+    }
+}
+
 group = 'com.ll'
 version = '0.0.1-SNAPSHOT'
 
@@ -60,6 +67,19 @@ dependencies {
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3', 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+    // S3
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.671'
+
+    // iamport
+    implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
+
+    // Swagger 의존성 추가
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+    // spring mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 }
 
 tasks.named('test') {

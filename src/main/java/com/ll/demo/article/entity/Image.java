@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @RequiredArgsConstructor
 @Getter
-@Setter
 @SuperBuilder(toBuilder = true)
 public class Image {
     @Id
@@ -24,4 +23,12 @@ public class Image {
     @JsonIgnore
     @OneToOne
     private Article article;
+
+    public void modifyFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void modifyPath(String path) {
+        this.path = path;
+    }
 }

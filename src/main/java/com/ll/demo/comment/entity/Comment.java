@@ -21,9 +21,6 @@ public class Comment extends BaseEntity {
     @Column(name = "content", columnDefinition = "MEDIUMTEXT")
     private String content;
 
-    @Column(name = "removeTime", columnDefinition = "DATETIME")
-    private LocalDateTime removeTime;
-
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
