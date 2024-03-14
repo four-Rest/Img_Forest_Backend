@@ -6,6 +6,7 @@ import com.ll.demo.global.service.SystemService;
 import com.ll.demo.member.dto.MemberCreateRequestDto;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

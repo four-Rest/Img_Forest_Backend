@@ -27,4 +27,8 @@ public class Image {
     public void modifyFileName(String fileName) {
         this.fileName = fileName;
     }
+
+    public void modifyPath(String path) {
+        this.path = path;
+    }
 }
