@@ -1,5 +1,5 @@
 package com.ll.demo.article.service;
-
+import net.coobird.thumbnailator.Thumbnails;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.ByteArrayOutputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -44,6 +45,18 @@ public class ImageService {
         //멀티파트 파일을 일반 파일로 전환
         File file = convertMultipartFileToFile(multipartFile);
 
+//        ByteArrayOutputStream os = new ByteArrayOutputStream();
+//        Thumbnails.of(file)
+//                .scale(1.0)
+//                .outputQuality(1.0)
+//                .toOutputStream(os);
+//
+//        byte[] optimizedImageBytes = os.toByteArray();
+//
+//        File optimizedFile = new File(file.getParentFile(),fileName);
+//        try (FileOutputStream optimizedFileStream = new FileOutputStream(optimizedFile)) {
+//            optimizedFileStream.write(optimizedImageBytes);
+//        }
 
         //Object storage에 업로드
         try {
@@ -67,6 +80,8 @@ public class ImageService {
 
         //로컬에 생성된 파일 삭제
         file.delete();
+        // optimizedFile.delete();
+
 
         return image;
 

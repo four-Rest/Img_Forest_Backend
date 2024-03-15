@@ -80,6 +80,7 @@ dependencies {
     // spring mail
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+    implementation 'net.coobird:thumbnailator:0.4.14'
 }
 
 tasks.named('test') {
