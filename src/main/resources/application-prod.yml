@@ -1,15 +1,15 @@
 server:
   shutdown: graceful
-  port: ${port}
+  port: 8090
 spring:
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: 50MB
+      max-request-size: 50MB
   datasource:
-    url: ${database.url}
-    username: ${database.username}
-    password: ${database.password}
+    url: ON_SECRET
+    username: ON_SECRET
+    password: ON_SECRET
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
