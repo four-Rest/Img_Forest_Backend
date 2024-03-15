@@ -66,6 +66,16 @@ public class PaymentController {
 
     }
 
+    // 결제 조회
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/payment/{id}")
+    public GlobalResponse paymentPage(@PathVariable("id") String id) {
+        PaymentDto paymentDto = paymentService.findRequestDto(id);
+
+        return GlobalResponse.of("200","결제 조회 반환",paymentDto);
+
+    }
+
 
 //    // 결제 성공
 //    @PreAuthorize("isAuthenticated()")

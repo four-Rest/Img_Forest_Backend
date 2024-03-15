@@ -31,7 +31,7 @@ public class OrderController {
     // 결제 완료 후 주문내역 저장
     @PreAuthorize("isAuthenticated()")
     @PostMapping("")
-    public GlobalResponse autoOrder(Principal principal, @RequestBody PaymentDto paymentDto) {
+    public GlobalResponse saveOrder(Principal principal, @RequestBody PaymentDto paymentDto) {
         String username = principal.getName();
         Member member = memberService.findByUsername(username);
         Article article = articleService.getArticleById(paymentDto.getArticleId());

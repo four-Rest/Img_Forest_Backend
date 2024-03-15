@@ -4,7 +4,6 @@ package com.ll.demo.order.service;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.repository.ArticleRepository;
 import com.ll.demo.member.entity.Member;
-import com.ll.demo.order.dto.OrderRequestDto;
 import com.ll.demo.order.entity.Order;
 import com.ll.demo.order.repository.OrderRepository;
 import com.ll.demo.payment.entity.Payment;

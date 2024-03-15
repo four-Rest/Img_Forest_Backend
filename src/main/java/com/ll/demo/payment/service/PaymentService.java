@@ -77,4 +77,16 @@ public class PaymentService {
         }
     }
 
+    public PaymentDto findRequestDto(String orderUid) {
+        Order order = orderRepository.findOrderAndPaymentAndMember(orderUid)
+                .orElseThrow(() -> new IllegalArgumentException("주문이 없습니다"));
+
+        return PaymentDto.builder()
+                .orderUid(order.getOrderUid())
+                .amount(order.getPayment().getPrice())
+                .username(order.getMember().getUsername())
+                .articleId(order.getArticle().getId())
+                .build();
+    }
+
 }
