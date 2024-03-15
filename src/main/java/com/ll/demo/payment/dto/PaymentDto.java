@@ -17,6 +17,6 @@ public class PaymentDto {
     private String username;
     private Long ArticleId;
     private Long amount;   // 결제 금액
-    private Long orderUid;
+    private String orderUid;
     private String impUid;  // 결제 고유 번호
 }
