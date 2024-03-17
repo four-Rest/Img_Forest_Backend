@@ -58,10 +58,10 @@ public class CommentService {
     public CreateCommentResponse createReply(Long commentId, CreateReplyCommentRequest request, Principal principal) {
         Member member = this.verifyMember(principal.getName());
 
-        Comment saved = this.commentRepository.save(CreateReplyCommentRequest.toEntity(request, member));
-
         Comment parentComment = verifyComment(commentId);
-        saved.setParentComment(parentComment);
+
+        Comment saved = this.commentRepository.save(CreateReplyCommentRequest.toEntity(request, member));
+        parentComment.addChildComment(saved); // 대댓글을 부모 댓글에 추가
 
         return CreateCommentResponse.of(saved);
     }
@@ -90,14 +90,13 @@ public class CommentService {
         }
 
         Comment parentComment = verifyComment(commentId);
-        parentComment.getChildComments().remove(replyComment);
+        parentComment.removeChildComment(replyComment); // Remove child comment from parent comment
         replyComment.setRemovedTime(LocalDateTime.now());
 
         commentRepository.save(replyComment);
 
         return DeleteReplyCommentResponse.of(replyComment);
     }
-
 
     private Member verifyMember(String username) {
         return this.memberRepository.findByUsername(username).orElseThrow(() ->
