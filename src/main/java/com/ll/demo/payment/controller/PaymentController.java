@@ -42,18 +42,6 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    private IamportClient iamportClient;
-
-    @Value("${iamport.api.key}")
-    private String restApiKey;
-
-    @Value("${iamport.api.secret}")
-    private String restApiSecret;
-
-    @PostConstruct
-    public void init() {
-        this.iamportClient = new IamportClient(restApiKey,restApiSecret);
-    }
 
     // 결제 요청
     @PreAuthorize("isAuthenticated()")
@@ -77,30 +65,6 @@ public class PaymentController {
     }
 
 
-//    // 결제 성공
-//    @PreAuthorize("isAuthenticated()")
-//    @PostMapping("/payment/validate")
-//    @Operation(summary = "결제완료 및 결제정보저장", description = "결제완료 및 결제정보저장 시 사용하는 API")
-//    public GlobalResponse createPayment(Principal principal, @RequestBody PaymentReq paymentReq) throws IOException {
-//        String orderNumber = String.valueOf(paymentReq.getOrderNumber());
-//        String username = principal.getName();
-//        Member member = memberService.findByUsername(username);
-//
-//        paymentService.saveOrder(member, paymentReq);
-//        log.info("결제 성공: 주문번호 {}", orderNumber);
-//        return GlobalResponse.of("200", "결제 성공");
-//    }
-//
-//
-//    // 결제 취소
-//    @PreAuthorize("isAuthenticated()")
-//    @PostMapping("/payment/cancel")
-//    @Operation(summary = "결제취소", description = "결제취소 시 사용하는 API")
-//    public IamportResponse<Payment> validateIamport(@PathVariable String imp_uid) throws IamportResponseException, IOException {
-//        IamportResponse<Payment> payment = iamportClient.paymentByImpUid(imp_uid);
-//        log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}",payment.getResponse().getMerchantUid());
-//        return payment;
-//    }
 
 
 

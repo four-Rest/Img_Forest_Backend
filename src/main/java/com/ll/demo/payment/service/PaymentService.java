@@ -15,26 +15,25 @@ import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
-import com.siot.IamportRestClient.response.PaymentBalance;
+
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class PaymentService {
     private final OrderRepository orderRepository;
-    private final ArticleRepository articleRepository;
     private final PaymentRepository paymentRepository;
-    private final IamportClient iamportClient;
-
+    private IamportClient iamportClient;
 
     public IamportResponse<Payment> paymentByCallback(PaymentDto paymentDto) {
 

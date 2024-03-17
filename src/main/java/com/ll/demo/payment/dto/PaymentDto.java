@@ -13,7 +13,6 @@ import lombok.Setter;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PaymentDto {
 
-
     // paymentCallbackRequest + RequestPayDto
 
     private String username;
