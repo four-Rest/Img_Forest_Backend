@@ -3,6 +3,7 @@ package com.ll.demo.article.controller;
 import com.ll.demo.article.dto.*;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.service.ArticleService;
+import com.ll.demo.article.service.ImageService;
 import com.ll.demo.article.service.TagService;
 import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.global.rq.Rq;
@@ -41,6 +42,7 @@ public class ArticleController {
     private final ArticleService articleService;
     private final MemberService memberService;
     private final TagService tagService;
+    private final ImageService imageService;
     private final Rq rq;
 
     //전체 글 조회
