@@ -4,7 +4,6 @@ server:
 spring:
   profiles:
     active: prod
-    include: secret
   servlet:
     multipart:
       max-file-size: 50MB
