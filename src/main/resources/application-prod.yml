@@ -8,8 +8,8 @@ spring:
       max-request-size: 50MB
   datasource:
     url: jdbc:mysql://172.17.0.1:3306/imgforest_prod
-    username: ON_SECRET
-    password: ON_SECRET
+    username: userlocal
+    password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
