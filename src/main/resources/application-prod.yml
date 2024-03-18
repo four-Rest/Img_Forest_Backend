@@ -2,6 +2,9 @@ server:
   shutdown: graceful
   port: 8090
 spring:
+  profiles:
+    active: prod
+    include: secret
   servlet:
     multipart:
       max-file-size: 50MB
