@@ -2,8 +2,6 @@ server:
   shutdown: graceful
   port: 8090
 spring:
-  profiles:
-    active: prod
   servlet:
     multipart:
       max-file-size: 50MB
@@ -18,8 +16,8 @@ spring:
       ddl-auto: update
   cloud:
     aws:
-      accessKey: ON_SECRET
-      secretKey: ON_SECRET
+      ${spring.profiles.include}.accessKey: ${cloud.aws.accessKey}
+      ${spring.profiles.include}.secretKey: ${cloud.aws.secretKey}
       regionName: kr-standard
       bucketName: img-forest-image-prod
 logging:
