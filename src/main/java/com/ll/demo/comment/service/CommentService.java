@@ -58,10 +58,10 @@ public class CommentService {
     public CreateCommentResponse createReply(Long commentId, CreateReplyCommentRequest request, Principal principal) {
         Member member = this.verifyMember(principal.getName());
 
-        Comment parentComment = verifyComment(commentId);
-
         Comment saved = this.commentRepository.save(CreateReplyCommentRequest.toEntity(request, member));
-        parentComment.addChildComment(saved); // 대댓글을 부모 댓글에 추가
+
+        Comment parentComment = verifyComment(commentId);
+        saved.setParentComment(parentComment);
 
         return CreateCommentResponse.of(saved);
     }
@@ -90,7 +90,7 @@ public class CommentService {
         }
 
         Comment parentComment = verifyComment(commentId);
-        parentComment.removeChildComment(replyComment); // Remove child comment from parent comment
+        parentComment.getChildComments().remove(replyComment);
         replyComment.setRemovedTime(LocalDateTime.now());
 
         commentRepository.save(replyComment);
