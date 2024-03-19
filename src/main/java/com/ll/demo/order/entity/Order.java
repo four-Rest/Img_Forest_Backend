@@ -2,6 +2,7 @@ package com.ll.demo.order.entity;
 
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.member.entity.Member;
+import com.ll.demo.payment.entity.Payment;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -18,19 +19,27 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderId;
+    private Long Id;
 
+    private Long price;
+
+    // 주문 번호
     @Column(unique = true)
-    private String orderNumber;
-
-    private String paymentMethod;
+    private String orderUid;
 
     private Timestamp orderDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "article_id")
     private Article article;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
+
 
 }
