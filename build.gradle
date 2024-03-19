@@ -80,6 +80,12 @@ dependencies {
     // spring mail
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+    //spring redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+
 }
 
 tasks.named('test') {
