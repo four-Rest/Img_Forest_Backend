@@ -80,4 +80,3 @@ springdoc:
   model-and-view-allowed: true
   paths-to-match:
     - /api/**
-
