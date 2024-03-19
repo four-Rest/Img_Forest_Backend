@@ -1,5 +1,8 @@
 package com.ll.demo.article.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ll.demo.article.dto.*;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.service.ArticleService;
@@ -14,9 +17,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +51,7 @@ public class ArticleController {
     private final TagService tagService;
     private final ImageService imageService;
     private final Rq rq;
+    private final RedisTemplate<String, String> redisTemplate;
 
     //전체 글 조회
     @GetMapping("")
@@ -56,16 +64,31 @@ public class ArticleController {
     //단일 글 조회
     @GetMapping("/detail/{id}")
     @Operation(summary = "단일 글 조회", description = "단일 글 조회 시 사용하는 API")
-    public GlobalResponse showArticle(@PathVariable("id") Long id) {
+    public GlobalResponse showArticle(@PathVariable("id") Long id) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        ListOperations<String, String> listOperations = redisTemplate.opsForList();
 
-        Article article = articleService.getArticleById(id);
+        // Redis에서 글 내용을 조회
+        List<String> cachedArticleJson = listOperations.range(id.toString(), 0, -1);
+        Article article;
+        //Redis에 없거나 Redis가 비어 있는 경우 key:id, value:article의 JSON 저장
+        if (cachedArticleJson == null || cachedArticleJson.isEmpty()) {
+            article = articleService.getArticleById(id);
+            String articleJson = objectMapper.writeValueAsString(article);
+            listOperations.leftPush(id.toString(), articleJson);
+        } else {
+            // Redis에 글이 있으면, 첫 번째 JSON 문자열을 Article 객체로 역직렬화합니다.
+            article = objectMapper.readValue(cachedArticleJson.get(0), Article.class);
+            System.out.println("여기 지나감 ㅎㅎㅎㅎㅎ");
+        }
+
         ArticleDetailResponseDto articleDetailResponseDto = new ArticleDetailResponseDto(article);
         if (rq.isLoggedIn() && articleService.getLikeByArticleIdAndMemberId(article.getId(), memberService.findByUsername(rq.getUser().getUsername()).getId()) != null) {
             articleDetailResponseDto.setLikeValue(true);
         } else {
             articleDetailResponseDto.setLikeValue(false);
         }
-
         return GlobalResponse.of("200", "success", articleDetailResponseDto);
     }
 
