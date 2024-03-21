@@ -2,6 +2,7 @@ package com.ll.demo.global.config;
 
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.service.ArticleService;
+import com.ll.demo.global.app.AppConfig;
 import com.ll.demo.global.service.SystemService;
 import com.ll.demo.member.dto.MemberCreateRequestDto;
 import com.ll.demo.member.entity.Member;
@@ -30,7 +31,7 @@ public class ImgTestDataConfig {
             ArticleService articleService
     ) {
         return args -> {
-            if (systemService.testDataCreated()) return;
+            if (systemService.testDataCreated() || AppConfig.isProd()) return;
 
             //테스트용 사용자 생성
             MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
@@ -40,8 +41,6 @@ public class ImgTestDataConfig {
             memberCreateRequestDto.setEmail("test@email.email");
             memberCreateRequestDto.setNickname("testUserForImgTest");
             memberService.signup(memberCreateRequestDto);
-
-
 
 
             //테스트데이터 생성

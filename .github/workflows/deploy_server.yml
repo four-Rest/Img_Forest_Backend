@@ -7,6 +7,7 @@ on:
       - 'build.gradle'
       - 'Dockerfile'
 
+
     branches:
       - main
 jobs:
