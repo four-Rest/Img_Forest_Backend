@@ -64,18 +64,32 @@ public class ArticleController {
     @GetMapping("/detail/{id}")
     @Operation(summary = "단일 글 조회", description = "단일 글 조회 시 사용하는 API")
     public GlobalResponse showArticle(@PathVariable("id") Long id)  {
+        Long memberId = null;
+        if(rq.isLoggedIn()){
+            memberId = memberService.findByUsername(rq.getUser().getUsername()).getId();
+            // 로그인 했고, Redis에서 글을 찾아보기
+            ArticleDetailResponseDto articleDetailResponseDto = articleService.findRecentArticle(memberId, id);
+            System.out.println("articleDetailResponseDto: " + articleDetailResponseDto);
+            if(articleDetailResponseDto != null) {
+                // Redis에서 찾은 글이 있으면, 그 글로 ArticleDetailResponseDto 생성 후 반환
+                articleDetailResponseDto.setLikeValue(
+                        articleService.getLikeByArticleIdAndMemberId(articleDetailResponseDto.getId(), memberId) != null
+                );
+                return GlobalResponse.of("200", "success", articleDetailResponseDto);
+            }
+            else{
+                // Redis에서 찾지 못했으면, DB에서 글을 조회하고 Redis에 저장
+                articleService.saveRecentReadArticle(memberId, id);
+            }
+        }
+        // DB에서 글 조회 로직
         Article article = articleService.getArticleById(id);
         ArticleDetailResponseDto articleDetailResponseDto = new ArticleDetailResponseDto(article);
-        Long memberId = memberService.findByUsername(rq.getUser().getUsername()).getId();
 
-        if(rq.isLoggedIn()){
-            articleService.saveRecentReadPosts(memberId, id);
-        }
-        if (rq.isLoggedIn() && articleService.getLikeByArticleIdAndMemberId(article.getId(), memberId) != null) {
-            articleDetailResponseDto.setLikeValue(true);
-        } else {
-            articleDetailResponseDto.setLikeValue(false);
-        }
+        // 좋아요 상태 설정
+        boolean isLiked = rq.isLoggedIn() && articleService.getLikeByArticleIdAndMemberId(article.getId(), memberId) != null;
+        articleDetailResponseDto.setLikeValue(isLiked);
+
         return GlobalResponse.of("200", "success", articleDetailResponseDto);
     }
 

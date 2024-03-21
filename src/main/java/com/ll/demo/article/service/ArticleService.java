@@ -1,5 +1,6 @@
 package com.ll.demo.article.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo.article.dto.ArticleDetailResponseDto;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.dto.ArticleListResponseDto;
@@ -27,9 +28,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +43,7 @@ public class ArticleService {
     private final TagRepository tagRepository;
     private final MemberRepository memberRepository;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public void create(ArticleRequestDto articleRequestDto, Member member) throws IOException {
@@ -192,7 +192,7 @@ public class ArticleService {
 
     //최근 읽은 글 저장
     @Transactional
-    public void saveRecentReadPosts(Long userId, Long articleId){
+    public void saveRecentReadArticle(Long userId, Long articleId){
         ListOperations<String, Object> listOperations = redisTemplate.opsForList();
         Optional<Article> opArticle = articleRepository.findById(articleId);
         if (opArticle.isPresent()) {
@@ -202,5 +202,28 @@ public class ArticleService {
             redisTemplate.expireAt(key, Instant.now().plus(7, ChronoUnit.DAYS)); // 유효기간 TTL 일주일 설정
         }
         else throw new IllegalArgumentException();
+    }
+
+    // 최근 읽은 글 조회
+    @Transactional
+    public ArticleDetailResponseDto findRecentArticle(Long userId, Long articleId) {
+        ListOperations<String, Object> listOperations = redisTemplate.opsForList();
+        String key = "userIdx::" + userId;
+        Long size = listOperations.size(key);
+        List<Object> results = size > 0 ? listOperations.range(key, 0, size) : Collections.emptyList();
+        return results.stream()
+                .map(this::convertMapToArticleDetailResponseDto)
+                .filter(Objects::nonNull) // null이 아닌 객체만 필터링
+                .filter(dto -> articleId.equals(dto.getId()))
+                .findFirst()
+                .orElse(null); // 일치하는 객체가 없으면 null을 반환합니다.
+    }
+
+    private ArticleDetailResponseDto convertMapToArticleDetailResponseDto(Object o) {
+        if (o instanceof Map) {
+            // Map 형태의 객체를 ArticleDetailResponseDto 객체로 변환
+            return objectMapper.convertValue(o, ArticleDetailResponseDto.class);
+        }
+        return null; // 변환할 수 없으면 null 반환
     }
 }
