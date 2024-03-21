@@ -1,5 +1,6 @@
 package com.ll.demo.article.service;
 
+import com.ll.demo.article.dto.ArticleDetailResponseDto;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.dto.ArticleListResponseDto;
 import com.ll.demo.article.dto.ArticleRequestDtoMode2;
@@ -17,10 +18,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +43,7 @@ public class ArticleService {
     private final LikeTableRepository likeTableRepository;
     private final TagRepository tagRepository;
     private final MemberRepository memberRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional
     public void create(ArticleRequestDto articleRequestDto, Member member) throws IOException {
@@ -181,5 +188,19 @@ public class ArticleService {
         }
 
         return articleRepository.findByMemberNickname(nick,pageable).map(article -> new ArticleListResponseDto(article));
+    }
+
+    //최근 읽은 글 저장
+    @Transactional
+    public void saveRecentReadPosts(Long userId, Long articleId){
+        ListOperations<String, Object> listOperations = redisTemplate.opsForList();
+        Optional<Article> opArticle = articleRepository.findById(articleId);
+        if (opArticle.isPresent()) {
+            ArticleDetailResponseDto articleDetailResponseDto = new ArticleDetailResponseDto(opArticle.get());
+            String key = "userIdx::"+ userId;
+            listOperations.leftPush(key, articleDetailResponseDto);
+            redisTemplate.expireAt(key, Instant.now().plus(7, ChronoUnit.DAYS)); // 유효기간 TTL 일주일 설정
+        }
+        else throw new IllegalArgumentException();
     }
 }
