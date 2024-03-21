@@ -62,10 +62,10 @@ public class ImgTestDataConfig {
             String[] fileNames = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"};
 
             //OS에 따른 path 설정
-            String imgSourcePath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\imgFiles\\testImg\\";
+            String imgSourcePath = System.getProperty("user.dir") + "\\src\\main\\resources\\";
             String os = System.getProperty("os.name").toLowerCase();
             if (!os.contains("win")) {
-                imgSourcePath = System.getProperty("user.dir") + "/src/main/resources/static/imgFiles/testImg/";
+                imgSourcePath = System.getProperty("user.dir") + "/src/main/resources/";
             }
 
             //테스트데이터용 이미지 다운로드
@@ -123,7 +123,7 @@ public class ImgTestDataConfig {
                 articleService.create(articleRequestDto, member);
             }
 
-            //테스트데이터 삭제
+            //로컬에 저장된 테스트이미지 삭제
             Arrays.stream(fileNames)
                     .forEach(fileName -> {
                         File file = new File(finalImgSourcePath + fileName + ".jpeg");
