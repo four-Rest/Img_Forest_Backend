@@ -197,7 +197,7 @@ public class ArticleService {
         Optional<Article> opArticle = articleRepository.findById(articleId);
         if (opArticle.isPresent()) {
             ArticleDetailResponseDto articleDetailResponseDto = new ArticleDetailResponseDto(opArticle.get());
-            String key = "userIdx::"+ userId;
+            String key = "userId::"+ userId;
             listOperations.leftPush(key, articleDetailResponseDto);
             redisTemplate.expireAt(key, Instant.now().plus(7, ChronoUnit.DAYS)); // 유효기간 TTL 일주일 설정
         }
@@ -208,15 +208,16 @@ public class ArticleService {
     @Transactional
     public ArticleDetailResponseDto findRecentArticle(Long userId, Long articleId) {
         ListOperations<String, Object> listOperations = redisTemplate.opsForList();
-        String key = "userIdx::" + userId;
+        String key = "userId::" + userId;
         Long size = listOperations.size(key);
         List<Object> results = size > 0 ? listOperations.range(key, 0, size) : Collections.emptyList();
+        System.out.println(results);
         return results.stream()
                 .map(this::convertMapToArticleDetailResponseDto)
                 .filter(Objects::nonNull) // null이 아닌 객체만 필터링
                 .filter(dto -> articleId.equals(dto.getId()))
                 .findFirst()
-                .orElse(null); // 일치하는 객체가 없으면 null을 반환합니다.
+                .orElse(null); // 일치하는 객체가 없으면 null을 반환
     }
 
     private ArticleDetailResponseDto convertMapToArticleDetailResponseDto(Object o) {
