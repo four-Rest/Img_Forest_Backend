@@ -1,4 +1,4 @@
-package com.ll.demo.comment.dto;
+package com.ll.demo.comment.dto.comment;
 
 import com.ll.demo.comment.entity.Comment;
 import lombok.*;
@@ -6,19 +6,15 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class DeleteReplyCommentResponse {
+public class DeleteCommentResponse {
     private Long replyId;
-    private String content;
     private LocalDateTime removedTime;
-
-    public static DeleteReplyCommentResponse of(Comment comment) {
-        return DeleteReplyCommentResponse.builder()
+    public static DeleteCommentResponse of(Comment comment) {
+        return DeleteCommentResponse.builder()
                 .replyId(comment.getId())
-                .content(comment.getContent())
                 .removedTime(comment.getRemovedTime())
                 .build();
     }

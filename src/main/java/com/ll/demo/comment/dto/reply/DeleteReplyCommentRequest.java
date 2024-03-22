@@ -1,4 +1,4 @@
-package com.ll.demo.comment.dto;
+package com.ll.demo.comment.dto.reply;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

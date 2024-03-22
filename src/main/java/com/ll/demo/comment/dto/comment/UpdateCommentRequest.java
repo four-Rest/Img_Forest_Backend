@@ -1,8 +1,9 @@
-package com.ll.demo.comment.dto;
+package com.ll.demo.comment.dto.comment;
 
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.comment.entity.Comment;
 import com.ll.demo.member.entity.Member;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
@@ -12,7 +13,7 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Validated
-public class DeleteCommentRequest {
+public class UpdateCommentRequest {
     @Setter
     private Long commentId;
 
@@ -22,9 +23,14 @@ public class DeleteCommentRequest {
     @NotNull(message = "어떤 멤버인지 확인이 필요합니다.")
     private String username;
 
-    public static Comment toEntity(DeleteCommentRequest request, Member member, Article article) {
+    @Setter
+    @NotEmpty(message = "댓글 내용은 필수입니다.")
+    private String content;
+
+    public static Comment toEntity(UpdateCommentRequest request, Member member, Article article) {
         return Comment.builder()
                 .id(request.getCommentId())
+                .content(request.getContent())
                 .member(member)
                 .article(article)
                 .build();

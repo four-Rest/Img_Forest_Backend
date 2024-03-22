@@ -2,7 +2,11 @@ package com.ll.demo.comment.service;
 
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.repository.ArticleRepository;
-import com.ll.demo.comment.dto.*;
+import com.ll.demo.comment.dto.comment.*;
+import com.ll.demo.comment.dto.reply.CreateReplyCommentRequest;
+import com.ll.demo.comment.dto.reply.DeleteReplyCommentResponse;
+import com.ll.demo.comment.dto.reply.UpdateReplyCommentRequest;
+import com.ll.demo.comment.dto.reply.UpdateReplyCommentResponse;
 import com.ll.demo.comment.entity.Comment;
 import com.ll.demo.comment.repository.CommentRepository;
 import com.ll.demo.member.entity.Member;

@@ -1,6 +1,10 @@
 package com.ll.demo.comment.controller;
 
-import com.ll.demo.comment.dto.*;
+import com.ll.demo.comment.dto.comment.*;
+import com.ll.demo.comment.dto.reply.CreateReplyCommentRequest;
+import com.ll.demo.comment.dto.reply.DeleteReplyCommentResponse;
+import com.ll.demo.comment.dto.reply.UpdateReplyCommentRequest;
+import com.ll.demo.comment.dto.reply.UpdateReplyCommentResponse;
 import com.ll.demo.comment.service.CommentService;
 import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.member.entity.Member;

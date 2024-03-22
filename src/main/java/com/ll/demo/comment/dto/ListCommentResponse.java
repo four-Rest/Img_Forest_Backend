@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -28,5 +29,8 @@ public class ListCommentResponse {
         this.createdDate = comment.getCreatedTime();
         this.modifiedDate = comment.getModifiedTime();
         this.removedTime = comment.getRemovedTime();
+        this.childComments = comment.getChildComments().stream()
+                .map(ListCommentResponse::new) // 재귀적으로 자식 댓글을 매핑합니다.
+                .collect(Collectors.toList());
     }
 }

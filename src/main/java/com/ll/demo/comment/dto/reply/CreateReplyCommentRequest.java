@@ -1,4 +1,4 @@
-package com.ll.demo.comment.dto;
+package com.ll.demo.comment.dto.reply;
 
 import com.ll.demo.comment.entity.Comment;
 import com.ll.demo.member.entity.Member;
