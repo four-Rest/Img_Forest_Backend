@@ -1,16 +1,11 @@
 package com.ll.demo.payment.service;
 
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.repository.ArticleRepository;
-import com.ll.demo.member.entity.Member;
-import com.ll.demo.member.service.MemberService;
-import com.ll.demo.order.dto.OrderRequestDto;
+
 import com.ll.demo.order.entity.Order;
 import com.ll.demo.order.repository.OrderRepository;
-import com.ll.demo.order.service.OrderService;
+
 import com.ll.demo.payment.dto.PaymentDto;
 import com.ll.demo.payment.enums.PayStatus;
 import com.ll.demo.payment.repository.PaymentRepository;
@@ -19,25 +14,11 @@ import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
-import jakarta.annotation.PostConstruct;
-import lombok.Builder;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
