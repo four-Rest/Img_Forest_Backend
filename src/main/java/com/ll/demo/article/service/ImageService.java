@@ -45,18 +45,18 @@ public class ImageService {
         //멀티파트 파일을 일반 파일로 전환
         File file = convertMultipartFileToFile(multipartFile);
 
-//        ByteArrayOutputStream os = new ByteArrayOutputStream();
-//        Thumbnails.of(file)
-//                .scale(1.0)
-//                .outputQuality(1.0)
-//                .toOutputStream(os);
-//
-//        byte[] optimizedImageBytes = os.toByteArray();
-//
-//        File optimizedFile = new File(file.getParentFile(),fileName);
-//        try (FileOutputStream optimizedFileStream = new FileOutputStream(optimizedFile)) {
-//            optimizedFileStream.write(optimizedImageBytes);
-//        }
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        Thumbnails.of(file)
+                .scale(1.0)
+                .outputQuality(0.8)
+                .toOutputStream(os);
+
+        byte[] optimizedImageBytes = os.toByteArray();
+
+        File optimizedFile = new File(file.getParentFile(),fileName);
+        try (FileOutputStream optimizedFileStream = new FileOutputStream(optimizedFile)) {
+            optimizedFileStream.write(optimizedImageBytes);
+       }
 
         //Object storage에 업로드
         try {
