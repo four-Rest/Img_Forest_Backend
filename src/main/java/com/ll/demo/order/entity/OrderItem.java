@@ -1,11 +1,9 @@
-package com.ll.demo.cart.entity;
+package com.ll.demo.order.entity;
 
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.global.entity.BaseEntity;
-import com.ll.demo.member.entity.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -16,10 +14,13 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @Getter
 @ToString(callSuper = true)
-public class CartItem extends BaseEntity {
+public class OrderItem extends BaseEntity {
     @ManyToOne
-    private Member buyer;
-
-    @OneToOne
+    private Order order;
+    @ManyToOne
     private Article article;
+
+    public long getPayPrice() {
+        return article.getPrice();
+    }
 }

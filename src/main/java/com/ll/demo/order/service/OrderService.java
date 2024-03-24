@@ -1,53 +1,56 @@
 package com.ll.demo.order.service;
 
-
-import com.ll.demo.article.entity.Article;
-import com.ll.demo.article.repository.ArticleRepository;
+import com.ll.demo.cart.entity.CartItem;
+import com.ll.demo.cart.service.CartService;
+import com.ll.demo.cash.entity.CashLog;
 import com.ll.demo.member.entity.Member;
+import com.ll.demo.member.service.MemberService;
 import com.ll.demo.order.entity.Order;
 import com.ll.demo.order.repository.OrderRepository;
-import com.ll.demo.payment.entity.Payment;
-import com.ll.demo.payment.enums.PayStatus;
-import com.ll.demo.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.util.UUID;
-
+import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Transactional
 public class OrderService {
-
     private final OrderRepository orderRepository;
-    private final ArticleRepository articleRepository;
-    private final PaymentRepository paymentRepository;
+    private final CartService cartService;
+    private final MemberService memberService;
 
-    public Order saveOrderAndPayment(Member member,Article article) {
+    @Transactional
+    public Order createFromCart(Member buyer) {
+        List<CartItem> cartItems = cartService.findItemsByBuyer(buyer);
 
-        // 임시 결제내역 생성
-        Payment payment = Payment.builder()
-                .price(1000L)
-                .status(PayStatus.WAITING_FOR_PAYMENT)
-                .build();
-
-        paymentRepository.save(payment);
-
-        // 주문 생성
         Order order = Order.builder()
-                .member(member)
-                .price(1000L)
-                .article(article)
-                .orderUid(UUID.randomUUID().toString())
-                .payment(payment)
-                .orderDate(new Timestamp(System.currentTimeMillis()))
+                .buyer(buyer)
                 .build();
 
-        return orderRepository.save(order);
+        // 카트에 아이템을 주문에 담고, 카트 아이템 삭제
+        cartItems.stream()
+                .forEach(order::addItem);
+        orderRepository.save(order);
+        cartItems.stream()
+                .forEach(cartService::delete);
+        return order;
     }
+    public void payByCashOnly(Order order) {
+        Member buyer = order.getBuyer();
+        long restCash = buyer.getRestCash();
+        long payPrice = order.calcPayPrice();
 
+        if (payPrice > restCash) {
+            throw new RuntimeException("예치금이 부족합니다.");
+        }
 
+        memberService.addCash(buyer, payPrice * -1, CashLog.EvenType.사용__예치금_주문결제);
+
+        payDone(order);
+    }
+    private void payDone(Order order) {
+        order.setPaymentDone();
+    }
 }

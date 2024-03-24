@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -17,12 +19,20 @@ public class CartService {
     @Transactional
     public CartItem addItem(Member member, Article article) {
         CartItem cartItem = CartItem.builder()
-                .member(member)
+                .buyer(member)
                 .article(article)
                 .build();
 
         cartItemRepository.save(cartItem);
 
         return cartItem;
+    }
+
+    public List<CartItem> findItemsByBuyer(Member buyer) {
+        return cartItemRepository.findByBuyer(buyer);
+    }
+
+    public void delete(CartItem cartItem) {
+        cartItemRepository.delete(cartItem);
     }
 }
