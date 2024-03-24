@@ -20,6 +20,6 @@ public class CartItem extends BaseEntity {
     @ManyToOne
     private Member buyer;
 
-    @OneToOne
+    @ManyToOne
     private Article article;
 }

@@ -37,6 +37,8 @@ public class OrderService {
                 .forEach(cartService::delete);
         return order;
     }
+
+    @Transactional
     public void payByCashOnly(Order order) {
         Member buyer = order.getBuyer();
         long restCash = buyer.getRestCash();
@@ -52,5 +54,15 @@ public class OrderService {
     }
     private void payDone(Order order) {
         order.setPaymentDone();
+    }
+
+    @Transactional
+    public void refund(Order order) {
+        long payPrice = order.calcPayPrice();
+
+        memberService.addCash(order.getBuyer(), payPrice, CashLog.EvenType.환불__예치금_주문결제);
+
+        order.setCancelDone();
+        order.setRefundDone();
     }
 }
