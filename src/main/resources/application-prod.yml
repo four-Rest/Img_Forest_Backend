@@ -20,10 +20,6 @@ spring:
       ${spring.profiles.include}.secretKey: ${cloud.aws.secretKey}
       regionName: kr-standard
       bucketName: img-forest-image-prod
-  data:
-    redis:
-      host: "172.17.0.1"
-      port: 6379
 logging:
   level:
     com.ll.medium: INFO

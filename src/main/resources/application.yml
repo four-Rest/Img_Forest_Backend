@@ -38,10 +38,7 @@ spring:
       regionName: kr-standard
       endpoint: https://kr.object.ncloudstorage.com
       bucketName: img-forest-image
-  data:
-    redis:
-      host: "${custom.dev.cookieDomain}"
-      port: 6379
+
 logging:
   level:
     com.ll.medium: DEBUG
@@ -49,7 +46,6 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
-
 custom:
   dev:
     cookieDomain: localhost
