@@ -7,28 +7,21 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.ll.demo.article.dto.ArticleRequestDto;
 import com.ll.demo.article.service.ArticleService;
-import com.ll.demo.global.app.AppConfig;
 import com.ll.demo.global.service.SystemService;
 import com.ll.demo.member.dto.MemberCreateRequestDto;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 @Transactional
 @Configuration
