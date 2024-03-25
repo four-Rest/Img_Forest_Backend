@@ -17,9 +17,13 @@ public class CartService {
     private final CartItemRepository cartItemRepository;
 
     @Transactional
-    public CartItem addItem(Member member, Article article) {
+    public CartItem addItem(Member buyer, Article article) {
+
+        if(buyer.hasArticle(article)) {
+            throw new IllegalArgumentException("이미 구매한 이미지입니다.");
+        }
         CartItem cartItem = CartItem.builder()
-                .buyer(member)
+                .buyer(buyer)
                 .article(article)
                 .build();
 

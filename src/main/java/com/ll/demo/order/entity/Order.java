@@ -36,6 +36,10 @@ public class Order extends BaseEntity {
 
 
     public void addItem(CartItem cartItem) {
+
+        if(buyer.hasArticle(cartItem.getArticle())) {
+            throw new IllegalArgumentException("이미 구매한 이미지입니다.");
+        }
         OrderItem orderItem = OrderItem.builder()
                 .order(this)
                 .article(cartItem.getArticle())
@@ -52,6 +56,9 @@ public class Order extends BaseEntity {
 
     public void setPaymentDone() {
         payDate = LocalDateTime.now();
+
+        orderItems.stream()
+                .forEach(OrderItem::setPaymentDone);
     }
 
     public void setCancelDone() {

@@ -23,4 +23,21 @@ public class OrderItem extends BaseEntity {
     public long getPayPrice() {
         return article.getPrice();
     }
+
+    public void setPaymentDone() {
+        Article article = this.article;
+        if(article !=null) {
+            order.getBuyer().addMyArticle(article);
+        }
+    }
+
+    public void setCancelDone() {
+    }
+
+    public void setRefundDone() {
+        Article article = this.article;
+        if(article !=null) {
+            order.getBuyer().removeMyArticle(article);
+        }
+    }
 }

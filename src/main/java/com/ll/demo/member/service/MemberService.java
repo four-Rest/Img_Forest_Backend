@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class  MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder encoder;
     private final JwtProperties jwtProperties;
