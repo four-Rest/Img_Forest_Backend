@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -107,4 +108,18 @@ public class OrderService {
         }
         payDone(order);
     }
+
+    public Optional<Order> findById(long id) {
+        return orderRepository.findById(id);
+    }
+
+    public Optional<Order> findByBuyer(String username) {
+        Member member = memberService.findByUsername(username);
+        return orderRepository.findByBuyer(member);
+    }
+
+    public boolean actorCanSee(Member member, Order order) {
+        return order.getBuyer().equals(member);
+    }
+
 }
