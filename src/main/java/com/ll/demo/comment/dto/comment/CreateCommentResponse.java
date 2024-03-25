@@ -1,23 +1,20 @@
-package com.ll.demo.comment.dto;
+package com.ll.demo.comment.dto.comment;
 
 import com.ll.demo.comment.entity.Comment;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class DeleteCommentResponse {
+public class CreateCommentResponse {
     private Long id;
     private String content;
-    private LocalDateTime removedTime;
-    public static DeleteCommentResponse of(Comment comment) {
-        return DeleteCommentResponse.builder()
+
+    public static CreateCommentResponse of(Comment comment) {
+        return CreateCommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
-                .removedTime(comment.getRemovedTime())
                 .build();
     }
 }

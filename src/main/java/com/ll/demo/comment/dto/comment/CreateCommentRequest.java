@@ -1,4 +1,4 @@
-package com.ll.demo.comment.dto;
+package com.ll.demo.comment.dto.comment;
 
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.comment.entity.Comment;
