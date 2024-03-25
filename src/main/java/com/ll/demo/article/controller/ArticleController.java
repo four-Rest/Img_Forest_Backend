@@ -1,8 +1,5 @@
 package com.ll.demo.article.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ll.demo.article.dto.*;
 import com.ll.demo.article.entity.Article;
 import com.ll.demo.article.service.ArticleService;
@@ -17,13 +14,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,32 +56,15 @@ public class ArticleController {
     //단일 글 조회
     @GetMapping("/detail/{id}")
     @Operation(summary = "단일 글 조회", description = "단일 글 조회 시 사용하는 API")
-    public GlobalResponse showArticle(@PathVariable("id") Long id)  {
-        Long memberId = null;
-        if(rq.isLoggedIn()){
-            memberId = memberService.findByUsername(rq.getUser().getUsername()).getId();
-            // 로그인 했고, Redis에서 글을 찾아보기
-            ArticleDetailResponseDto articleDetailResponseDto = articleService.findRecentArticle(memberId, id);
-            System.out.println("articleDetailResponseDto: " + articleDetailResponseDto);
-            if(articleDetailResponseDto != null) {
-                // Redis에서 찾은 글이 있으면, 그 글로 ArticleDetailResponseDto 생성 후 반환
-                articleDetailResponseDto.setLikeValue(
-                        articleService.getLikeByArticleIdAndMemberId(articleDetailResponseDto.getId(), memberId) != null
-                );
-                return GlobalResponse.of("200", "success", articleDetailResponseDto);
-            }
-            else{
-                // Redis에서 찾지 못했으면, DB에서 글을 조회하고 Redis에 저장
-                articleService.saveRecentReadArticle(memberId, id);
-            }
-        }
-        // DB에서 글 조회 로직
+    public GlobalResponse showArticle(@PathVariable("id") Long id) {
+
         Article article = articleService.getArticleById(id);
         ArticleDetailResponseDto articleDetailResponseDto = new ArticleDetailResponseDto(article);
-
-        // 좋아요 상태 설정
-        boolean isLiked = rq.isLoggedIn() && articleService.getLikeByArticleIdAndMemberId(article.getId(), memberId) != null;
-        articleDetailResponseDto.setLikeValue(isLiked);
+        if (rq.isLoggedIn() && articleService.getLikeByArticleIdAndMemberId(article.getId(), memberService.findByUsername(rq.getUser().getUsername()).getId()) != null) {
+            articleDetailResponseDto.setLikeValue(true);
+        } else {
+            articleDetailResponseDto.setLikeValue(false);
+        }
 
         return GlobalResponse.of("200", "success", articleDetailResponseDto);
     }

@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class ArticleDetailResponseDto {
-    private Long id;
     private String content;
     private String username;
     private boolean paid;
@@ -27,13 +26,7 @@ public class ArticleDetailResponseDto {
     private boolean likeValue;
     private List<ListCommentResponse> listCommentResponses;
 
-    // Jackson 역직렬화를 위한 기본 생성자 추가
-    public ArticleDetailResponseDto() {
-        super();
-    }
-
     public ArticleDetailResponseDto(Article article) {
-        this.id = article.getId();
         this.content = article.getContent();
         this.username = article.getMember().getUsername();
         this.paid = article.isPaid();
