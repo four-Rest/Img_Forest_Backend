@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 import net.bytebuddy.implementation.bind.annotation.Super;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,5 +68,25 @@ public class Order extends BaseEntity {
 
     public void setRefundDone() {
         refundDate = LocalDateTime.now();
+    }
+
+
+    //결제 이름 가져오기(article.id를 String으로 변경 후 OrderName으로 지정)
+    public String getName() {
+        String name = String.valueOf(orderItems.get(0).getArticle().getId());
+
+        if(orderItems.size() > 1) {
+            name += " 외 %건".formatted(orderItems.size() - 1);
+        }
+        return name;
+    }
+
+    // 결제 코드 생성 및 가져오기
+    public String getCode() {
+        // yyyy-MM-dd 형식의 DateTimeFormatter 생성
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // LocalDateTime 객체를 문자열로 변환
+        return getPayDate().format(formatter) + "__" + getId();
     }
 }

@@ -30,7 +30,7 @@ public class Member extends BaseEntity {
     private String nickname;
     private String refreshToken;
 
-    private long restCash;
+    private Long restCash;
 
 
     // 사용자 권한처리

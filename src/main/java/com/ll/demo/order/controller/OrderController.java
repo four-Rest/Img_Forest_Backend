@@ -26,9 +26,9 @@ public class OrderController {
 
     // 주문 상세
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/{username}")
-    public GlobalResponse showDetail(@PathVariable String username, Principal principal) {
-       Order order = orderService.findByBuyer(username).orElse(null);
+    @GetMapping("/{id}")
+    public GlobalResponse showDetail(@PathVariable long id, Principal principal) {
+       Order order = orderService.findById(id).orElse(null);
 
        if (order == null) {
            throw new IllegalArgumentException("주문을 찾을 수 없습니다");
