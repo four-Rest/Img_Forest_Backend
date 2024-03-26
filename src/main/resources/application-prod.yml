@@ -31,7 +31,7 @@ spring:
           redirectUrlAfterSocialLogin: https://img.for-rest.site/?check-social-login
         registration:
           kakao:
-            redirect-uri: https://api.img.for-rest.site/{action}/oauth2/code/{registrationId}
+            redirect-uri: 'https://api.img.for-rest.site/{action}/oauth2/code/{registrationId}'
 logging:
   level:
     com.ll.medium: INFO
