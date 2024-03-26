@@ -117,7 +117,7 @@ public class OrderController {
 
         // 결제 승인이 완료
         if (isSuccess) {
-            orderService.payDone(orderId);
+            orderService.payByTossPayments(orderService.findByCode(orderId).get(), Long.parseLong(amount));
         } else {
             throw new RuntimeException("결제 승인 실패");
         }

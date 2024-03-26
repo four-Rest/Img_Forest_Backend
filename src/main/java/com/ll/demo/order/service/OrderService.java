@@ -81,6 +81,12 @@ public class OrderService {
     }
 
     public boolean canPay(Order order,long pgPayPrice) {
+
+
+        // 서버사이드에서도 올바르지 않는 결제요청을 막음.
+        if(!order.isPayable()){
+            return false;
+        }
         long restCash = order.getBuyer().getRestCash();
 
         return order.calcPayPrice() <= restCash + pgPayPrice;
