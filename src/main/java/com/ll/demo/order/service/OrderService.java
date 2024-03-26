@@ -86,6 +86,15 @@ public class OrderService {
         return order.calcPayPrice() <= restCash + pgPayPrice;
     }
 
+    public void checkCanPay(String orderCode, long pgPayPrice) {
+        Order order = findByCode(orderCode).orElse(null);
+
+        if (order == null)
+            throw new IllegalArgumentException("존재하지 않는 주문입니다.");
+
+        checkCanPay(order, pgPayPrice);
+    }
+
 
     // 토스페이먼츠로 결제하는 기능 , 부족한 금액은 자동으로 예치금에서 차감
     @Transactional
@@ -120,6 +129,20 @@ public class OrderService {
 
     public boolean actorCanSee(Member member, Order order) {
         return order.getBuyer().equals(member);
+    }
+
+    public Optional<Order> findByCode(String code) {
+        long id = Long.parseLong(code.split("__", 2)[1]);
+
+        return findById(id);
+    }
+
+
+    public void payDone(String code) {
+        Order order = findByCode(code).orElse(null);
+        if (order == null)
+            throw new IllegalArgumentException("존재하지 않는 주문입니다.");
+        payDone(order);
     }
 
 }
