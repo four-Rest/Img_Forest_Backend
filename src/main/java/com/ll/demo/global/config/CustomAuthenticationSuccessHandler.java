@@ -30,7 +30,7 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException, IOException {
         String redirectUrlAfterSocialLogin = oauth2Properties.getRedirectUrlAfterSocialLogin();
-        if (redirectUrlAfterSocialLogin.startsWith(AppConfig.getDevFrontUrl())){
+        if (redirectUrlAfterSocialLogin.startsWith(AppConfig.getSiteFrontUrl())){
             String username = authentication.getName();
             Member member = memberRepository.findByUsername(username)
                     .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
