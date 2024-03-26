@@ -32,7 +32,7 @@ spring:
         registration:
           kakao:
             redirect-uri: https://img.for-rest.site/{action}/oauth2/code/{registrationId}
-            clientId: ${spring.security.oauth2.client.registration.kakao.clientId}
+            clientId: '${spring.security.oauth2.client.registration.kakao.clientId}'
 logging:
   level:
     com.ll.medium: INFO
