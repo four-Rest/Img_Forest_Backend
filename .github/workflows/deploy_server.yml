@@ -9,7 +9,7 @@ on:
 
 
     branches:
-      - main
+      - dev_ref
 jobs:
   makeTagAndRelease:
     runs-on: ubuntu-latest
@@ -63,5 +63,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ env.OWNER_LC }}/imgforest-server-app:${{ needs.makeTagAndRelease.outputs.tag_name }},
-            ghcr.io/${{ env.OWNER_LC }}/imgforest-server-app:latest
+            ghcr.io/${{ env.OWNER_LC }}/imgforest-server-test-app:${{ needs.makeTagAndRelease.outputs.tag_name }},
+            ghcr.io/${{ env.OWNER_LC }}/imgforest-server-test-app:latest

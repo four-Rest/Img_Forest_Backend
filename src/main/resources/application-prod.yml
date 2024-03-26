@@ -24,6 +24,14 @@ spring:
     redis:
       host: "172.17.0.1"
       port: 6379
+  security:
+    oauth2:
+      client:
+        custom:
+          redirectUrlAfterSocialLogin: https://img.for-rest.site/?check-social-login
+        registration:
+          kakao:
+            clientId: ${security.oauth2.client.registration.kakao.clientId}
 logging:
   level:
     com.ll.medium: INFO
