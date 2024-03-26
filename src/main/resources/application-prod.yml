@@ -32,7 +32,6 @@ spring:
         registration:
           kakao:
             redirect-uri: https://img.for-rest.site/{action}/oauth2/code/{registrationId}
-            clientId: '${kakao.clientId}'
 logging:
   level:
     com.ll.medium: INFO
