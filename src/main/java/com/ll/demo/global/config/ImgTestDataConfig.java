@@ -54,21 +54,14 @@ public class ImgTestDataConfig {
             //이미지파일 이름 설정
             String[] fileNames = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"};
 
-            //OS에 따른 path 설정
-            String imgSourcePath = System.getProperty("user.dir") + "\\src\\main\\resources\\";
-            String os = System.getProperty("os.name").toLowerCase();
-            if (!os.contains("win")) {
-                imgSourcePath = System.getProperty("user.dir") + "/src/main/resources/";
-            }
 
             //테스트데이터용 이미지 다운로드
-            String finalImgSourcePath = imgSourcePath;
             Arrays.stream(fileNames)
                     .forEach(fileName -> {
                         try {
                             S3Object s3Object = s3.getObject(s3Util.getBucketName(), "testImg/" + fileName + ".jpeg");
                             S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();
-                            String downloadFilePath = finalImgSourcePath + fileName + ".jpeg";
+                            String downloadFilePath = fileName + ".jpeg";
 
                             OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFilePath));
                             byte[] bytesArray = new byte[4096];
@@ -96,7 +89,7 @@ public class ImgTestDataConfig {
 
                 //테스트이미지 파일을 테스트용 multipartFile로 불러옴
 
-                Path path = Paths.get(imgSourcePath + "%s.jpeg".formatted(fileNames[i % 15]));
+                Path path = Paths.get("%s.jpeg".formatted(fileNames[i % 15]));
                 String name = "%s.jpeg".formatted(fileNames[i % 15]);
                 String originalFilename = "%s.jpeg".formatted(fileNames[i % 15]);
                 String contentType = "image/jpeg";
@@ -119,7 +112,7 @@ public class ImgTestDataConfig {
             //로컬에 저장된 테스트이미지 삭제
             Arrays.stream(fileNames)
                     .forEach(fileName -> {
-                        File file = new File(finalImgSourcePath + fileName + ".jpeg");
+                        File file = new File(fileName + ".jpeg");
                         file.delete();
                     });
         };
