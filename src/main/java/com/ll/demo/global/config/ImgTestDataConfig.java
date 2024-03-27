@@ -85,29 +85,29 @@ public class ImgTestDataConfig {
                     );
 
             //객체화, article 데이터 생성
-            for (int i = 0; i < 45; i++) {
+                for (int i = 0; i < 15; i++) {
 
-                //테스트이미지 파일을 테스트용 multipartFile로 불러옴
+                    //테스트이미지 파일을 테스트용 multipartFile로 불러옴
 
-                Path path = Paths.get("%s.jpeg".formatted(fileNames[i % 15]));
-                String name = "%s.jpeg".formatted(fileNames[i % 15]);
-                String originalFilename = "%s.jpeg".formatted(fileNames[i % 15]);
-                String contentType = "image/jpeg";
-                byte[] content = null;
-                try {
-                    content = Files.readAllBytes(path);
-                } catch (final IOException e) {
+                    Path path = Paths.get("%s.jpeg".formatted(fileNames[i]));
+                    String name = "%s.jpeg".formatted(fileNames[i]);
+                    String originalFilename = "%s.jpeg".formatted(fileNames[i]);
+                    String contentType = "image/jpeg";
+                    byte[] content = null;
+                    try {
+                        content = Files.readAllBytes(path);
+                    } catch (final IOException e) {
+                    }
+
+                    MultipartFile multipartFile = new MockMultipartFile(name,
+                            originalFilename, contentType, content);
+                    ArticleRequestDto articleRequestDto = new ArticleRequestDto();
+                    articleRequestDto.setContent("content of test article %d".formatted(i + 1));
+                    articleRequestDto.setTagString("test example image %d".formatted(i + 1));
+                    articleRequestDto.setMultipartFile(multipartFile);
+
+                    articleService.create(articleRequestDto, member);
                 }
-
-                MultipartFile multipartFile = new MockMultipartFile(name,
-                        originalFilename, contentType, content);
-                ArticleRequestDto articleRequestDto = new ArticleRequestDto();
-                articleRequestDto.setContent("content of test article %d".formatted(i));
-                articleRequestDto.setTagString("test example image %d".formatted(i));
-                articleRequestDto.setMultipartFile(multipartFile);
-
-                articleService.create(articleRequestDto, member);
-            }
 
             //로컬에 저장된 테스트이미지 삭제
             Arrays.stream(fileNames)
