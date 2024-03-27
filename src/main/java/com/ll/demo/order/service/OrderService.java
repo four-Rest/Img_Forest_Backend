@@ -128,9 +128,8 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
-    public Optional<Order> findByBuyer(String username) {
-        Member member = memberService.findByUsername(username);
-        return orderRepository.findByBuyer(member);
+    public List<Order> findByBuyer(Member buyer) {
+        return orderRepository.findByBuyerOrderByIdDesc(buyer);
     }
 
     public boolean actorCanSee(Member member, Order order) {

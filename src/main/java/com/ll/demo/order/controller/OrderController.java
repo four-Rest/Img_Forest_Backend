@@ -1,15 +1,11 @@
 package com.ll.demo.order.controller;
 
 
-import com.ll.demo.article.entity.Article;
-import com.ll.demo.article.service.ArticleService;
 import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
-import com.ll.demo.order.dto.OrderRequestDto;
 import com.ll.demo.order.entity.Order;
 import com.ll.demo.order.service.OrderService;
-import com.ll.demo.payment.dto.PaymentDto;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -18,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import retrofit2.http.Path;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,7 +24,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Base64;
-import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/order")
@@ -60,7 +55,6 @@ public class OrderController {
 
        return GlobalResponse.of("200","success",order);
     }
-
 
 
     // 결제 확인
@@ -132,6 +126,31 @@ public class OrderController {
         return ResponseEntity.status(code).body(jsonObject);
     }
 
+    @GetMapping("/myList")
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse showMyList(Principal principal) {
 
+        Member member = memberService.findByUsername(principal.getName());
+        List<Order> orderList = orderService.findByBuyer(member);
 
+        return GlobalResponse.of("200","주문 정보 리스트 반환",orderList);
+    }
+
+    @PostMapping("/{id}/payByCash")
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse payByCash(@PathVariable long id) {
+        Order order = orderService.findById(id).orElse(null);
+
+        if(order == null) {
+            throw new IllegalArgumentException("존재하지 않는 주문입니다.");
+        }
+
+        if(!orderService.canPay(order,0)) {
+            throw new RuntimeException("권한이 없습니다");
+        }
+
+        orderService.payByCashOnly(order);
+
+        return GlobalResponse.of("200","캐쉬로만 결제 완료");
+    }
 }
