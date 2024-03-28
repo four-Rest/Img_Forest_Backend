@@ -1,7 +1,6 @@
 package com.ll.demo.global.config;
 
 import com.ll.demo.global.app.AppConfig;
-import com.ll.demo.global.rq.Rq;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.repository.MemberRepository;
 import jakarta.servlet.ServletException;
@@ -26,11 +25,12 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
 
     private final JwtProperties jwtProperties;
     private final MemberRepository memberRepository;
+    private final Oauth2Properties oauth2Properties;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException, IOException {
-        String redirectUrlAfterSocialLogin = "http://localhost:3000/?check-social-login";
-        if (redirectUrlAfterSocialLogin.startsWith(AppConfig.getDevFrontUrl())){
+        String redirectUrlAfterSocialLogin = oauth2Properties.getRedirectUrlAfterSocialLogin();
+        if (redirectUrlAfterSocialLogin.startsWith(AppConfig.getSiteFrontUrl())){
             String username = authentication.getName();
             Member member = memberRepository.findByUsername(username)
                     .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
