@@ -10,11 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Long> {
-
-    List<Order> findByBuyerOrderByIdDesc(Member buyer);
-
-
-
+public interface OrderRepository extends JpaRepository<Order, Long>, OrderRepositoryCustom {
 
 }

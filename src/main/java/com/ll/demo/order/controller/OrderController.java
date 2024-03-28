@@ -11,6 +11,10 @@ import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -126,14 +131,24 @@ public class OrderController {
         return ResponseEntity.status(code).body(jsonObject);
     }
 
+
+    // 내 주문 리스트 페이징
     @GetMapping("/myList")
     @PreAuthorize("isAuthenticated()")
-    public GlobalResponse showMyList(Principal principal) {
+    public GlobalResponse showMyList(@RequestParam(defaultValue = "1") int page,
+                                     Boolean payStatus,
+                                     Boolean cancelStatus,
+                                     Boolean refundStatus,
+                                     Principal principal) {
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page -1,10,Sort.by(sorts));
 
         Member member = memberService.findByUsername(principal.getName());
-        List<Order> orderList = orderService.findByBuyer(member);
+        Page<Order> orderPage = orderService.search(member,payStatus,cancelStatus,refundStatus,pageable);
 
-        return GlobalResponse.of("200","주문 정보 리스트 반환",orderList);
+        return GlobalResponse.of("200","주문 정보 리스트 반환",orderPage);
     }
 
     @PostMapping("/{id}/payByCash")
@@ -152,5 +167,25 @@ public class OrderController {
         orderService.payByCashOnly(order);
 
         return GlobalResponse.of("200","캐쉬로만 결제 완료");
+    }
+
+    @DeleteMapping("/{id}/cancel")
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse cancelOrder(@PathVariable long id, Principal principal) {
+        Order order = orderService.findById(id).orElse(null);
+
+        if(order == null) {
+            throw new RuntimeException("존재하지 않는 주문입니다.");
+        }
+
+        Member member = memberService.findByUsername(principal.getName());
+
+        if (!orderService.canCancel(member, order)) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
+
+        orderService.cancel(order);
+
+        return GlobalResponse.of("200","주문취소가 완료되었습니다.");
     }
 }

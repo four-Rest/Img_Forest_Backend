@@ -8,6 +8,8 @@ import com.ll.demo.member.service.MemberService;
 import com.ll.demo.order.entity.Order;
 import com.ll.demo.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -128,10 +130,6 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
-    public List<Order> findByBuyer(Member buyer) {
-        return orderRepository.findByBuyerOrderByIdDesc(buyer);
-    }
-
     public boolean actorCanSee(Member member, Order order) {
         return order.getBuyer().equals(member);
     }
@@ -150,4 +148,25 @@ public class OrderService {
         payDone(order);
     }
 
+    public Page<Order> search(Member buyer, Boolean payStatus, Boolean cancelStatus, Boolean refundStatus, Pageable pageable) {
+
+        return orderRepository.search(buyer,payStatus,cancelStatus,refundStatus,pageable);
+    }
+
+
+    @Transactional
+    public void cancel(Order order) {
+        if(!order.isCancelable()) {
+            throw new RuntimeException("취소할 수 없는 주문입니다.");
+        }
+        order.setCancelDone();
+
+        if(order.isPayDone()) {
+            refund(order);
+        }
+    }
+
+    public boolean canCancel(Member buyer, Order order) {
+        return buyer.equals(order.getBuyer()) && order.isCancelable();
+    }
 }
