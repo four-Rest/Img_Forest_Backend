@@ -32,7 +32,11 @@ public class CartService {
         return cartItem;
     }
 
-    public List<CartItem> findItemsByBuyer(Member buyer) {
+    public void removeItem(Member buyer, Article article) {
+        cartItemRepository.deleteByBuyerAndArticle(buyer,article);
+    }
+
+    public List<CartItem> findByBuyer(Member buyer) {
         return cartItemRepository.findByBuyer(buyer);
     }
 
@@ -40,11 +44,16 @@ public class CartService {
         cartItemRepository.delete(cartItem);
     }
 
-    public void removeItem(Member buyer, Article article) {
-        CartItem cartItem = CartItem.builder()
-                .buyer(buyer)
-                .article(article)
-                .build();
-        cartItemRepository.delete(cartItem);
+    public boolean canAdd(Member buyer,Article article){
+        if(buyer == null) {
+            return false;
+        }
+        return !cartItemRepository.existsByBuyerAndArticle(buyer, article);
     }
+    public boolean canRemove(Member buyer, Article article) {
+        if (buyer == null) return false;
+
+        return cartItemRepository.existsByBuyerAndArticle(buyer, article);
+    }
+
 }

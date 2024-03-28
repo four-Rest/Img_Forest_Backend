@@ -26,7 +26,7 @@ public class OrderService {
 
     @Transactional
     public Order createFromCart(Member buyer) {
-        List<CartItem> cartItems = cartService.findItemsByBuyer(buyer);
+        List<CartItem> cartItems = cartService.findByBuyer(buyer);
 
         Order order = Order.builder()
                 .buyer(buyer)

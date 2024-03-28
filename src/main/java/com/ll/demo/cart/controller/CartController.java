@@ -34,7 +34,7 @@ public class CartController {
         Member member = memberService.findByUsername(principal.getName());
         cartService.addItem(member,article);
 
-        List<CartItem> cartItems = cartService.findItemsByBuyer(member);
+        List<CartItem> cartItems = cartService.findByBuyer(member);
         return GlobalResponse.of("200","장바구니 담기 성공",cartItems);
     }
 
@@ -48,7 +48,7 @@ public class CartController {
         Member member = memberService.findByUsername(principal.getName());
 
         cartService.removeItem(member,article);
-        List<CartItem> cartItems = cartService.findItemsByBuyer(member);
+        List<CartItem> cartItems = cartService.findByBuyer(member);
         return GlobalResponse.of("200","장바구니 삭제 성공",cartItems);
     }
 }
