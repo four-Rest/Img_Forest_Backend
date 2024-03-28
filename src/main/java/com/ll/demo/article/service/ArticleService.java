@@ -211,7 +211,6 @@ public class ArticleService {
         String key = "userId::" + userId;
         Long size = listOperations.size(key);
         List<Object> results = size > 0 ? listOperations.range(key, 0, size) : Collections.emptyList();
-        System.out.println(results);
         return results.stream()
                 .map(this::convertMapToArticleDetailResponseDto)
                 .filter(Objects::nonNull) // null이 아닌 객체만 필터링

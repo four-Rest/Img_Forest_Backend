@@ -69,7 +69,6 @@ public class ArticleController {
             memberId = memberService.findByUsername(rq.getUser().getUsername()).getId();
             // 로그인 했고, Redis에서 글을 찾아보기
             ArticleDetailResponseDto articleDetailResponseDto = articleService.findRecentArticle(memberId, id);
-            System.out.println("articleDetailResponseDto: " + articleDetailResponseDto);
             if(articleDetailResponseDto != null) {
                 // Redis에서 찾은 글이 있으면, 그 글로 ArticleDetailResponseDto 생성 후 반환
                 articleDetailResponseDto.setLikeValue(
@@ -255,4 +254,33 @@ public class ArticleController {
         return GlobalResponse.of("200","success", result);
     }
 
+
+    @GetMapping("/detail/db/{id}")
+    @Operation(summary = "단일 글 db로 조회", description = "단일 글 조회 시 db만 사용하는 API")
+    public GlobalResponse showArticleByDB(@PathVariable("id") Long id)  {
+        Long memberId = 2L;
+        Article article = articleService.getArticleById(id);
+        ArticleDetailResponseDto articleDetailResponseDto = new ArticleDetailResponseDto(article);
+        boolean isLiked = rq.isLoggedIn() && articleService.getLikeByArticleIdAndMemberId(article.getId(), memberId) != null;
+        articleDetailResponseDto.setLikeValue(isLiked);
+        return GlobalResponse.of("200", "success", articleDetailResponseDto);
+    }
+
+
+    @GetMapping("/detail/redis/{id}")
+    @Operation(summary = "단일 글 redis로 조회", description = "단일 글 조회 시 redis만 사용하는 API")
+    public GlobalResponse showArticleByRedis(@PathVariable("id") Long id)  {
+        Long memberId = 2L;
+        ArticleDetailResponseDto articleDetailResponseDto = articleService.findRecentArticle(memberId, id);
+        if(articleDetailResponseDto != null) {
+            articleDetailResponseDto.setLikeValue(
+                    articleService.getLikeByArticleIdAndMemberId(articleDetailResponseDto.getId(), memberId) != null
+            );
+            return GlobalResponse.of("200", "success", articleDetailResponseDto);
+        }
+        else{
+            articleService.saveRecentReadArticle(memberId, id);
+            return GlobalResponse.of("200", "saved", articleDetailResponseDto);
+        }
+    }
 }
