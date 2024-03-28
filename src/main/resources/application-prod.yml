@@ -24,6 +24,14 @@ spring:
     redis:
       host: "172.17.0.1"
       port: 6379
+  security:
+    oauth2:
+      client:
+        custom:
+          redirectUrlAfterSocialLogin: https://img.for-rest.site/?check-social-login
+        registration:
+          kakao:
+            redirect-uri: '${custom.prod.backUrl}/{action}/oauth2/code/{registrationId}'
 logging:
   level:
     com.ll.medium: INFO
@@ -31,3 +39,8 @@ logging:
     org.hibernate.orm.jdbc.bind: INFO
     org.hibernate.orm.jdbc.extract: INFO
     org.springframework.transaction.interceptor: INFO
+custom:
+  site:
+    cookieDomain: "${custom.prod.cookieDomain}"
+    frontUrl: "${custom.prod.frontUrl}"
+    backUrl: "${custom.prod.backUrl}"

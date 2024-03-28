@@ -20,17 +20,19 @@ spring:
       client:
         registration:
           kakao:
-            clientId: ON_SECRET
+            clientId: '${kakao.clientId}'
             scope: profile_nickname, profile_image
             client-name: Kakao
             authorization-grant-type: authorization_code
-            redirect-uri: '${custom.dev.backUrl}/{action}/oauth2/code/{registrationId}'
+            redirect-uri: '${custom.site.backUrl}/{action}/oauth2/code/{registrationId}'
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
+        custom:
+          redirectUrlAfterSocialLogin: http://localhost:3000/?check-social-login
   cloud:
     aws:
       accessKey: ON_SECRET
@@ -56,7 +58,7 @@ custom:
     frontUrl: "http://${custom.dev.cookieDomain}:3000"
     backUrl: "http://${custom.dev.cookieDomain}:${server.port}"
   prod:
-    cookieDomain: //img_Forest
+    cookieDomain: img.for-rest.site
     frontUrl: "https://${custom.prod.cookieDomain}"
     backUrl: "https://api.${custom.prod.cookieDomain}"
   site:
