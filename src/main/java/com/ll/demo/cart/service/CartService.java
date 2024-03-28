@@ -39,4 +39,12 @@ public class CartService {
     public void delete(CartItem cartItem) {
         cartItemRepository.delete(cartItem);
     }
+
+    public void removeItem(Member buyer, Article article) {
+        CartItem cartItem = CartItem.builder()
+                .buyer(buyer)
+                .article(article)
+                .build();
+        cartItemRepository.delete(cartItem);
+    }
 }
