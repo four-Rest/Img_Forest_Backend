@@ -188,4 +188,13 @@ public class OrderController {
 
         return GlobalResponse.of("200","주문취소가 완료되었습니다.");
     }
+
+    // 장바구니로 주문
+    @PostMapping("/createFromCart")
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse createFromCart(Principal principal) {
+        Member member = memberService.findByUsername(principal.getName());
+        Order order = orderService.createFromCart(member);
+        return GlobalResponse.of("200","장바구니 주문이 완료되었습니다.");
+    }
 }

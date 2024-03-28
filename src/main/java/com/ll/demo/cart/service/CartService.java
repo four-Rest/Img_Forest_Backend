@@ -56,4 +56,7 @@ public class CartService {
         return cartItemRepository.existsByBuyerAndArticle(buyer, article);
     }
 
+    public List<CartItem> findByBuyerOrderByIdDesc(Member buyer) {
+        return cartItemRepository.findByBuyer(buyer);
+    }
 }
