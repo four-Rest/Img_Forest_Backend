@@ -1,4 +1,4 @@
-package com.ll.demo.comment.dto;
+package com.ll.demo.comment.dto.reply;
 
 import com.ll.demo.comment.entity.Comment;
 import lombok.*;
@@ -7,13 +7,13 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class UpdateCommentResponse {
-    private Long id;
+public class UpdateReplyCommentResponse {
+    private Long replyId;
     private String content;
 
-    public static UpdateCommentResponse of(Comment comment) {
-        return UpdateCommentResponse.builder()
-                .id(comment.getId())
+    public static UpdateReplyCommentResponse of(Comment comment) {
+        return UpdateReplyCommentResponse.builder()
+                .replyId(comment.getId())
                 .content(comment.getContent())
                 .build();
     }
