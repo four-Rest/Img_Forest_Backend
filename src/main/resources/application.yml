@@ -66,6 +66,10 @@ custom:
     frontUrl: "${custom.dev.frontUrl}"
     backUrl: "${custom.dev.backUrl}"
     name: img_Forest
+  tossPayments:
+    widget:
+      clientKey: test_ck_BX7zk2yd8yOdGY7pw9GLVx9POLqK
+      secretKey: ON_SECRET
 
 
 springdoc:
@@ -86,3 +90,4 @@ springdoc:
   model-and-view-allowed: true
   paths-to-match:
     - /api/**
+

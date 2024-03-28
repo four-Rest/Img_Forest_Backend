@@ -1,6 +1,10 @@
 package com.ll.demo.member.service;
 
+import com.ll.demo.cash.entity.CashLog;
+import com.ll.demo.cash.repository.CashLogRepository;
+import com.ll.demo.cash.service.CashService;
 import com.ll.demo.global.config.JwtProperties;
+import com.ll.demo.global.entity.BaseEntity;
 import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.member.dto.*;
 import com.ll.demo.member.entity.Member;
@@ -22,13 +26,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class  MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder encoder;
     private final JwtProperties jwtProperties;
     private final EmailRepository emailRepository;
     private final EmailService emailService;
-
+    private final CashService cashService;
+    private final CashLogRepository cashLogRepository;
     @Transactional
     public GlobalResponse<Member> signup(MemberCreateRequestDto dto) {
         if (validDuplicationUsername(dto.getUsername()).isPresent()) {
@@ -212,4 +217,12 @@ public class MemberService {
         emailRepository.deleteByExpiresTimeBefore(LocalDateTime.now());
     }
 
+
+    @Transactional
+    public void addCash(Member member, long price, CashLog.EvenType eventType) {
+        CashLog cashLog = cashService.addCash(member, price, eventType);
+
+        long newRestCash = member.getRestCash() + cashLog.getPrice();
+        member.setRestCash(newRestCash);
+    }
 }
