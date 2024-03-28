@@ -1,5 +1,6 @@
 package com.ll.demo.order.service;
 
+import com.ll.demo.article.entity.Article;
 import com.ll.demo.cart.entity.CartItem;
 import com.ll.demo.cart.service.CartService;
 import com.ll.demo.cash.entity.CashLog;
@@ -168,5 +169,14 @@ public class OrderService {
 
     public boolean canCancel(Member buyer, Order order) {
         return buyer.equals(order.getBuyer()) && order.isCancelable();
+    }
+
+    public Order createFromArticle(Member buyer, Article article) {
+        Order order = Order.builder()
+                .buyer(buyer)
+                .build();
+        order.addItem(article);
+        orderRepository.save(order);
+        return order;
     }
 }

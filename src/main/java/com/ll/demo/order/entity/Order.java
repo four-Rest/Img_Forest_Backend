@@ -1,5 +1,6 @@
 package com.ll.demo.order.entity;
 
+import com.ll.demo.article.entity.Article;
 import com.ll.demo.cart.entity.CartItem;
 import com.ll.demo.global.entity.BaseEntity;
 import com.ll.demo.member.entity.Member;
@@ -37,13 +38,17 @@ public class Order extends BaseEntity {
 
 
     public void addItem(CartItem cartItem) {
+       addItem(cartItem.getArticle());
+    }
 
-        if(buyer.hasArticle(cartItem.getArticle())) {
-            throw new IllegalArgumentException("이미 구매한 이미지입니다.");
+    public void addItem(Article article) {
+
+        if(buyer.hasArticle(article)) {
+            throw new RuntimeException("이미 구매한 이미지입니다.");
         }
         OrderItem orderItem = OrderItem.builder()
                 .order(this)
-                .article(cartItem.getArticle())
+                .article(article)
                 .build();
 
         orderItems.add(orderItem);

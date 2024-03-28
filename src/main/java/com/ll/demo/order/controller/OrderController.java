@@ -1,6 +1,8 @@
 package com.ll.demo.order.controller;
 
 
+import com.ll.demo.article.entity.Article;
+import com.ll.demo.article.service.ArticleService;
 import com.ll.demo.global.response.GlobalResponse;
 import com.ll.demo.member.entity.Member;
 import com.ll.demo.member.service.MemberService;
@@ -37,6 +39,7 @@ import java.util.List;
 public class OrderController {
     private final OrderService orderService;
     private final MemberService memberService;
+    private final ArticleService articleService;
 
     @Value("${custom.tossPayments.widget.secretKey")
     private String tossApiKey;
@@ -196,5 +199,20 @@ public class OrderController {
         Member member = memberService.findByUsername(principal.getName());
         Order order = orderService.createFromCart(member);
         return GlobalResponse.of("200","장바구니 주문이 완료되었습니다.");
+    }
+
+    // 단견결제
+    @PostMapping("/directMakeOrder/{articleId}")
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse directMakeOrder(@PathVariable long articleId, Principal principal) {
+
+        Article article = articleService.findById(articleId);
+        Member member = memberService.findByUsername(principal.getName());
+
+
+
+        Order order = orderService.createFromArticle(member,article);
+
+        return GlobalResponse.of("200","단건주문이 완료되었습니다.",order);
     }
 }

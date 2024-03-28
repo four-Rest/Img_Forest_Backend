@@ -59,4 +59,8 @@ public class CartService {
     public List<CartItem> findByBuyerOrderByIdDesc(Member buyer) {
         return cartItemRepository.findByBuyer(buyer);
     }
+
+    public boolean canDirectMakeOrder(Member buyer,Article article) {
+        return canAdd(buyer,article);
+    }
 }
