@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(final CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "https://img.for-rest.site")
+                .allowedOrigins("http://localhost:3000", "https://img.for-rest.jinsol.my")
                 .allowedMethods(ALLOWED_METHOD_NAMES.split(","))
                 .allowedHeaders("*")
                 .exposedHeaders(HttpHeaders.LOCATION) // 리다이렉트에 사용하는 LOCATION 헤더 활성화
