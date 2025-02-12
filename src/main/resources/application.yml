@@ -67,7 +67,7 @@ custom:
     frontUrl: "http://${custom.dev.cookieDomain}:3000"
     backUrl: "http://${custom.dev.cookieDomain}:${server.port}"
   prod:
-    cookieDomain: img.for-rest.site
+    cookieDomain: img.for-rest.jinsol.my
     frontUrl: "https://${custom.prod.cookieDomain}"
     backUrl: "https://api.${custom.prod.cookieDomain}"
   site:
