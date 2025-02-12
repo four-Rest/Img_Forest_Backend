@@ -38,4 +38,4 @@
 ## 5. 참고사항
 
 - TroubleShooting
-- [ImgForest 배포 링크](https://img.for-rest.site/)
+- [ImgForest 배포 링크](https://img.for-rest.jinsol.my/)
